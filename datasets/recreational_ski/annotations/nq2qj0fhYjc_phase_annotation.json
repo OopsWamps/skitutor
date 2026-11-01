@@ -1,0 +1,69 @@
+{
+ "trc": "datasets\\epfl_ski2dpose\\video_reconcile\\nq2qj0fhYjc\\0\\0_Sports2D\\0_Sports2D_px_person00.trc",
+ "fps": 59.94005994005994,
+ "annotator": "silver-2d",
+ "marks": [
+  {
+   "frame": 30,
+   "kind": "edge"
+  },
+  {
+   "frame": 271,
+   "kind": "apex"
+  },
+  {
+   "frame": 304,
+   "kind": "edge"
+  },
+  {
+   "frame": 381,
+   "kind": "apex"
+  },
+  {
+   "frame": 429,
+   "kind": "edge"
+  },
+  {
+   "frame": 473,
+   "kind": "apex"
+  },
+  {
+   "frame": 546,
+   "kind": "edge"
+  },
+  {
+   "frame": 584,
+   "kind": "apex"
+  },
+  {
+   "frame": 617,
+   "kind": "edge"
+  },
+  {
+   "frame": 720,
+   "kind": "apex"
+  },
+  {
+   "frame": 756,
+   "kind": "edge"
+  },
+  {
+   "frame": 786,
+   "kind": "apex"
+  },
+  {
+   "frame": 818,
+   "kind": "edge"
+  },
+  {
+   "frame": 852,
+   "kind": "apex"
+  },
+  {
+   "frame": 861,
+   "kind": "edge"
+  }
+ ],
+ "video": "datasets/epfl_ski2dpose/videos/Videos/nq2qj0fhYjc/0.mp4",
+ "form": "卡宾"
+}

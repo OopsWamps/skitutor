@@ -1,0 +1,85 @@
+{
+ "trc": "datasets\\recreational_ski\\results_channel\\BV1js4y137Mr\\BV1js4y137Mr_Sports2D\\BV1js4y137Mr_Sports2D_px_person00.trc",
+ "fps": 30.0,
+ "annotator": "silver-2d",
+ "marks": [
+  {
+   "frame": 112,
+   "kind": "edge"
+  },
+  {
+   "frame": 194,
+   "kind": "apex"
+  },
+  {
+   "frame": 287,
+   "kind": "edge"
+  },
+  {
+   "frame": 312,
+   "kind": "apex"
+  },
+  {
+   "frame": 314,
+   "kind": "edge"
+  },
+  {
+   "frame": 356,
+   "kind": "apex"
+  },
+  {
+   "frame": 412,
+   "kind": "edge"
+  },
+  {
+   "frame": 478,
+   "kind": "apex"
+  },
+  {
+   "frame": 524,
+   "kind": "edge"
+  },
+  {
+   "frame": 524,
+   "kind": "apex"
+  },
+  {
+   "frame": 561,
+   "kind": "edge"
+  },
+  {
+   "frame": 619,
+   "kind": "apex"
+  },
+  {
+   "frame": 727,
+   "kind": "edge"
+  },
+  {
+   "frame": 766,
+   "kind": "apex"
+  },
+  {
+   "frame": 856,
+   "kind": "edge"
+  },
+  {
+   "frame": 936,
+   "kind": "apex"
+  },
+  {
+   "frame": 959,
+   "kind": "edge"
+  },
+  {
+   "frame": 1101,
+   "kind": "apex"
+  },
+  {
+   "frame": 1103,
+   "kind": "edge"
+  }
+ ],
+ "video": "datasets/recreational_ski/results_channel/BV1js4y137Mr/BV1js4y137Mr_Sports2D/BV1js4y137Mr_Sports2D.mp4",
+ "form": "侧面"
+}

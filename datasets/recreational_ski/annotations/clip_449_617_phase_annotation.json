@@ -1,0 +1,325 @@
+{
+ "trc": "datasets\\recreational_ski\\results_clips\\clip_449_617\\clip_449_617_Sports2D\\clip_449_617_Sports2D_px_person00.trc",
+ "fps": 30.0,
+ "annotator": "silver-2d",
+ "marks": [
+  {
+   "frame": 37,
+   "kind": "edge"
+  },
+  {
+   "frame": 62,
+   "kind": "apex"
+  },
+  {
+   "frame": 118,
+   "kind": "edge"
+  },
+  {
+   "frame": 119,
+   "kind": "apex"
+  },
+  {
+   "frame": 157,
+   "kind": "edge"
+  },
+  {
+   "frame": 182,
+   "kind": "apex"
+  },
+  {
+   "frame": 196,
+   "kind": "edge"
+  },
+  {
+   "frame": 211,
+   "kind": "apex"
+  },
+  {
+   "frame": 268,
+   "kind": "edge"
+  },
+  {
+   "frame": 339,
+   "kind": "apex"
+  },
+  {
+   "frame": 466,
+   "kind": "edge"
+  },
+  {
+   "frame": 777,
+   "kind": "apex"
+  },
+  {
+   "frame": 787,
+   "kind": "edge"
+  },
+  {
+   "frame": 787,
+   "kind": "apex"
+  },
+  {
+   "frame": 986,
+   "kind": "edge"
+  },
+  {
+   "frame": 998,
+   "kind": "apex"
+  },
+  {
+   "frame": 1122,
+   "kind": "edge"
+  },
+  {
+   "frame": 1537,
+   "kind": "apex"
+  },
+  {
+   "frame": 1591,
+   "kind": "edge"
+  },
+  {
+   "frame": 1591,
+   "kind": "apex"
+  },
+  {
+   "frame": 1641,
+   "kind": "edge"
+  },
+  {
+   "frame": 1684,
+   "kind": "apex"
+  },
+  {
+   "frame": 1715,
+   "kind": "edge"
+  },
+  {
+   "frame": 1732,
+   "kind": "apex"
+  },
+  {
+   "frame": 1773,
+   "kind": "edge"
+  },
+  {
+   "frame": 1824,
+   "kind": "apex"
+  },
+  {
+   "frame": 1828,
+   "kind": "edge"
+  },
+  {
+   "frame": 1844,
+   "kind": "apex"
+  },
+  {
+   "frame": 1920,
+   "kind": "edge"
+  },
+  {
+   "frame": 1956,
+   "kind": "apex"
+  },
+  {
+   "frame": 1986,
+   "kind": "edge"
+  },
+  {
+   "frame": 2091,
+   "kind": "apex"
+  },
+  {
+   "frame": 2165,
+   "kind": "edge"
+  },
+  {
+   "frame": 2200,
+   "kind": "apex"
+  },
+  {
+   "frame": 2225,
+   "kind": "edge"
+  },
+  {
+   "frame": 2333,
+   "kind": "apex"
+  },
+  {
+   "frame": 2338,
+   "kind": "edge"
+  },
+  {
+   "frame": 2472,
+   "kind": "apex"
+  },
+  {
+   "frame": 2484,
+   "kind": "edge"
+  },
+  {
+   "frame": 2760,
+   "kind": "apex"
+  },
+  {
+   "frame": 2940,
+   "kind": "edge"
+  },
+  {
+   "frame": 2946,
+   "kind": "apex"
+  },
+  {
+   "frame": 2980,
+   "kind": "edge"
+  },
+  {
+   "frame": 2995,
+   "kind": "apex"
+  },
+  {
+   "frame": 3040,
+   "kind": "edge"
+  },
+  {
+   "frame": 3085,
+   "kind": "apex"
+  },
+  {
+   "frame": 3112,
+   "kind": "edge"
+  },
+  {
+   "frame": 3391,
+   "kind": "apex"
+  },
+  {
+   "frame": 3839,
+   "kind": "edge"
+  },
+  {
+   "frame": 3839,
+   "kind": "apex"
+  },
+  {
+   "frame": 3884,
+   "kind": "edge"
+  },
+  {
+   "frame": 3897,
+   "kind": "apex"
+  },
+  {
+   "frame": 3949,
+   "kind": "edge"
+  },
+  {
+   "frame": 4109,
+   "kind": "apex"
+  },
+  {
+   "frame": 4124,
+   "kind": "edge"
+  },
+  {
+   "frame": 4128,
+   "kind": "apex"
+  },
+  {
+   "frame": 4189,
+   "kind": "edge"
+  },
+  {
+   "frame": 4194,
+   "kind": "apex"
+  },
+  {
+   "frame": 4224,
+   "kind": "edge"
+  },
+  {
+   "frame": 4227,
+   "kind": "apex"
+  },
+  {
+   "frame": 4249,
+   "kind": "edge"
+  },
+  {
+   "frame": 4258,
+   "kind": "apex"
+  },
+  {
+   "frame": 4268,
+   "kind": "edge"
+  },
+  {
+   "frame": 4330,
+   "kind": "apex"
+  },
+  {
+   "frame": 4341,
+   "kind": "edge"
+  },
+  {
+   "frame": 4348,
+   "kind": "apex"
+  },
+  {
+   "frame": 4454,
+   "kind": "edge"
+  },
+  {
+   "frame": 4525,
+   "kind": "apex"
+  },
+  {
+   "frame": 4528,
+   "kind": "edge"
+  },
+  {
+   "frame": 4541,
+   "kind": "apex"
+  },
+  {
+   "frame": 4543,
+   "kind": "edge"
+  },
+  {
+   "frame": 4550,
+   "kind": "apex"
+  },
+  {
+   "frame": 4559,
+   "kind": "edge"
+  },
+  {
+   "frame": 4628,
+   "kind": "apex"
+  },
+  {
+   "frame": 4631,
+   "kind": "edge"
+  },
+  {
+   "frame": 4663,
+   "kind": "apex"
+  },
+  {
+   "frame": 4725,
+   "kind": "edge"
+  },
+  {
+   "frame": 4791,
+   "kind": "apex"
+  },
+  {
+   "frame": 4800,
+   "kind": "edge"
+  }
+ ],
+ "video": "datasets/recreational_ski/results_clips/clip_449_617/clip_449_617_annotated.mp4",
+ "form": "犁式小弯"
+}

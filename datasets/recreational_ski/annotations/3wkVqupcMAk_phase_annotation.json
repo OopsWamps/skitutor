@@ -1,0 +1,53 @@
+{
+ "trc": "datasets\\epfl_ski2dpose\\video_reconcile\\3wkVqupcMAk\\0\\0_Sports2D\\0_Sports2D_px_person06.trc",
+ "fps": 60.0,
+ "annotator": "silver-2d",
+ "marks": [
+  {
+   "frame": 1137,
+   "kind": "edge"
+  },
+  {
+   "frame": 1218,
+   "kind": "apex"
+  },
+  {
+   "frame": 1231,
+   "kind": "edge"
+  },
+  {
+   "frame": 1231,
+   "kind": "apex"
+  },
+  {
+   "frame": 1324,
+   "kind": "edge"
+  },
+  {
+   "frame": 1402,
+   "kind": "apex"
+  },
+  {
+   "frame": 1412,
+   "kind": "edge"
+  },
+  {
+   "frame": 1436,
+   "kind": "apex"
+  },
+  {
+   "frame": 1503,
+   "kind": "edge"
+  },
+  {
+   "frame": 1509,
+   "kind": "apex"
+  },
+  {
+   "frame": 1595,
+   "kind": "edge"
+  }
+ ],
+ "video": "datasets/epfl_ski2dpose/videos/Videos/3wkVqupcMAk/0.mp4",
+ "form": "跟拍混合"
+}

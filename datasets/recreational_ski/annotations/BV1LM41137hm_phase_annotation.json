@@ -1,0 +1,149 @@
+{
+ "trc": "datasets\\recreational_ski\\results_channel\\BV1LM41137hm\\BV1LM41137hm_Sports2D\\BV1LM41137hm_Sports2D_px_person05.trc",
+ "fps": 25.0,
+ "annotator": "silver-2d",
+ "marks": [
+  {
+   "frame": 32,
+   "kind": "edge"
+  },
+  {
+   "frame": 47,
+   "kind": "apex"
+  },
+  {
+   "frame": 60,
+   "kind": "edge"
+  },
+  {
+   "frame": 90,
+   "kind": "apex"
+  },
+  {
+   "frame": 101,
+   "kind": "edge"
+  },
+  {
+   "frame": 102,
+   "kind": "apex"
+  },
+  {
+   "frame": 140,
+   "kind": "edge"
+  },
+  {
+   "frame": 152,
+   "kind": "apex"
+  },
+  {
+   "frame": 154,
+   "kind": "edge"
+  },
+  {
+   "frame": 180,
+   "kind": "apex"
+  },
+  {
+   "frame": 212,
+   "kind": "edge"
+  },
+  {
+   "frame": 213,
+   "kind": "apex"
+  },
+  {
+   "frame": 224,
+   "kind": "edge"
+  },
+  {
+   "frame": 248,
+   "kind": "apex"
+  },
+  {
+   "frame": 249,
+   "kind": "edge"
+  },
+  {
+   "frame": 373,
+   "kind": "apex"
+  },
+  {
+   "frame": 428,
+   "kind": "edge"
+  },
+  {
+   "frame": 482,
+   "kind": "apex"
+  },
+  {
+   "frame": 484,
+   "kind": "edge"
+  },
+  {
+   "frame": 489,
+   "kind": "apex"
+  },
+  {
+   "frame": 527,
+   "kind": "edge"
+  },
+  {
+   "frame": 539,
+   "kind": "apex"
+  },
+  {
+   "frame": 540,
+   "kind": "edge"
+  },
+  {
+   "frame": 582,
+   "kind": "apex"
+  },
+  {
+   "frame": 615,
+   "kind": "edge"
+  },
+  {
+   "frame": 647,
+   "kind": "apex"
+  },
+  {
+   "frame": 649,
+   "kind": "edge"
+  },
+  {
+   "frame": 693,
+   "kind": "apex"
+  },
+  {
+   "frame": 715,
+   "kind": "edge"
+  },
+  {
+   "frame": 776,
+   "kind": "apex"
+  },
+  {
+   "frame": 841,
+   "kind": "edge"
+  },
+  {
+   "frame": 878,
+   "kind": "apex"
+  },
+  {
+   "frame": 918,
+   "kind": "edge"
+  },
+  {
+   "frame": 970,
+   "kind": "apex"
+  },
+  {
+   "frame": 979,
+   "kind": "edge"
+  }
+ ],
+ "video": "datasets/recreational_ski/results_channel/BV1LM41137hm/BV1LM41137hm_Sports2D/BV1LM41137hm_Sports2D.mp4",
+ "form": "侧面"
+}

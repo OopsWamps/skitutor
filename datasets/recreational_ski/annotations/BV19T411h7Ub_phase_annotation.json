@@ -1,0 +1,85 @@
+{
+ "trc": "datasets\\recreational_ski\\results_channel\\BV19T411h7Ub\\BV19T411h7Ub_Sports2D\\BV19T411h7Ub_Sports2D_px_person02.trc",
+ "fps": 30.0,
+ "annotator": "silver-2d",
+ "marks": [
+  {
+   "frame": 82,
+   "kind": "edge"
+  },
+  {
+   "frame": 174,
+   "kind": "apex"
+  },
+  {
+   "frame": 203,
+   "kind": "edge"
+  },
+  {
+   "frame": 293,
+   "kind": "apex"
+  },
+  {
+   "frame": 317,
+   "kind": "edge"
+  },
+  {
+   "frame": 318,
+   "kind": "apex"
+  },
+  {
+   "frame": 373,
+   "kind": "edge"
+  },
+  {
+   "frame": 418,
+   "kind": "apex"
+  },
+  {
+   "frame": 466,
+   "kind": "edge"
+  },
+  {
+   "frame": 533,
+   "kind": "apex"
+  },
+  {
+   "frame": 596,
+   "kind": "edge"
+  },
+  {
+   "frame": 657,
+   "kind": "apex"
+  },
+  {
+   "frame": 700,
+   "kind": "edge"
+  },
+  {
+   "frame": 701,
+   "kind": "apex"
+  },
+  {
+   "frame": 747,
+   "kind": "edge"
+  },
+  {
+   "frame": 784,
+   "kind": "apex"
+  },
+  {
+   "frame": 833,
+   "kind": "edge"
+  },
+  {
+   "frame": 833,
+   "kind": "apex"
+  },
+  {
+   "frame": 857,
+   "kind": "edge"
+  }
+ ],
+ "video": "datasets/recreational_ski/results_channel/BV19T411h7Ub/BV19T411h7Ub_Sports2D/BV19T411h7Ub_Sports2D.mp4",
+ "form": "侧面"
+}

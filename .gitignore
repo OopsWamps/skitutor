@@ -17,3 +17,4 @@ reconcile_video_run*.log
 web_results/
 models/
 third_party/
+.scratch/phase-2/attack_exp/cache/

@@ -1,0 +1,205 @@
+{
+ "trc": "datasets\\epfl_ski2dpose\\video_reconcile\\FW1S3VAKui8\\0\\0_Sports2D\\0_Sports2D_px_person00.trc",
+ "fps": 59.94005994005994,
+ "annotator": "silver-2d",
+ "marks": [
+  {
+   "frame": 126,
+   "kind": "edge"
+  },
+  {
+   "frame": 140,
+   "kind": "apex"
+  },
+  {
+   "frame": 221,
+   "kind": "edge"
+  },
+  {
+   "frame": 261,
+   "kind": "apex"
+  },
+  {
+   "frame": 280,
+   "kind": "edge"
+  },
+  {
+   "frame": 319,
+   "kind": "apex"
+  },
+  {
+   "frame": 323,
+   "kind": "edge"
+  },
+  {
+   "frame": 324,
+   "kind": "apex"
+  },
+  {
+   "frame": 356,
+   "kind": "edge"
+  },
+  {
+   "frame": 391,
+   "kind": "apex"
+  },
+  {
+   "frame": 401,
+   "kind": "edge"
+  },
+  {
+   "frame": 440,
+   "kind": "apex"
+  },
+  {
+   "frame": 455,
+   "kind": "edge"
+  },
+  {
+   "frame": 485,
+   "kind": "apex"
+  },
+  {
+   "frame": 496,
+   "kind": "edge"
+  },
+  {
+   "frame": 531,
+   "kind": "apex"
+  },
+  {
+   "frame": 541,
+   "kind": "edge"
+  },
+  {
+   "frame": 542,
+   "kind": "apex"
+  },
+  {
+   "frame": 585,
+   "kind": "edge"
+  },
+  {
+   "frame": 621,
+   "kind": "apex"
+  },
+  {
+   "frame": 629,
+   "kind": "edge"
+  },
+  {
+   "frame": 663,
+   "kind": "apex"
+  },
+  {
+   "frame": 679,
+   "kind": "edge"
+  },
+  {
+   "frame": 719,
+   "kind": "apex"
+  },
+  {
+   "frame": 738,
+   "kind": "edge"
+  },
+  {
+   "frame": 774,
+   "kind": "apex"
+  },
+  {
+   "frame": 799,
+   "kind": "edge"
+  },
+  {
+   "frame": 835,
+   "kind": "apex"
+  },
+  {
+   "frame": 844,
+   "kind": "edge"
+  },
+  {
+   "frame": 882,
+   "kind": "apex"
+  },
+  {
+   "frame": 900,
+   "kind": "edge"
+  },
+  {
+   "frame": 932,
+   "kind": "apex"
+  },
+  {
+   "frame": 964,
+   "kind": "edge"
+  },
+  {
+   "frame": 964,
+   "kind": "apex"
+  },
+  {
+   "frame": 1010,
+   "kind": "edge"
+  },
+  {
+   "frame": 1054,
+   "kind": "apex"
+  },
+  {
+   "frame": 1065,
+   "kind": "edge"
+  },
+  {
+   "frame": 1068,
+   "kind": "apex"
+  },
+  {
+   "frame": 1112,
+   "kind": "edge"
+  },
+  {
+   "frame": 1150,
+   "kind": "apex"
+  },
+  {
+   "frame": 1171,
+   "kind": "edge"
+  },
+  {
+   "frame": 1175,
+   "kind": "apex"
+  },
+  {
+   "frame": 1218,
+   "kind": "edge"
+  },
+  {
+   "frame": 1260,
+   "kind": "apex"
+  },
+  {
+   "frame": 1280,
+   "kind": "edge"
+  },
+  {
+   "frame": 1281,
+   "kind": "apex"
+  },
+  {
+   "frame": 1323,
+   "kind": "edge"
+  },
+  {
+   "frame": 1352,
+   "kind": "apex"
+  },
+  {
+   "frame": 1420,
+   "kind": "edge"
+  }
+ ],
+ "video": "datasets/epfl_ski2dpose/videos/Videos/FW1S3VAKui8/0.mp4",
+ "form": "跟拍混合"
+}

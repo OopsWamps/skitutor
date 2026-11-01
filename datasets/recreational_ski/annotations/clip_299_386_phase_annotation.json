@@ -1,0 +1,13 @@
+{
+ "trc": "datasets\\recreational_ski\\results_clips\\clip_299_386\\clip_299_386_Sports2D\\clip_299_386_Sports2D_px_person00.trc",
+ "fps": 15.0,
+ "annotator": "silver-2d",
+ "marks": [
+  {
+   "frame": 1259,
+   "kind": "edge"
+  }
+ ],
+ "video": "datasets/recreational_ski/results_clips/clip_299_386/clip_299_386_annotated.mp4",
+ "form": "犁式小弯"
+}

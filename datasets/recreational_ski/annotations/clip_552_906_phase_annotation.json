@@ -1,0 +1,533 @@
+{
+ "trc": "datasets\\recreational_ski\\results_clips\\clip_552_906\\clip_552_906_Sports2D\\clip_552_906_Sports2D_px_person00.trc",
+ "fps": 15.0,
+ "annotator": "silver-2d",
+ "marks": [
+  {
+   "frame": 127,
+   "kind": "edge"
+  },
+  {
+   "frame": 144,
+   "kind": "apex"
+  },
+  {
+   "frame": 155,
+   "kind": "edge"
+  },
+  {
+   "frame": 156,
+   "kind": "apex"
+  },
+  {
+   "frame": 170,
+   "kind": "edge"
+  },
+  {
+   "frame": 188,
+   "kind": "apex"
+  },
+  {
+   "frame": 196,
+   "kind": "edge"
+  },
+  {
+   "frame": 211,
+   "kind": "apex"
+  },
+  {
+   "frame": 244,
+   "kind": "edge"
+  },
+  {
+   "frame": 260,
+   "kind": "apex"
+  },
+  {
+   "frame": 267,
+   "kind": "edge"
+  },
+  {
+   "frame": 286,
+   "kind": "apex"
+  },
+  {
+   "frame": 300,
+   "kind": "edge"
+  },
+  {
+   "frame": 319,
+   "kind": "apex"
+  },
+  {
+   "frame": 370,
+   "kind": "edge"
+  },
+  {
+   "frame": 438,
+   "kind": "apex"
+  },
+  {
+   "frame": 453,
+   "kind": "edge"
+  },
+  {
+   "frame": 473,
+   "kind": "apex"
+  },
+  {
+   "frame": 501,
+   "kind": "edge"
+  },
+  {
+   "frame": 512,
+   "kind": "apex"
+  },
+  {
+   "frame": 549,
+   "kind": "edge"
+  },
+  {
+   "frame": 567,
+   "kind": "apex"
+  },
+  {
+   "frame": 634,
+   "kind": "edge"
+  },
+  {
+   "frame": 672,
+   "kind": "apex"
+  },
+  {
+   "frame": 860,
+   "kind": "edge"
+  },
+  {
+   "frame": 888,
+   "kind": "apex"
+  },
+  {
+   "frame": 930,
+   "kind": "edge"
+  },
+  {
+   "frame": 949,
+   "kind": "apex"
+  },
+  {
+   "frame": 951,
+   "kind": "edge"
+  },
+  {
+   "frame": 1080,
+   "kind": "apex"
+  },
+  {
+   "frame": 1245,
+   "kind": "edge"
+  },
+  {
+   "frame": 2481,
+   "kind": "apex"
+  },
+  {
+   "frame": 2483,
+   "kind": "edge"
+  },
+  {
+   "frame": 2484,
+   "kind": "apex"
+  },
+  {
+   "frame": 2548,
+   "kind": "edge"
+  },
+  {
+   "frame": 2553,
+   "kind": "apex"
+  },
+  {
+   "frame": 2592,
+   "kind": "edge"
+  },
+  {
+   "frame": 2612,
+   "kind": "apex"
+  },
+  {
+   "frame": 2644,
+   "kind": "edge"
+  },
+  {
+   "frame": 2662,
+   "kind": "apex"
+  },
+  {
+   "frame": 2686,
+   "kind": "edge"
+  },
+  {
+   "frame": 2707,
+   "kind": "apex"
+  },
+  {
+   "frame": 2743,
+   "kind": "edge"
+  },
+  {
+   "frame": 2758,
+   "kind": "apex"
+  },
+  {
+   "frame": 2825,
+   "kind": "edge"
+  },
+  {
+   "frame": 2826,
+   "kind": "apex"
+  },
+  {
+   "frame": 2867,
+   "kind": "edge"
+  },
+  {
+   "frame": 2877,
+   "kind": "apex"
+  },
+  {
+   "frame": 2924,
+   "kind": "edge"
+  },
+  {
+   "frame": 2944,
+   "kind": "apex"
+  },
+  {
+   "frame": 2953,
+   "kind": "edge"
+  },
+  {
+   "frame": 2971,
+   "kind": "apex"
+  },
+  {
+   "frame": 2990,
+   "kind": "edge"
+  },
+  {
+   "frame": 3036,
+   "kind": "apex"
+  },
+  {
+   "frame": 3047,
+   "kind": "edge"
+  },
+  {
+   "frame": 3064,
+   "kind": "apex"
+  },
+  {
+   "frame": 3095,
+   "kind": "edge"
+  },
+  {
+   "frame": 3136,
+   "kind": "apex"
+  },
+  {
+   "frame": 3141,
+   "kind": "edge"
+  },
+  {
+   "frame": 3143,
+   "kind": "apex"
+  },
+  {
+   "frame": 3171,
+   "kind": "edge"
+  },
+  {
+   "frame": 3188,
+   "kind": "apex"
+  },
+  {
+   "frame": 3197,
+   "kind": "edge"
+  },
+  {
+   "frame": 3210,
+   "kind": "apex"
+  },
+  {
+   "frame": 3216,
+   "kind": "edge"
+  },
+  {
+   "frame": 3219,
+   "kind": "apex"
+  },
+  {
+   "frame": 3243,
+   "kind": "edge"
+  },
+  {
+   "frame": 3251,
+   "kind": "apex"
+  },
+  {
+   "frame": 3266,
+   "kind": "edge"
+  },
+  {
+   "frame": 3276,
+   "kind": "apex"
+  },
+  {
+   "frame": 3304,
+   "kind": "edge"
+  },
+  {
+   "frame": 3352,
+   "kind": "apex"
+  },
+  {
+   "frame": 3353,
+   "kind": "edge"
+  },
+  {
+   "frame": 3356,
+   "kind": "apex"
+  },
+  {
+   "frame": 3394,
+   "kind": "edge"
+  },
+  {
+   "frame": 3394,
+   "kind": "apex"
+  },
+  {
+   "frame": 3410,
+   "kind": "edge"
+  },
+  {
+   "frame": 3416,
+   "kind": "apex"
+  },
+  {
+   "frame": 3432,
+   "kind": "edge"
+  },
+  {
+   "frame": 3479,
+   "kind": "apex"
+  },
+  {
+   "frame": 3481,
+   "kind": "edge"
+  },
+  {
+   "frame": 3507,
+   "kind": "apex"
+  },
+  {
+   "frame": 3524,
+   "kind": "edge"
+  },
+  {
+   "frame": 3576,
+   "kind": "apex"
+  },
+  {
+   "frame": 3581,
+   "kind": "edge"
+  },
+  {
+   "frame": 3584,
+   "kind": "apex"
+  },
+  {
+   "frame": 3613,
+   "kind": "edge"
+  },
+  {
+   "frame": 3615,
+   "kind": "apex"
+  },
+  {
+   "frame": 3626,
+   "kind": "edge"
+  },
+  {
+   "frame": 3688,
+   "kind": "apex"
+  },
+  {
+   "frame": 3696,
+   "kind": "edge"
+  },
+  {
+   "frame": 3711,
+   "kind": "apex"
+  },
+  {
+   "frame": 3735,
+   "kind": "edge"
+  },
+  {
+   "frame": 3780,
+   "kind": "apex"
+  },
+  {
+   "frame": 3822,
+   "kind": "edge"
+  },
+  {
+   "frame": 3834,
+   "kind": "apex"
+  },
+  {
+   "frame": 3883,
+   "kind": "edge"
+  },
+  {
+   "frame": 3896,
+   "kind": "apex"
+  },
+  {
+   "frame": 3907,
+   "kind": "edge"
+  },
+  {
+   "frame": 3919,
+   "kind": "apex"
+  },
+  {
+   "frame": 3921,
+   "kind": "edge"
+  },
+  {
+   "frame": 3937,
+   "kind": "apex"
+  },
+  {
+   "frame": 3955,
+   "kind": "edge"
+  },
+  {
+   "frame": 3958,
+   "kind": "apex"
+  },
+  {
+   "frame": 3970,
+   "kind": "edge"
+  },
+  {
+   "frame": 4002,
+   "kind": "apex"
+  },
+  {
+   "frame": 4008,
+   "kind": "edge"
+  },
+  {
+   "frame": 4036,
+   "kind": "apex"
+  },
+  {
+   "frame": 4049,
+   "kind": "edge"
+  },
+  {
+   "frame": 4068,
+   "kind": "apex"
+  },
+  {
+   "frame": 4082,
+   "kind": "edge"
+  },
+  {
+   "frame": 4085,
+   "kind": "apex"
+  },
+  {
+   "frame": 4107,
+   "kind": "edge"
+  },
+  {
+   "frame": 4139,
+   "kind": "apex"
+  },
+  {
+   "frame": 4159,
+   "kind": "edge"
+  },
+  {
+   "frame": 4181,
+   "kind": "apex"
+  },
+  {
+   "frame": 4195,
+   "kind": "edge"
+  },
+  {
+   "frame": 4256,
+   "kind": "apex"
+  },
+  {
+   "frame": 4257,
+   "kind": "edge"
+  },
+  {
+   "frame": 4258,
+   "kind": "apex"
+  },
+  {
+   "frame": 4292,
+   "kind": "edge"
+  },
+  {
+   "frame": 4306,
+   "kind": "apex"
+  },
+  {
+   "frame": 4317,
+   "kind": "edge"
+  },
+  {
+   "frame": 4335,
+   "kind": "apex"
+  },
+  {
+   "frame": 4342,
+   "kind": "edge"
+  },
+  {
+   "frame": 4344,
+   "kind": "apex"
+  },
+  {
+   "frame": 4354,
+   "kind": "edge"
+  },
+  {
+   "frame": 4360,
+   "kind": "apex"
+  },
+  {
+   "frame": 4367,
+   "kind": "edge"
+  },
+  {
+   "frame": 4521,
+   "kind": "apex"
+  },
+  {
+   "frame": 4767,
+   "kind": "edge"
+  }
+ ],
+ "video": "datasets/recreational_ski/results_clips/clip_552_906/clip_552_906_annotated.mp4",
+ "form": "犁式小弯"
+}
