@@ -31,7 +31,7 @@ def _report_dict() -> dict:
         "quality": {"person_height_ratio": 0.3, "low_conf_frame_ratio": 0.1,
                     "deep_squat_frame_ratio": 0.0},
         "metrics": [
-            {"metric": "knee_flexion", "name": "膝弯曲角", "basis": "2d",
+            {"metric": "knee_flexion", "name": "膝弯曲角", "basis": "3d",
              "definition": "髋-膝-踝夹角", "reference": [140, 170],
              "median_deg": 155.0, "pct_in_range": 0.5, "band_percentile": 50.0,
              "n_valid_frames": 100, "verdict": "膝弯曲角在参考带内"},

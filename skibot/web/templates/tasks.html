@@ -7,6 +7,7 @@
   {% if not tasks %}
   <p class="muted" style="margin:0">还没有任务，去<a href="/">上传一段视频</a>。</p>
   {% else %}
+  <div class="table-scroll">
   <table>
     <tr><th>视频</th><th>水平档</th><th>提交时间</th><th>状态</th><th></th></tr>
     {% for t in tasks %}
@@ -27,6 +28,7 @@
     </tr>
     {% endfor %}
   </table>
+  </div>
   <p class="muted" style="margin:14px 0 0">有进行中的任务时，本页每 5 秒自动刷新。</p>
   {% endif %}
 </div>

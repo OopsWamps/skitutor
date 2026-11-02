@@ -64,6 +64,7 @@
   </table>
 
   <h2 style="margin-top:28px">全程三维六项</h2>
+  {% if result.overall_rows %}
   <table>
     <tr><th>指标</th><th>A 中位</th><th>B 中位</th><th>差值（B−A）</th><th>方向</th></tr>
     {% for r in result.overall_rows %}
@@ -80,6 +81,9 @@
     </tr>
     {% endfor %}
   </table>
+  {% else %}
+  <p class="muted">两侧报告都没有三维数据，无法对比全程三维指标（未开三维提升或缺帧率）。</p>
+  {% endif %}
 </div>
 {% endif %}
 
