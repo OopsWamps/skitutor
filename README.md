@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/skitutor-logo.svg" width="560" alt="SKITUTOR">
+</p>
+
 # skibot
 
 滑雪视频体态分析：上传一段滑雪视频，输出关键点轨迹、五项体态指标和结构化报告。
