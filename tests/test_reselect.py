@@ -274,7 +274,7 @@ def test_blurred_source(tmp: Path):
         seen["probe"] = Path(p)
         return 640, 480, 30.0
 
-    def fake_render(src, kp, res, out, view=None):
+    def fake_render(src, kp, res, out, view=None, **kwargs):
         seen["render"] = Path(src)
         Path(out).write_bytes(b"x")
         return Path(out)

@@ -1,29 +1,79 @@
 {% extends "base.html" %}
-{% block title %}上传分析 · skibot{% endblock %}
+{% block title %}SKITUTOR · 滑雪体态分析{% endblock %}
 {% block content %}
-<div class="card">
-  <h1>上传滑雪视频</h1>
-  <p class="muted">mp4/mov/m4v/avi；分析在服务器排队执行，分钟级，完成后在任务页查看报告。
-  上传即预检：分辨率低于 720p、时长不足 3 秒、人物占画面过小会被当场拒绝并给出重拍建议。</p>
+<section class="hero">
+  <p class="eyebrow">Polar Night · 滑雪体态分析</p>
+  <div class="ice-slab">
+    <span class="ice-depth" aria-hidden="true">SKITUTOR</span>
+    <h1 class="ice-title" data-text="SKITUTOR">SKITUTOR</h1>
+  </div>
+  <p class="hero-sub">你的滑雪体态分析助手</p>
+
+  <div class="features">
+    <a class="feature feature--primary" href="#upload">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 16V4"/><path d="M7.5 8.5 12 4l4.5 4.5"/>
+        <path d="M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15"/>
+      </svg>
+      <span class="f-cn">开始分析</span>
+      <span class="f-en">Analyse</span>
+    </a>
+    <a class="feature" href="/tasks" data-nav>
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M8 6h12M8 12h12M8 18h12"/>
+        <path d="M4 6h.01M4 12h.01M4 18h.01"/>
+      </svg>
+      <span class="f-cn">任务记录</span>
+      <span class="f-en">History</span>
+    </a>
+    <a class="feature" href="/compare" data-nav>
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 7h9M4 17h9"/><path d="M13 4l3 3-3 3"/>
+        <path d="M20 7v10"/><path d="M20 20l-3-3 3-3"/>
+      </svg>
+      <span class="f-cn">前后对比</span>
+      <span class="f-en">Compare</span>
+    </a>
+  </div>
+
+  <a class="scroll-hint" href="#upload">↓ 上传视频</a>
+</section>
+
+<section id="upload" class="panel panel--solid">
+  <h2>上传滑雪视频</h2>
+  <p class="muted" style="margin-top:-4px">
+    支持 mp4 / mov / m4v / avi。上传即预检：分辨率不足、时长短于 3 秒、人物过小都会被当场退回，
+    并给出重拍建议。分析在服务器排队执行，通常几分钟，完成后到任务页查看报告。
+  </p>
   <form id="f">
-    <p><input type="file" name="video" accept=".mp4,.mov,.m4v,.avi" required
-              style="margin-top:6px"></p>
-    <p>
-      水平档：
+    <label class="dropzone field">
+      <input type="file" name="video" accept=".mp4,.mov,.m4v,.avi" required>
+      <span class="muted" style="display:block;margin-top:10px">点击选择视频 · mp4 / mov / m4v / avi</span>
+    </label>
+    <div class="field">
+      <span class="label">水平档</span>
       <select name="level">
         <option value="novice">novice（初学）</option>
         <option value="intermediate" selected>intermediate（中级）</option>
         <option value="advanced">advanced（竞技）</option>
       </select>
-      <label style="margin-left:18px">
-        <input type="checkbox" name="blur" checked> 人脸打码
+    </div>
+    <div class="field checkline">
+      <label><input type="checkbox" name="blur" checked> 人脸打码</label>
+      {% if lifter_enabled %}
+      <label title="三维骨架回放与分相位读数">
+        <input type="checkbox" name="lifter" checked> 三维分析
       </label>
-    </p>
-    <p><button class="btn" id="go" type="submit">开始分析</button>
-       <span id="msg" class="muted" style="margin-left:12px"></span></p>
+      {% endif %}
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+      <button class="btn" id="go" type="submit">开始分析</button>
+      <span id="msg" class="muted"></span>
+    </div>
   </form>
-  <div id="reject" class="error" style="display:none"></div>
-</div>
+  <div id="reject" class="error" style="display:none;margin-top:16px"></div>
+</section>
+
 <script>
 function showReject(detail) {
   // 预检拒绝：结构化列出每条原因与重拍建议；其他错误按字符串展示
@@ -34,6 +84,8 @@ function showReject(detail) {
     h.textContent = detail.message || '视频未通过上传预检';
     box.append(h);
     const ul = document.createElement('ul');
+    ul.style.margin = '8px 0 0';
+    ul.style.paddingLeft = '18px';
     for (const it of detail.issues) {
       const li = document.createElement('li');
       li.textContent = it.problem + ' —— ' + it.advice;

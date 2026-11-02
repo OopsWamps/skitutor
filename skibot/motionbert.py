@@ -35,12 +35,25 @@ import numpy as np
 
 from .mbmodel import MODEL_PARAMS
 from .skeleton import HIP_CENTER, L_HIP, R_HIP
-from .skeleton3d import Skeleton3D
+from .skeleton3d import Lifter, Skeleton3D
 
 if TYPE_CHECKING:
     from torch.nn import Module
 
 CLIP_LEN = 243
+
+
+def make_lifter(name: str) -> Lifter | None:
+    """lifter 名 → 适配器：none→None（二维基线），motionbert→MotionBERTLifter。
+
+    cli / web / reselect 共用的唯一解析点——同一份名字语义（AnalyzeOptions
+    .lifter、serve --lifter、任务表的 lifter 字段）不许各写一份。
+    """
+    if name == "none":
+        return None
+    if name == "motionbert":
+        return MotionBERTLifter()
+    raise ValueError(f"未知 lifter：{name!r}，可选 none / motionbert")
 # 权重默认位置（相对仓库根；与 scripts/check_motionbert.py 一致）
 DEFAULT_CKPT = Path("models/motionbert/FT_MB_release_MB_ft_h36m/best_epoch.bin")
 

@@ -18,3 +18,8 @@ web_results/
 models/
 third_party/
 .scratch/phase-2/attack_exp/cache/
+web_demo/
+.scratch/ui_preview/
+.scratch/ui_repro/
+.scratch/_*.html
+.scratch/*.log

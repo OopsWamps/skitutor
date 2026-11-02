@@ -1,133 +1,293 @@
 {% extends "base.html" %}
-{% block title %}报告 · {{ task.video_name }} · skibot{% endblock %}
+{% block title %}报告 · {{ task.video_name }} · SKITUTOR{% endblock %}
 {% block content %}
-<div class="card">
-  <h1>{{ task.video_name }}</h1>
-  <p class="muted">
-    水平档 {{ report.level }} · 视角判定 {{ report.view.detected }}
-    （score {{ report.view.score }}，{{ report.view.n_valid_frames }} 有效帧）
-    {% if report.data_source %} · 三维来源 {{ report.data_source }}{% endif %}
-    · 生成于 {{ report.generated_at }}
-    {% if report.person %} · 选中 {{ report.person.selection }}{% endif %}
-  </p>
-  {% if report.notice %}<div class="notice">{{ report.notice }}</div>{% endif %}
-  {% if report.quality %}
-  <p class="muted">质量：{{ report.quality | tojson }}</p>
-  {% endif %}
-</div>
+{% set level_cn = {'novice': '初学', 'intermediate': '中级', 'advanced': '竞技'}.get(report.level, report.level) %}
+{% set view_cn = {'sagittal': '侧面视角', 'frontal': '正面视角', 'mixed': '混合视角'}.get(report.view.detected, '视角未定') %}
 
-{% for m in metrics %}
-<div class="card">
-  <h2>{{ m.name }}（{{ m.metric }}）
-    {% if m.verdict %}<span style="float:right;font-weight:normal;font-size:14px" class="muted">{{ m.verdict }}</span>{% endif %}
-  </h2>
-  {% if m.basis %}
-  <p class="muted" style="font-size:13px;margin:0">
-    基准 {{ m.basis }}{% if m.definition %} · {{ m.definition }}{% endif %}
-    {% if m.legacy %} · 遗留项：三维报告以 {{ m.replaced_by | join(" / ") }} 替代{% endif %}
-  </p>
-  {% endif %}
-  {% if m.note %}<p class="muted" style="font-size:13px;margin:0">{{ m.note }}</p>{% endif %}
-  {% if m.median_deg is not none %}
-  <p style="font-size:26px;margin:6px 0">
-    {{ m.median_deg }}°
-    <span class="muted" style="font-size:14px">
-      {% if m.reference %}参考带 {{ m.reference[0] }}~{{ m.reference[1] }}°
-      · 达标帧 {{ (m.pct_in_range * 100) | round(0) | int }}%{% else %}三维列只作描述统计{% endif %}
-      · 有效 {{ m.n_valid_frames }} 帧
-    </span>
-  </p>
-  {% if m.helper %}
-  <p class="muted" style="font-size:13px;margin:0">
-    辅助量：{% for key, value in m.helper.items() %}{{ key }} {{ value }}°{% if not loop.last %} · {% endif %}{% endfor %}
-  </p>
-  {% endif %}
-  {% if m.band_percentile is not none %}
-  <div style="position:relative;height:10px;background:var(--line);border-radius:5px;margin:10px 0 4px">
-    <div style="position:absolute;left:0;top:0;bottom:0;width:100%;border-radius:5px;
-                background:linear-gradient(90deg,#dfe9f5,#c4d6ee)"></div>
-    <div style="position:absolute;top:-4px;width:4px;height:18px;border-radius:2px;
-                background:var(--ink);
-                left:{{ [m.band_percentile, 100] | min if m.band_percentile >= 0 else 0 }}%;
-                {% if m.band_percentile < 0 %}left:-2px;background:var(--red);
-                {% elif m.band_percentile > 100 %}left:calc(100% - 2px);background:var(--red);{% endif %}">
+<div class="panel panel--solid report-head">
+  <div>
+    <p class="eyebrow">Ski Posture Report</p>
+    <h1>{{ task.video_name }}</h1>
+    <div class="chips">
+      <span class="chip chip-neutral">{{ level_cn }}</span>
+      <span class="chip chip-neutral">{{ view_cn }}</span>
+      {% if report.person %}<span class="chip chip-neutral">{{ report.person.selection }}</span>{% endif %}
+      <span class="chip chip-neutral">{{ report.generated_at[:16] | replace('T', ' ') }}</span>
     </div>
   </div>
-  <div class="muted">带内百分位 {{ m.band_percentile }}（0 = 带下沿，100 = 带上沿）</div>
-  {% endif %}
-  {% else %}
-  <p class="muted">有效数据不足，无法判断</p>
-  {% endif %}
-  {% if m.caveat %}<p style="color:var(--red);font-size:14px">{{ m.caveat }}</p>{% endif %}
+  <a class="ghost-link" href="/tasks">← 任务列表</a>
 </div>
-{% endfor %}
 
-<div class="card">
-  <h2>标注视频</h2>
-  <video controls style="width:100%;border-radius:6px" src="{{ annotated_url }}"></video>
+<div class="metric-grid">
+{% for m in metrics %}
+{% set ref = m.reference %}
+{% set med = m.median_deg %}
+{% set cells = (phases.aggregate.get(m.metric) if phases and phases.aggregate else none) %}
+<article class="panel panel--solid metric">
+  <div class="metric-top">
+    <h2>{{ m.name }}</h2>
+    {% if med is not none %}
+      {% if ref and ref[0] <= med <= ref[1] %}
+      <span class="chip chip-ok">达标</span>
+      {% elif ref %}
+      <span class="chip chip-warn">{{ '偏大' if med > ref[1] else '偏小' }}
+        {{ ((med - ref[1]) if med > ref[1] else (ref[0] - med)) | abs | round(1) }}°</span>
+      {% endif %}
+    {% endif %}
+  </div>
+
+  {% if med is not none %}
+  <div class="metric-num">{{ med }}<span class="deg">°</span></div>
+  {% if ref %}
+  <p class="metric-meta">目标 {{ ref[0] }}–{{ ref[1] }}° ·
+    {{ ((m.pct_in_range or 0) * 100) | round(0) | int }}% 的时间在范围内</p>
+  {% else %}
+  <p class="metric-meta">本次记录角度</p>
+  {% endif %}
+
+  {% if m.band_percentile is not none %}
+  {% set bp = m.band_percentile %}
+  <div class="band" aria-hidden="true">
+    <div class="band-fill"></div>
+    <div class="band-mark{% if bp < 0 or bp > 100 %} out{% endif %}"
+         style="left:{{ 0 if bp < 0 else (100 if bp > 100 else bp) }}%"></div>
+  </div>
+  {% endif %}
+
+  {% if cells %}
+  <div class="phase-row">
+    {% for ph, cn in (('entry', '入弯'), ('control', '控制'), ('exit', '出弯')) %}
+    {% set c = cells.get(ph, {}) %}
+    <div class="phase-cell">
+      <span class="ph">{{ cn }}</span>
+      {% if c.get('median_deg') is not none %}
+      <span class="pv">{{ c.get('median_deg') }}°</span>
+      {% else %}
+      <span class="pv none" title="无有效帧">—</span>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% else %}
+  <p class="metric-empty">有效数据不足，这一项暂不判断</p>
+  {% endif %}
+</article>
+{% endfor %}
 </div>
+
+{% if animation_url %}
+<div class="panel panel--solid">
+  <h2>三维骨架回放</h2>
+  <div class="video-wrap">
+    <video id="v3d" controls src="{{ annotated_url }}"></video>
+    <canvas id="sk3d" aria-label="三维骨架，可拖动旋转"></canvas>
+  </div>
+  <div class="tl-strip" id="tstrip"></div>
+  <div class="tl-meta">
+    <span class="legend">
+      <span style="color:#5fe6ff">入弯</span>
+      <span style="color:#52e8c4">控制</span>
+      <span style="color:#9a8cff">出弯</span>
+      <span style="color:#7f9ab0">弯间 / 未检出</span>
+    </span>
+    <span id="ph3d"></span>
+    <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer">
+      <input type="checkbox" id="ov3d"> 指标叠加
+    </label>
+    <span id="ov"></span>
+  </div>
+  <p class="muted" style="margin:8px 0 0">拖动旋转 · 滚轮缩放 · 与左侧视频共享时间轴</p>
+<script>
+(() => {
+  const v = document.getElementById('v3d');
+  const cv = document.getElementById('sk3d');
+  const g = cv.getContext('2d');
+  const strip = document.getElementById('tstrip');
+  const phEl = document.getElementById('ph3d');
+  const ovBox = document.getElementById('ov');
+  const ovOn = document.getElementById('ov3d');
+  const PH_COLOR = {entry: '#5fe6ff', control: '#52e8c4', exit: '#9a8cff', '': '#7f9ab0'};
+  const PH_CN = {entry: '入弯', control: '控制', exit: '出弯', '': '弯间 / 未检出'};
+  // 按 CSS 尺寸与 DPR 配画布，避免高分屏发糊
+  let CW = 420, CH = 420;
+  let redraw = () => {};   // resize 可能在动画数据到达前发生
+  function fit() {
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    CW = cv.clientWidth || 420;
+    CH = CW;
+    cv.width = Math.round(CW * dpr);
+    cv.height = Math.round(CH * dpr);
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  fit();
+  addEventListener('resize', () => { fit(); redraw(); });
+
+  fetch('{{ animation_url }}').then(r => r.json()).then(data => {
+    const fps = data.fps, frames = data.frames;
+    const conf = data.confidence || [], edges = data.edges || [];
+    const series = data.series || {};
+    const phaseOf = new Array(frames.length).fill('');
+    for (const t of ((data.phases || {}).turns) || [])
+      for (const ph of ['entry', 'control', 'exit']) {
+        const iv = t[ph];
+        for (let f = iv.start_frame; f < iv.end_frame && f < frames.length; f++)
+          phaseOf[f] = ph;
+      }
+    let runStart = 0;
+    for (let f = 1; f <= frames.length; f++) {
+      if (f === frames.length || phaseOf[f] !== phaseOf[runStart]) {
+        const seg = document.createElement('div');
+        seg.style.cssText = 'position:absolute;top:0;bottom:0;background:'
+          + PH_COLOR[phaseOf[runStart]] + ';left:' + (runStart / frames.length * 100)
+          + '%;width:' + ((f - runStart) / frames.length * 100) + '%';
+        strip.append(seg);
+        runStart = f;
+      }
+    }
+    const cur = document.createElement('div');
+    cur.style.cssText = 'position:absolute;top:-3px;width:2px;height:18px;'
+      + 'background:#f2feff;box-shadow:0 0 8px rgba(95,230,255,.9);left:0';
+    strip.append(cur);
+
+    let scale = 0.3;
+    const step = Math.max(1, Math.floor(frames.length / 200));
+    for (let f = 0; f < frames.length; f += step)
+      for (const j of frames[f] || [])
+        if (j) scale = Math.max(scale, Math.abs(j[0]), Math.abs(j[1]));
+
+    let yaw = -0.6, pitch = 0.15, zoom = 1, drag = null;
+    cv.addEventListener('pointerdown', e => {
+      drag = [e.clientX, e.clientY]; cv.setPointerCapture(e.pointerId);
+      cv.style.cursor = 'grabbing';
+    });
+    cv.addEventListener('pointermove', e => {
+      if (!drag) return;
+      yaw += (e.clientX - drag[0]) * 0.01;
+      pitch = Math.max(-1.4, Math.min(1.4, pitch + (e.clientY - drag[1]) * 0.01));
+      drag = [e.clientX, e.clientY];
+      draw();
+    });
+    cv.addEventListener('pointerup', () => { drag = null; cv.style.cursor = 'grab'; });
+    cv.addEventListener('wheel', e => {
+      e.preventDefault();
+      zoom = Math.max(0.3, Math.min(5, zoom * (e.deltaY < 0 ? 1.1 : 0.9)));
+      draw();
+    }, {passive: false});
+
+    function project(p) {
+      const cy = Math.cos(yaw), sy = Math.sin(yaw);
+      const x1 = p[0] * cy + p[2] * sy, z1 = -p[0] * sy + p[2] * cy;
+      const cp = Math.cos(pitch), sp = Math.sin(pitch);
+      const y1 = p[1] * cp - z1 * sp;
+      const s = Math.min(CW, CH) * 0.42 * zoom / scale;
+      return [CW / 2 + x1 * s, CH / 2 - y1 * s];
+    }
+    function curFrame() {
+      return Math.max(0, Math.min(frames.length - 1, Math.round(v.currentTime * fps)));
+    }
+    function draw() {
+      const f = curFrame(), fr = frames[f] || [];
+      const col = PH_COLOR[phaseOf[f]] || PH_COLOR[''];
+      g.clearRect(0, 0, CW, CH);
+      g.lineWidth = 3; g.lineCap = 'round'; g.strokeStyle = col;
+      for (const [a, b] of edges) {
+        const pa = fr[a], pb = fr[b];
+        if (!pa || !pb) continue;
+        const A = project(pa), B = project(pb);
+        g.beginPath(); g.moveTo(A[0], A[1]); g.lineTo(B[0], B[1]); g.stroke();
+      }
+      for (let j = 0; j < fr.length; j++) {
+        if (!fr[j]) continue;
+        const P = project(fr[j]);
+        g.fillStyle = (conf[f] && conf[f][j] != null && conf[f][j] < 0.3)
+          ? 'rgba(127,154,176,0.35)' : '#eafcff';
+        g.beginPath(); g.arc(P[0], P[1], 3.5, 0, 7); g.fill();
+      }
+      phEl.textContent = 'f=' + f + '/' + frames.length
+        + ' · ' + (PH_CN[phaseOf[f]] || PH_CN['']);
+      cur.style.left = (frames.length > 1 ? f / (frames.length - 1) * 100 : 0) + '%';
+      if (ovOn.checked) {
+        const parts = [];
+        for (const [k, cn] of [['hip_flexion', '屈髋'], ['knee_flexion', '膝'],
+                               ['trunk_lean_sagittal', '前倾']])
+          if (series[k]) {
+            const val = series[k][f];
+            parts.push(cn + ' ' + (val == null ? '—' : val.toFixed(1) + '°'));
+          }
+        ovBox.textContent = parts.join(' · ');
+      } else ovBox.textContent = '';
+    }
+    v.addEventListener('seeked', draw);
+    v.addEventListener('pause', draw);
+    v.addEventListener('timeupdate', draw);
+    ovOn.addEventListener('change', draw);
+    redraw = draw;
+    draw();
+  });
+})();
+</script>
+</div>
+
+{% else %}
+<div class="panel panel--solid">
+  <h2>标注视频</h2>
+  <video controls style="width:100%;border-radius:12px;border:1px solid var(--hair)"
+         src="{{ annotated_url }}"></video>
+</div>
+{% endif %}
 
 {% if candidates | length > 1 %}
-<div class="card" id="picker">
+<div class="panel panel--solid" id="picker">
   <h2>分析对象</h2>
-  <p class="muted" style="margin-top:0">当前 person {{ current_person }}。选择其他人物只重跑评估与渲染，不重新检测姿态。</p>
-  <div style="display:flex;gap:12px;flex-wrap:wrap">
+  <p class="muted" style="margin-top:-4px">画面里有多个人，选择你要分析的那一个。</p>
+  <div class="pick-grid">
     {% for c in candidates %}
     <button class="pick" data-id="{{ c.id }}" data-current="{{ '1' if c.id == current_person else '' }}"
-            style="background:none;border:2px solid {{ 'var(--ink)' if c.id == current_person else 'var(--line)' }};
-                   border-radius:8px;padding:6px;cursor:pointer;text-align:center">
+            aria-pressed="{{ 'true' if c.id == current_person else 'false' }}">
       {% if c.preview_url %}
-      <img src="{{ c.preview_url }}" alt="person {{ c.id }}"
-           style="width:180px;border-radius:4px;display:block">
+      <img src="{{ c.preview_url }}" alt="人物 {{ c.id }}">
       {% endif %}
-      <span>person {{ c.id }}<br><span class="muted" style="font-size:12px">有效 {{ c.n_valid_frames }} 帧</span></span>
+      <span class="pick-label">人物 {{ c.id }}</span>
     </button>
     {% endfor %}
   </div>
-  <p class="muted" id="pickmsg" style="margin-bottom:0"></p>
+  <p class="muted" id="pickmsg" style="margin:12px 0 0"></p>
 </div>
 <script>
 document.querySelectorAll('button.pick').forEach(b => b.onclick = () => {
   if (b.dataset.current) return;
   const msg = document.getElementById('pickmsg');
   document.querySelectorAll('button.pick').forEach(x => x.disabled = true);
-  msg.textContent = '改选中：只重跑评估与渲染…';
+  msg.textContent = '正在切换…';
   const body = new FormData(); body.append('person', b.dataset.id);
   const fail = err => {
-  document.querySelectorAll('button.pick').forEach(x => x.disabled = false);
-  msg.textContent = '改选失败：' + err.message;
-};
-const poll = async () => {
-  const j = await (await fetch('/api/tasks/{{ task.id }}')).json();
-  if (!j.reselecting) {
-    if (j.reselect_error) throw new Error(j.reselect_error);
-    location.reload();
-    return;
-  }
-  setTimeout(() => poll().catch(fail), 1000);
-};
-fetch('/api/tasks/{{ task.id }}/person', {method: 'POST', body})
-  .then(async r => {
-    if (!r.ok) {
-      let detail = r.status;
-      try { detail = (await r.json()).detail || r.status; } catch (_) {}
-      throw new Error(detail);
+    document.querySelectorAll('button.pick').forEach(x => x.disabled = false);
+    msg.textContent = '切换失败：' + err.message;
+  };
+  const poll = async () => {
+    const j = await (await fetch('/api/tasks/{{ task.id }}')).json();
+    if (!j.reselecting) {
+      if (j.reselect_error) throw new Error(j.reselect_error);
+      location.reload();
+      return;
     }
-    setTimeout(() => poll().catch(fail), 800);
-  })
-  .catch(fail);
+    setTimeout(() => poll().catch(fail), 1000);
+  };
+  fetch('/api/tasks/{{ task.id }}/person', {method: 'POST', body})
+    .then(async r => {
+      if (!r.ok) {
+        let detail = r.status;
+        try { detail = (await r.json()).detail || r.status; } catch (_) {}
+        throw new Error(detail);
+      }
+      setTimeout(() => poll().catch(fail), 800);
+    })
+    .catch(fail);
 });
 </script>
 {% endif %}
 
-<div class="card">
-  <h2>假设与口径</h2>
-  <ul class="muted" style="margin:0;padding-left:18px">
-    {% for a in report.assumptions %}<li>{{ a }}</li>{% endfor %}
-  </ul>
-  <p class="muted" style="margin-bottom:0">
-    <a href="/api/tasks/{{ task.id }}">任务 JSON</a> ·
-    <a href="/tasks">返回任务列表</a>
-  </p>
-</div>
+<div class="foot"><a href="/tasks">← 返回任务列表</a></div>
 {% endblock %}

@@ -116,11 +116,31 @@ def assess(keypoints: np.ndarray, *, level: str,
             "frontal": round(float(np.mean(frame_view == "f")), 3),
             "none": round(float(np.mean(frame_view == "")), 3),
         })
+    phases_summary = None
+    if phase_seg is not None and series3d is not None:
+        agg = P.aggregate_phases(series3d, phase_seg)
+        if agg is not None:
+            # 聚合值只留一位小数：报告是给人看的，相位聚合不是对账材料
+            agg = {m: {ph: ({**v, "median_deg":
+                             None if v["median_deg"] is None
+                             else round(v["median_deg"], 1)}
+                            if isinstance(v, dict) else v)
+                       for ph, v in phases.items()}
+                   for m, phases in agg.items()}
+        phases_summary = {
+            "n_turns": len(phase_seg.turns),
+            "fallback": phase_seg.fallback,
+            "aggregate": agg,
+            "note": ("相位切分未通过人工标注验收（2026-10：单目置信门弯数"
+                     "覆盖不足），逐弯数值仅供参考；三维参考带待多机位"
+                     "验证后生成"),
+        }
     report = build_report(label, vr, series, refs, level,
                           person=person, calibrated=calibrated, quality=q,
                           series3d=series3d, gravity_source=gravity_source,
                           slope_source=slope_source,
-                          data_source=sk3.source if sk3 is not None else None)
+                          data_source=sk3.source if sk3 is not None else None,
+                          phases=phases_summary)
     return Assessment(report=report, series=series, frame_view=frame_view,
                       view=vr, refs=refs,
                       skeleton3d=sk3, series3d=series3d, phases=phase_seg)

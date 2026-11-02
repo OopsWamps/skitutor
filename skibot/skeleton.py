@@ -53,6 +53,27 @@ def pick_side(left_conf: float, right_conf: float) -> str:
 # 躯干与下肢大关节。雪场远景缺脸/手脚趾很常见，全点口径会让提示常驻失去区分度。
 CORE_JOINTS = (L_SHOULDER, R_SHOULDER, L_HIP, R_HIP, L_KNEE, R_KNEE, L_ANKLE, R_ANKLE)
 
+# Halpe-26 规范名（按索引），animation.json 的 joints 列表与此同序
+HALPE_NAMES: tuple[str, ...] = (
+    "Nose", "L_Eye", "R_Eye", "L_Ear", "R_Ear",
+    "L_Shoulder", "R_Shoulder", "L_Elbow", "R_Elbow", "L_Wrist", "R_Wrist",
+    "L_Hip", "R_Hip", "L_Knee", "R_Knee", "L_Ankle", "R_Ankle",
+    "Head_Top", "Neck", "Hip_Center",
+    "L_Big_Toe", "L_Small_Toe", "L_Heel",
+    "R_Big_Toe", "R_Small_Toe", "R_Heel",
+)
+
+# 全身骨架边（索引对）：三维回放的画线依据。与 render.EDGES（二维叠加只画
+# 躯干八点）不同，这里含手臂与头颈；缺测关节（眼耳脚趾）画线时跳过。
+SKELETON_EDGES: tuple[tuple[int, int], ...] = (
+    (L_SHOULDER, R_SHOULDER), (L_SHOULDER, L_HIP), (R_SHOULDER, R_HIP),
+    (L_HIP, R_HIP), (HIP_CENTER, NECK), (NECK, HEAD_TOP), (NECK, NOSE),
+    (L_SHOULDER, L_ELBOW), (L_ELBOW, L_WRIST),
+    (R_SHOULDER, R_ELBOW), (R_ELBOW, R_WRIST),
+    (L_HIP, L_KNEE), (L_KNEE, L_ANKLE),
+    (R_HIP, R_KNEE), (R_KNEE, R_ANKLE),
+)
+
 
 def size_score(kp: np.ndarray) -> float:
     """中位骨架包围盒主轴长度 px。选人尺寸分与"人物偏小"质量统计共用。

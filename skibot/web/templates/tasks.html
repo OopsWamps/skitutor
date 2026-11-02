@@ -1,17 +1,18 @@
 {% extends "base.html" %}
-{% block title %}任务 · skibot{% endblock %}
+{% block title %}任务 · SKITUTOR{% endblock %}
 {% block content %}
 {% if error %}<div class="error">上次分析失败：{{ error }}</div>{% endif %}
-<div class="card">
-  <h1>任务列表</h1>
-  {% if not tasks %}<p class="muted">还没有任务，去<a href="/">上传一段视频</a>。</p>
+<div class="panel panel--solid">
+  <h2>任务列表</h2>
+  {% if not tasks %}
+  <p class="muted" style="margin:0">还没有任务，去<a href="/">上传一段视频</a>。</p>
   {% else %}
   <table>
     <tr><th>视频</th><th>水平档</th><th>提交时间</th><th>状态</th><th></th></tr>
     {% for t in tasks %}
     <tr>
       <td>{{ t.video_name }}</td>
-      <td>{{ t.level }}</td>
+      <td>{{ {'novice': '初学', 'intermediate': '中级', 'advanced': '竞技'}.get(t.level, t.level) }}</td>
       <td class="muted">{{ t.created_at.strftime('%m-%d %H:%M') }}</td>
       <td class="st-{{ t.status }}">
         {% if t.status == 'done' %}完成
@@ -19,12 +20,14 @@
         {% elif t.status == 'failed' %}失败{% if t.error %}<div class="muted">{{ t.error }}</div>{% endif %}
         {% else %}排队中{% endif %}
       </td>
-      <td>{% if t.status == 'done' %}<a href="/report/{{ t.id }}">查看报告</a>
-        {% elif t.status == 'failed' %}<button class="retry" data-id="{{ t.id }}">重试</button>{% endif %}</td>
+      <td>
+        {% if t.status == 'done' %}<a class="ghost-link" href="/report/{{ t.id }}">查看报告</a>
+        {% elif t.status == 'failed' %}<button class="retry" data-id="{{ t.id }}">重试</button>{% endif %}
+      </td>
     </tr>
     {% endfor %}
   </table>
-  <p class="muted">有进行中的任务时本页每 5 秒自动刷新。</p>
+  <p class="muted" style="margin:14px 0 0">有进行中的任务时，本页每 5 秒自动刷新。</p>
   {% endif %}
 </div>
 {% if tasks | selectattr('status', 'equalto', 'failed') | list %}

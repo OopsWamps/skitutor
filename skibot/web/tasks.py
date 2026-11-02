@@ -50,6 +50,7 @@ class Task:
     video_name: str
     level: str
     blur: bool | None  # None = 未知（从 report.json 重建的旧任务）
+    lifter: str = "none"  # 三维提升档（none/motionbert），改选重跑同参
     status: str = STATUS_QUEUED
     error: str = ""
     report_path: Path | None = None
@@ -73,6 +74,7 @@ def _task_dump(t: Task) -> dict:
         "video_name": t.video_name,
         "level": t.level,
         "blur": t.blur,
+        "lifter": t.lifter,
         "status": t.status,
         "error": t.error,
         "report_path": str(t.report_path) if t.report_path else None,
@@ -84,6 +86,7 @@ def _task_dump(t: Task) -> dict:
 
 VALID_STATUSES = (STATUS_QUEUED, STATUS_RUNNING, STATUS_DONE, STATUS_FAILED)
 VALID_LEVELS = ("novice", "intermediate", "advanced")
+VALID_LIFTERS = ("none", "motionbert")
 
 
 def _task_load(d: dict) -> Task:
@@ -123,9 +126,13 @@ def _task_load(d: dict) -> Task:
     reselecting = bool(reselecting) if isinstance(reselecting, bool) else False
     reselect_error = d.get("reselect_error")
     reselect_error = str(reselect_error) if isinstance(reselect_error, str) else ""
+    lifter = d.get("lifter")
+    # 旧记录没有 lifter 字段（二期前的二维任务）：按 none 读，重跑/改选
+    # 仍走二维，不会把旧任务悄悄升级成三维
+    lifter = lifter if lifter in VALID_LIFTERS else "none"
     return Task(
         id=tid, video_path=Path(video_path),
-        video_name=video_name, level=level, blur=blur,
+        video_name=video_name, level=level, blur=blur, lifter=lifter,
         status=status, error=str(d.get("error", "")),
         report_path=Path(report) if report else None, created_at=created_at,
         reselecting=reselecting, reselect_error=reselect_error)
@@ -251,11 +258,18 @@ class TaskBoard:
                     data = json.loads(rp.read_text(encoding="utf-8"))
                 except Exception:
                     data = {}
+                if not isinstance(data, dict):  # 合法 JSON 但不是对象
+                    data = {}
                 level = data.get("level", "intermediate")
-                # 报告没记打码设置，blur=None：改选时按打码副本是否存在推断
+                # 报告没记打码设置，blur=None：改选时按打码副本是否存在推断。
+                # data_source 记了三维来源的，改选重跑要带同一个 lifter——
+                # 一律按 none 会让改选把三维报告悄悄降级成二维
+                lifter = ("motionbert" if data.get("data_source") == "motionbert"
+                          else "none")
                 task = Task(id=stem,
                             video_path=self._locate_video(stem, rp, data),
                             video_name=stem, level=level, blur=None,
+                            lifter=lifter,
                             status=STATUS_DONE, report_path=rp)
                 self._tasks[stem] = task
                 self._order.append(stem)
@@ -301,9 +315,11 @@ class TaskBoard:
             print(f"[tasks] 回收孤儿上传目录 uploads/{d.name}")
 
     def enqueue(self, task_id: str, video_path: Path, video_name: str,
-                level: str, blur: bool) -> Task:
+                level: str, blur: bool, lifter: str = "none") -> Task:
+        if lifter not in VALID_LIFTERS:
+            raise ValueError(f"未知 lifter: {lifter}，可选 {VALID_LIFTERS}")
         task = Task(id=task_id, video_path=video_path, video_name=video_name,
-                    level=level, blur=blur)
+                    level=level, blur=blur, lifter=lifter)
         with self._cv:
             self._tasks[task_id] = task
             self._order.append(task_id)
@@ -453,6 +469,7 @@ class TaskBoard:
             if task.blur is None:
                 raise RuntimeError("任务缺打码设置（blur 未知），请重新上传分析")
             opts = AnalyzeOptions(level=task.level, blur=bool(task.blur),
+                                  lifter=task.lifter,
                                   result_dir=self.result_dir)
             fn = self._analyze_fn if self._analyze_fn is not None else analyze_one
             report = fn(task.video_path, opts)
@@ -477,7 +494,8 @@ class TaskBoard:
             if task is None or task.report_path is None:
                 raise RuntimeError("任务或报告不存在，无法改选")
             reselect_one(task.report_path.parent, person, level=task.level,
-                         fallback_video=task.video_path, blur=task.blur)
+                         fallback_video=task.video_path, blur=task.blur,
+                         lifter=task.lifter)
             error = ""
         except Exception as e:  # noqa: BLE001 —— 改选失败进表，由页面展示
             error = f"{type(e).__name__}: {e}"

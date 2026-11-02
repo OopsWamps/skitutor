@@ -28,6 +28,9 @@ def test_naming_contract():
     m = A.PREVIEW_RE.fullmatch("candidate_person12.jpg")
     assert m and int(m.group(1)) == 12
     assert A.files_url(work, "t1_annotated.mp4") == "/files/t1/t1_annotated.mp4"
+    # 历史结果的目录名可能来自任意文件名：& ' % 必须编码，否则静态路由 404
+    odd = A.work_dir(Path("web_results"), "a&b'c%d")
+    assert A.files_url(odd, "x y.mp4") == "/files/a%26b%27c%25d/x%20y.mp4"
     print("  artifacts：命名契约 ✓")
 
 

@@ -57,13 +57,15 @@ def list_candidates(work: Path) -> list[Candidate]:
 
 def reselect_one(work: Path, person: int, *, level: str,
                  fallback_video: Path, refs_path: str | None = None,
-                 blur: bool | None = None) -> Path:
+                 blur: bool | None = None, lifter: str = "none") -> Path:
     """改选为 person：复用已落盘轨迹重跑评估与渲染，不重跑姿态检测。
 
     work 是结果子目录（result_dir/<stem>），内含全部人物 px trc；报告与
     <stem>_annotated.mp4 原地覆盖。视频源与首次分析一致：blur=True 用打码
     副本（缺了就报错），blur=False 用 fallback_video，None 时按副本是否存在
-    推断。返回报告路径。
+    推断。lifter 与首次分析同参（none/motionbert）：改选后的报告与
+    animation.json 必须出自同一套三维设置，否则相位卡与回放卡会在改选后
+    悄悄消失。返回报告路径。
     """
     tracks = dict(find_all_trc_px(work))
     if person not in tracks:
@@ -82,13 +84,16 @@ def reselect_one(work: Path, person: int, *, level: str,
             pass
     refs = load_refs(refs_path or DEFAULT_REFS)
     _, frame_h, fps = probe_video(src)
+    # make_lifter 对 "none" 返回 None；motionbert 分支在函数内按需载 torch
+    from .motionbert import make_lifter
     # 报告与标注视频成对原子发布（评估收尾 module）：任何一步失败都保持
     # 旧人物，报告与标注视频不会错配，也不会读到半截 JSON
     finalize.assess_and_publish(
         kp, src, refs=refs, level=level, label=label,
         report_path=prev, video_path=artifacts.annotated_path(work),
         person={"id": person, "selection": f"人工改选 person {person}"},
-        frame_height=frame_h, fps=fps)
+        frame_height=frame_h, fps=fps,
+        lifter=make_lifter(lifter))
     return prev
 
 

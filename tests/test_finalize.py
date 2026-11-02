@@ -1,9 +1,11 @@
 """评估收尾测试：python tests/test_finalize.py
 
 assess_and_publish 是报告与标注视频的唯一发布点：成对原子替换、渲染失败
-保持旧产物、只落报告的抢救模式。用合成侧视骨架 + 小视频，不跑 Sports2D。
+保持旧产物、只落报告的抢救模式；lifter+fps 时 animation.json 同链成对
+落盘、降级二维时删除。用合成侧视骨架 + 小视频，不跑 Sports2D。
 """
 
+import json
 import sys
 import tempfile
 from pathlib import Path
@@ -63,8 +65,18 @@ def test_publish_report_and_video(tmp: Path):
     assert rp.exists() and rp.stat().st_size > 0
     assert vp.exists() and vp.stat().st_size > 0
     assert res.report["view"]["detected"] == "sagittal"
+    # 发布的视频是浏览器可解的 H.264（OpenCV 的 FMP4 网页里黑屏），帧数不丢
+    import cv2
+
+    cap = cv2.VideoCapture(str(vp))
+    fourcc = int(cap.get(cv2.CAP_PROP_FOURCC))
+    codec = "".join(chr((fourcc >> 8 * i) & 0xFF) for i in range(4)).lower()
+    n_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    cap.release()
+    assert codec in ("h264", "avc1"), codec
+    assert abs(n_frames - 12) <= 1, n_frames
     assert not list(tmp.glob("*.tmp")) and not list(tmp.glob("*.bak"))
-    print("  finalize：报告 + 标注视频成对发布 ✓")
+    print("  finalize：报告 + 标注视频成对发布（H.264）✓")
 
 
 def test_report_only_mode(tmp: Path):
@@ -109,10 +121,112 @@ def test_render_failure_keeps_old_pair(tmp: Path):
     print("  finalize：渲染失败保持旧产物对 ✓")
 
 
+def test_publish_with_lifter_writes_animation(tmp: Path):
+    """lifter+fps：animation.json 与报告成对落盘，report 带 phases 摘要；
+    标注视频只转码一次（render 内的转码关掉，交给 ensure_browser_mp4）。"""
+    import skibot.finalize as F
+    from skibot.skeleton3d import MockLifter
+
+    tmp = Path(tempfile.mkdtemp(prefix="skibot_test_finalize_anim_"))
+    src = tiny_video(tmp / "src.mp4")
+    rp, vp = tmp / "report.json", tmp / "v_annotated.mp4"
+    seen: dict = {}
+    orig_render = F.render_annotated
+
+    def spy(*a, **k):
+        seen.update(k)
+        return orig_render(*a, **k)
+
+    F.render_annotated = spy
+    try:
+        res = assess_and_publish(side_kp(), src, refs=REFS, level="novice",
+                                 label="t.mp4", report_path=rp, video_path=vp,
+                                 fps=30.0, lifter=MockLifter())
+    finally:
+        F.render_annotated = orig_render
+    assert seen.get("transcode_h264") is False
+    anim_p = tmp / "animation.json"
+    assert anim_p.exists()
+    anim = json.loads(anim_p.read_text(encoding="utf-8"))
+    assert anim["schema"] == "skibot.animation/0.1"
+    assert anim["fps"] == 30.0
+    assert len(anim["frames"]) == 12 and len(anim["frames"][0]) == 26
+    assert len(anim["frames"][0][0]) == 3
+    assert len(anim["joints"]) == 26 and all(len(e) == 2 for e in anim["edges"])
+    assert anim["source"] == "mock" and anim["phases"]["fps"] == 30.0
+    # 序列是逐帧一维；置信与骨架同形
+    assert all(isinstance(v, list) for v in anim["series"].values())
+    assert len(anim["confidence"]) == 12
+    # 报告带相位摘要：静态骨架没有合格弯 → aggregate None + fallback
+    assert res.report["phases"]["n_turns"] == 0
+    assert res.report["phases"]["fallback"] == "no_valid_turns"
+    assert res.report["phases"]["aggregate"] is None
+    assert not list(tmp.glob("*.tmp")) and not list(tmp.glob("*.bak"))
+    print("  finalize：lifter 发布成对落 animation.json + phases 摘要 ✓")
+
+
+def test_downgrade_removes_animation(tmp: Path):
+    """同目录重跑降级成二维：旧动画在发布成功后删除，报告不再带 phases。"""
+    from skibot.skeleton3d import MockLifter
+
+    tmp = Path(tempfile.mkdtemp(prefix="skibot_test_finalize_down_"))
+    src = tiny_video(tmp / "src.mp4")
+    rp, vp = tmp / "report.json", tmp / "v_annotated.mp4"
+    assess_and_publish(side_kp(), src, refs=REFS, level="novice",
+                       label="t.mp4", report_path=rp, video_path=vp,
+                       fps=30.0, lifter=MockLifter())
+    assert (tmp / "animation.json").exists()
+    res = assess_and_publish(side_kp(), src, refs=REFS, level="novice",
+                             label="t.mp4", report_path=rp, video_path=vp,
+                             fps=30.0)
+    assert not (tmp / "animation.json").exists()
+    assert "phases" not in res.report
+    assert not list(tmp.glob("*.tmp")) and not list(tmp.glob("*.bak"))
+    print("  finalize：降级二维删旧动画 ✓")
+
+
+def test_render_failure_keeps_animation_pair(tmp: Path):
+    """渲染失败：旧报告、旧视频与旧动画原样保留（动画也回滚）。"""
+    import skibot.finalize as F
+    from skibot.skeleton3d import MockLifter
+
+    tmp = Path(tempfile.mkdtemp(prefix="skibot_test_finalize_animfail_"))
+    src = tiny_video(tmp / "src.mp4")
+    rp, vp = tmp / "report.json", tmp / "v_annotated.mp4"
+    assess_and_publish(side_kp(), src, refs=REFS, level="novice",
+                       label="t.mp4", report_path=rp, video_path=vp,
+                       fps=30.0, lifter=MockLifter())
+    old = {p.name: p.read_bytes()
+           for p in (rp, vp, tmp / "animation.json")}
+
+    def boom(*a, **k):
+        raise RuntimeError("渲染挂了")
+
+    orig = F.render_annotated
+    F.render_annotated = boom
+    try:
+        try:
+            assess_and_publish(side_kp(), src, refs=REFS, level="novice",
+                               label="t.mp4", report_path=rp, video_path=vp,
+                               fps=30.0, lifter=MockLifter())
+            raise AssertionError("渲染失败应抛出")
+        except RuntimeError:
+            pass
+    finally:
+        F.render_annotated = orig
+    assert {p.name: p.read_bytes()
+            for p in (rp, vp, tmp / "animation.json")} == old
+    assert not list(tmp.glob("*.tmp")) and not list(tmp.glob("*.bak"))
+    print("  finalize：渲染失败保持报告/视频/动画三元组 ✓")
+
+
 if __name__ == "__main__":
     with tempfile.TemporaryDirectory() as td:
         t = Path(td)
         test_publish_report_and_video(t / "publish")
         test_report_only_mode(t / "reportonly")
         test_render_failure_keeps_old_pair(t / "fail")
+        test_publish_with_lifter_writes_animation(t / "anim")
+        test_downgrade_removes_animation(t / "down")
+        test_render_failure_keeps_animation_pair(t / "animfail")
     print("全部通过")

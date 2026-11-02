@@ -168,13 +168,16 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--refs", type=Path, default=DEFAULT_REFS,
                    help="参考区间表路径")
 
-    w = sub.add_parser("serve", help="启动 Web 壳（上传页 + 任务页 + 报告页）")
+    w = sub.add_parser("serve", help="启动 Web 壳（上传页 + 任务页 + 报告页 + 对比页）")
     w.add_argument("--port", type=int, default=8000, help="监听端口（默认 8000）")
     w.add_argument("--host", default="127.0.0.1", help="监听地址（默认本机）")
     w.add_argument("--result-dir", type=Path, default=Path("web_results"),
                    help="分析产物目录（默认 web_results/）")
     w.add_argument("--no-precheck", action="store_true",
                    help="关闭上传预检（默认开启：容器/分辨率/时长/人物占比）")
+    w.add_argument("--lifter", choices=("none", "motionbert"), default="motionbert",
+                   help="三维提升档（默认 motionbert：上传默认开三维；none 把"
+                        "上传页的三维开关压到关——权重/显卡不在位时用）")
 
     args = parser.parse_args(argv)
 
@@ -183,7 +186,8 @@ def main(argv: list[str] | None = None) -> int:
 
         from .web.app import create_app
         uvicorn.run(create_app(args.result_dir,
-                               enable_precheck=not args.no_precheck),
+                               enable_precheck=not args.no_precheck,
+                               lifter=args.lifter),
                     host=args.host, port=args.port, log_level="info")
         return 0
 

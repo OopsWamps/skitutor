@@ -27,11 +27,17 @@ def work_dir(result_dir: Path, video_stem: str) -> Path:
 
 
 REPORT_NAME = "report.json"
+ANIMATION_NAME = "animation.json"
 PREVIEW_GLOB = "candidate_person*.jpg"
 
 
 def report_path(work: Path) -> Path:
     return Path(work) / REPORT_NAME
+
+
+def animation_path(work: Path) -> Path:
+    """三维骨架回放数据（root-relative 逐帧 + 相位 + 序列），与报告成对发布。"""
+    return Path(work) / ANIMATION_NAME
 
 
 def annotated_path(work: Path) -> Path:
@@ -51,8 +57,15 @@ PREVIEW_RE = re.compile(r"candidate_person(\d+)\.jpg")
 
 
 def files_url(work: Path, filename: str) -> str:
-    """产物在 /files 静态挂载下的地址（web 壳把 result_dir 挂在 /files）。"""
-    return f"/files/{work.name}/{filename}"
+    """产物在 /files 静态挂载下的地址（web 壳把 result_dir 挂在 /files）。
+
+    目录名来自任务 id 或视频 stem（CLI 历史结果可能是任意文件名，含 & ' %
+    等字符），百分号编码后再进 URL；模板 <script> 内注入的地址不解码
+    HTML 实体，不编码会 404。
+    """
+    from urllib.parse import quote
+
+    return f"/files/{quote(work.name)}/{quote(filename)}"
 
 
 def source_video(work: Path, fallback_video: Path,
@@ -118,4 +131,21 @@ def read_text_retry(path: Path, attempts: int = 3) -> str:
             if attempt == attempts - 1:
                 raise
             time.sleep(0.05 * (attempt + 1))
+    raise AssertionError("unreachable")
+
+
+def unlink_with_retry(path: Path, attempts: int = 3) -> None:
+    """删除文件，容忍 Windows 上杀毒/索引器/静态请求对文件的短暂锁定。
+
+    与 replace_with_retry 同一语义：重试耗尽抛最后一次 OSError，由调用方
+    决定降级还是上抛——发布成功后的清理失败不该把已成功的任务标成失败。
+    """
+    for attempt in range(attempts):
+        try:
+            Path(path).unlink(missing_ok=True)
+            return
+        except OSError:
+            if attempt == attempts - 1:
+                raise
+            time.sleep(0.1 * (attempt + 1))
     raise AssertionError("unreachable")

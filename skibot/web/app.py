@@ -24,7 +24,8 @@ from ..precheck import PrecheckConfig, run_precheck
 from ..reselect import (
     current_person, ensure_previews, list_candidates, source_video,
 )
-from .tasks import STATUS_FAILED, TaskBoard
+from .tasks import STATUS_FAILED, Task, TaskBoard
+from .compare import PHASE_METRIC_LABELS, compare_reports
 
 TEMPLATES = Path(__file__).parent / "templates"
 LEVELS = ("novice", "intermediate", "advanced")
@@ -32,13 +33,18 @@ LEVELS = ("novice", "intermediate", "advanced")
 
 def create_app(result_dir: Path, *, enable_precheck: bool = True,
                precheck_config: PrecheckConfig | None = None,
-               analyze_fn=None) -> FastAPI:
+               analyze_fn=None, lifter: str = "motionbert") -> FastAPI:
     """result_dir 同时是任务表、上传落盘与分析产物的根目录。
 
     enable_precheck=False 关掉上传预检（默认开）；precheck_config 覆盖判据
     默认值（默认见 PrecheckConfig 的 docstring）；analyze_fn 注入任务表的
-    分析函数（测试用替身，不跑 Sports2D）。
+    分析函数（测试用替身，不跑 Sports2D）；lifter 是三维提升的服务级上限
+    （motionbert=默认开三维，none=把上传页的三维开关压到关——权重/显卡
+    不在位时用）。
     """
+    if lifter not in ("none", "motionbert"):
+        raise ValueError(f"未知 lifter: {lifter}")
+    lifter_enabled = lifter == "motionbert"
     # 先转绝对路径：上传落盘路径会原样写进 tasks.json，默认的相对
     # --result-dir（web_results）换个工作目录启动就找不到源视频了
     result_dir = Path(result_dir).resolve()
@@ -58,11 +64,14 @@ def create_app(result_dir: Path, *, enable_precheck: bool = True,
 
     @app.get("/", response_class=HTMLResponse)
     def index(request: Request):
-        return tpl.TemplateResponse(request, "upload.html", {"active": "upload"})
+        # 服务级 lifter=none 时隐藏表单的三维开关（留着会是一个撒谎的勾选框）
+        return tpl.TemplateResponse(request, "upload.html", {
+            "active": "upload", "lifter_enabled": lifter_enabled})
 
     @app.post("/api/upload")
     async def upload(video: UploadFile = File(...),
-                     level: str = Form("intermediate"), blur: str = Form("on")):
+                     level: str = Form("intermediate"), blur: str = Form(""),
+                     lifter: str = Form("")):
         if level not in LEVELS:
             raise HTTPException(400, f"未知水平档: {level}")
         name = Path(video.filename or "").name
@@ -92,7 +101,13 @@ def create_app(result_dir: Path, *, enable_precheck: bool = True,
                                 "advice": i.advice} for i in result.issues],
                 })
             notes = result.notes
-        board.enqueue(task_id, dest, name, level, blur == "on")  # 显示名保留原名
+        # 表单三维开关只在服务级档位允许时生效（serve --lifter none 压到关）。
+        # checkbox 未勾选时浏览器不发字段，缺省必须是"关"——缺省"开"会让
+        # 取消勾选完全失效（2026-11-02 复核发现，blur 同病）
+        effective_lifter = ("motionbert" if lifter == "on" and lifter_enabled
+                            else "none")
+        board.enqueue(task_id, dest, name, level, blur == "on",
+                      effective_lifter)  # 显示名保留原名
         return {"task_id": task_id, "precheck_notes": notes}
 
     @app.get("/tasks", response_class=HTMLResponse)
@@ -160,23 +175,86 @@ def create_app(result_dir: Path, *, enable_precheck: bool = True,
                                     status_code=302)
         if not t.done:
             return RedirectResponse("/tasks", status_code=302)
-        if t.report_path is None:  # done 已蕴含非空；显式写出让类型检查收窄
-            return RedirectResponse("/tasks", status_code=302)
-        report = json.loads(t.report_path.read_text(encoding="utf-8"))
-        work = t.report_path.parent
+        loaded = _load_report(t)
+        if loaded is None:
+            # 任务表说 done、报告却读不出来（被手删/写了一半/磁盘满）：
+            # 渲染任务页给可操作提示，而不是让报告页 500
+            return tpl.TemplateResponse(request, "tasks.html", {
+                "active": "tasks", "tasks": board.all(),
+                "error": f"任务 {task_id} 的报告文件缺失或损坏，无法查看；"
+                         "可删除该结果或重新上传分析",
+            }, status_code=500)
+        report, report_file = loaded
+        work = report_file.parent
         cands = ensure_previews(work, source_video(work, t.video_path, t.blur))
+        # 回放卡数据源：动画与报告同链发布；旧任务没有就不渲染。还要看
+        # 报告本身有没有三维相位——降级二维时旧动画若因文件锁没删掉，
+        # 单看文件存在会把上一次三维评估的骨架配到本次二维报告上
+        anim = artifacts.animation_path(work)
+        animation_url = (artifacts.files_url(work, anim.name)
+                         if anim.exists() and report.get("phases") is not None
+                         else None)
         return tpl.TemplateResponse(request, "report.html", {
             "active": "tasks", "task": t, "report": report,
             "metrics": report.get("metrics", []),
+            "phases": report.get("phases"),
+            "phase_metric_labels": PHASE_METRIC_LABELS,
             "annotated_url": artifacts.files_url(
                 work, artifacts.annotated_path(work).name),
+            "animation_url": animation_url,
             "candidates": [{"id": c.pid, "n_valid_frames": c.n_valid,
                             "preview_url": _preview_url(work, c.pid)}
                            for c in cands],
             "current_person": current_person(work),
         })
 
+    @app.get("/compare", response_class=HTMLResponse)
+    def compare_page(request: Request, a: str = "", b: str = ""):
+        done = [t for t in board.all() if t.done]
+        opts = [{"id": t.id, "label": f"{t.video_name}（{t.level}，"
+                                     f"{t.created_at:%Y-%m-%d}）"} for t in done]
+        ctx: dict = {"active": "compare", "tasks": opts,
+                     "a": a, "b": b, "result": None, "error": "",
+                     "a_task": None, "b_task": None}
+        if a and b:
+            ta, tb = board.get(a), board.get(b)
+            if ta is None or tb is None or not ta.done or not tb.done:
+                raise HTTPException(404, "对比需要两个已完成的分析")
+            loaded_a, loaded_b = _load_report(ta), _load_report(tb)
+            if loaded_a is None or loaded_b is None:
+                # 单侧报告坏掉：另一个任务仍是好的，不该整页 500；
+                # 指出是哪个任务，用户可去任务页重跑
+                bad = a if loaded_a is None else b
+                ctx["error"] = f"任务 {bad} 的报告文件缺失或损坏，无法对比"
+            else:
+                ctx["result"] = compare_reports(loaded_a[0], loaded_b[0])
+                ctx["a_task"] = ta
+                ctx["b_task"] = tb
+        return tpl.TemplateResponse(request, "compare.html", ctx)
+
     return app
+
+
+def _load_report(t: Task) -> tuple[dict, Path] | None:
+    """读任务的 report.json，返回（报告, 路径）；读不出来返回 None。
+
+    「读不出来」包括文件被删、写了一半、JSON 损坏、顶层不是对象——这些
+    状态任务表分辨不了（它只知道 done）。报告页与对比页都不能因此 500：
+    一个坏文件不该把整个站点的既有结果变成错误页。
+    """
+    rp = t.report_path
+    if rp is None:
+        return None
+    try:
+        data = json.loads(artifacts.read_text_retry(rp))
+    except (OSError, ValueError):
+        return None
+    # 合法 JSON 但形状不对（空对象、写了一半、别的文件冒充）：页面会
+    # 在模板里取 report.view 时抛 UndefinedError，同样按坏报告处理
+    if (not isinstance(data, dict) or not isinstance(data.get("view"), dict)
+            or not isinstance(data.get("metrics"), list)):
+        return None
+    return data, rp
 
 
 def _preview_url(work: Path, pid: int) -> str | None:

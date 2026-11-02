@@ -191,6 +191,7 @@ def build_report(
     gravity_source: str = "unknown",
     slope_source: str = "none",
     data_source: str | None = None,
+    phases: dict | None = None,
 ) -> dict:
     if level not in LEVELS:
         raise ValueError(f"未知水平档: {level}，可选 {LEVELS}")
@@ -288,6 +289,10 @@ def build_report(
     }
     if data_source is not None:
         report["data_source"] = data_source
+    if phases is not None:
+        # 可选相位对象（schema 0.2 增量字段）：弯数、fallback、按相位聚合
+        # 与口径注记；逐弯明细在 animation.json，报告只带摘要
+        report["phases"] = phases
     size_ratio = quality.get("person_height_ratio")
     if size_ratio is not None and size_ratio < SMALL_SUBJECT_RATIO:
         notices.append(f"人物在画面中偏小（约为画面高的 {size_ratio*100:.0f}%），"

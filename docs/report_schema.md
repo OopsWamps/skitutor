@@ -19,7 +19,7 @@
   - `note`：口径说明，给用户看的短句。
 - `shoulder_hip_align` 保留为遗留项（`legacy: true`），值仍是旧合并口径。
   三维报告不再有这一项，改出横断面 H-SEP 与冠状面 obliquity 两项。
-- `phases` 对象尚未出现，等 issue 12。
+- `phases` 对象见下节（2026-11-02 起，传 lifter+fps 时写入）。
 
 ## 三维列（issue 04）
 
@@ -61,6 +61,27 @@ lifter 时出现）。缺数据帧
 
 `schema` 仍为 `skibot.report/0.2`；以上都是可选增量字段。读 0.2 旧报告的
 代码需要容忍 `basis="3d"` 条目与 `reference: null`。
+
+## 相位对象与 animation.json（issue 19 前置，2026-11-02）
+
+传 lifter 且帧率已知时，report 顶层多一个可选 `phases` 摘要，同链多发布
+`animation.json`（报告页回放卡的数据源，schema `skibot.animation/0.1`）：
+
+- `phases`（report.json）：`n_turns`（合格弯数）、`fallback`（无合格弯时
+  `"no_valid_turns"`）、`aggregate`（`{指标: {entry/control/exit:
+  {median_deg, n_frames}}`，无合格弯为 null）、`note`（未验证口径注记）。
+  逐弯明细不进报告——在 animation.json。
+- `animation.json`（结果子目录，与报告同一次评估成对发布；降级二维重跑时
+  删除）：`schema/fps/n_frames/source/gravity_source/note`、`joints`
+  （Halpe-26 名，与 `skeleton.HALPE_NAMES` 同序）、`edges`（`skeleton.
+  SKELETON_EDGES` 的索引对）、`phases`（`PhaseSegmentation.to_dict()` 全量
+  含逐弯与弃弯）、`series`（三项矢状序列逐帧 1 位小数，null=缺测）、
+  `confidence`（(T,26) 2 位小数）、`frames`（root-relative 骨架 3 位小数，
+  null=缺测）。
+- 兼容：旧报告无 `phases`、旧结果目录无 animation.json —— 报告页不渲染
+  相位卡与回放卡（不渲染空壳）。
+- Web 侧 `serve --lifter`（默认 motionbert）与上传表单三维开关控制是否走
+  三维链；任务表 `lifter` 字段持久化，改选同参重跑。
 
 ## 字段映射
 

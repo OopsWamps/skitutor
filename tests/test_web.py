@@ -45,6 +45,16 @@ def _report_dict() -> dict:
              "median_deg": None, "pct_in_range": None, "band_percentile": None,
              "n_valid_frames": 0, "verdict": None, "helper": None}],
         "person": {"id": 0, "selection": "测试选人"},
+        "phases": {
+            "n_turns": 4, "fallback": None,
+            "aggregate": {
+                "knee_flexion": {
+                    "entry": {"median_deg": 101.5, "n_frames": 40},
+                    "control": {"median_deg": None, "n_frames": 0},
+                    "exit": {"median_deg": 132.0, "n_frames": 36}},
+            },
+            "note": "相位切分未通过人工标注验收，逐弯数值仅供参考",
+        },
     }
 
 
@@ -124,13 +134,18 @@ def test_web_flow(tmp: Path):
     page = client.get(f"/report/{tid}")
     assert page.status_code == 200
     body = page.text
-    assert "膝弯曲角" in body and "155.0" in body and "测试水印" in body
-    assert "50.0" in body and f"{tid}_annotated.mp4" in body
-    assert "基准 2d" in body and "髋-膝-踝夹角" in body  # basis/definition 进报告页
-    # 三维条目：无参考带/无判断；helper 渲染；null 中位走进“有效数据不足”
-    assert "三维来源 mock" in body
-    assert "三维列只作描述统计" in body and "hip_flexion_3pt_deg" in body
+    assert "膝弯曲角" in body and "155.0" in body and "达标" in body
+    assert "left:50.0%" in body and f"{tid}_annotated.mp4" in body
+    # 报告页只出体态读数：原理、口径、水印、辅助量一律不展示
+    assert "测试水印" not in body
+    assert "基准 2d" not in body and "髋-膝-踝夹角" not in body
+    assert "三维来源 mock" not in body
+    assert "三维列只作描述统计" not in body and "hip_flexion_3pt_deg" not in body
     assert "有效数据不足" in body
+    # 相位读数并进各关节卡：null 单元格只留破折号
+    assert "入弯" in body and "101.5" in body and "出弯" in body and "132.0" in body
+    assert "无有效帧" in body and "未通过人工标注验收" not in body
+    assert "标注视频" in body and "三维骨架回放" not in body
 
     # 完成态不允许重试
     assert client.post(f"/api/tasks/{tid}/retry").status_code == 409
@@ -248,7 +263,7 @@ def test_web_reselect(tmp: Path):
 
     # 报告页渲染编号候选
     body = client.get("/report/clip1").text
-    assert "分析对象" in body and "person 1" in body
+    assert "分析对象" in body and "人物 1" in body
 
     # 异步改选：立即返回，轮询结束后报告与标注视频都换成 person 1
     r = client.post("/api/tasks/clip1/person", data={"person": 1})
@@ -538,6 +553,175 @@ def test_restore_variants(tmp: Path):
           "改选中断复位 ✓")
 
 
+def test_lifter_wiring(tmp: Path):
+    """三维开关：表单默认开、显式关、服务级 none 压到关；lifter 进任务表。"""
+    def _stub(video, opts):
+        raise RuntimeError("stub")
+
+    # 服务级默认 motionbert：勾选框发 "on" → motionbert
+    app = create_app(tmp / "w1", enable_precheck=False, analyze_fn=_stub)
+    client = TestClient(app)
+    r = client.post("/api/upload",
+                    files={"video": ("a.mp4", b"x", "video/mp4")},
+                    data={"level": "novice", "blur": "off", "lifter": "on"})
+    tid = r.json()["task_id"]
+    assert client.app.state.board.get(tid).lifter == "motionbert"
+    # 未勾选的 checkbox 浏览器不发字段 → 必须是关（缺省"开"会让取消勾选失效）
+    r = client.post("/api/upload",
+                    files={"video": ("a2.mp4", b"x", "video/mp4")},
+                    data={"level": "novice", "blur": "off"})
+    tid = r.json()["task_id"]
+    assert client.app.state.board.get(tid).lifter == "none"
+    # blur 同语义：不发字段 = 不打码，发 "on" = 打码
+    r = client.post("/api/upload",
+                    files={"video": ("a3.mp4", b"x", "video/mp4")},
+                    data={"level": "novice", "lifter": "off"})
+    tid = r.json()["task_id"]
+    assert client.app.state.board.get(tid).blur is False
+    r = client.post("/api/upload",
+                    files={"video": ("a4.mp4", b"x", "video/mp4")},
+                    data={"level": "novice", "blur": "on", "lifter": "off"})
+    tid = r.json()["task_id"]
+    assert client.app.state.board.get(tid).blur is True
+    # 表单显式关 → none
+    r = client.post("/api/upload",
+                    files={"video": ("b.mp4", b"x", "video/mp4")},
+                    data={"level": "novice", "blur": "off", "lifter": "off"})
+    tid2 = r.json()["task_id"]
+    assert client.app.state.board.get(tid2).lifter == "none"
+    # 服务级 none：表单开了也被压到关
+    app2 = create_app(tmp / "w2", enable_precheck=False, analyze_fn=_stub,
+                      lifter="none")
+    r = TestClient(app2).post(
+        "/api/upload", files={"video": ("c.mp4", b"x", "video/mp4")},
+        data={"level": "novice", "blur": "off", "lifter": "on"})
+    board2 = app2.state.board
+    tid3 = r.json()["task_id"]
+    assert board2.get(tid3).lifter == "none"
+    board2.stop()
+    app.state.board.stop()
+    print("  web：三维开关表单/服务级接线进任务表 ✓")
+
+
+def test_report_viewer_and_compare(tmp: Path):
+    """回放卡（有 animation.json 才渲染）与对比页（选两个完成态）。"""
+    def _stub(video, opts):
+        raise RuntimeError("stub")
+
+    app = create_app(tmp / "w", enable_precheck=False, analyze_fn=_stub)
+    client = TestClient(app)
+    board = app.state.board
+
+    def _mk_done(name: str, phases=None, level="intermediate"):
+        r = client.post("/api/upload",
+                        files={"video": (f"{name}.mp4", b"x", "video/mp4")},
+                        data={"level": level, "blur": "off"})
+        tid = r.json()["task_id"]
+        work = tmp / "w" / tid
+        work.mkdir(parents=True, exist_ok=True)
+        rep = _report_dict()
+        if phases is not None:
+            rep["phases"] = phases
+        (work / "report.json").write_text(
+            json.dumps(rep, ensure_ascii=False), encoding="utf-8")
+        (work / f"{tid}_annotated.mp4").write_bytes(b"fake")
+        board.mark_done(tid, work / "report.json")
+        return tid, work
+
+    agg = {"n_turns": 4, "fallback": None, "aggregate": {
+        "knee_flexion": {ph: {"median_deg": 100.0 + i * 5, "n_frames": 30}
+                         for i, ph in enumerate(("entry", "control", "exit"))}}}
+    ta, wa = _mk_done("a", agg)
+    tb, wb = _mk_done("b", agg)
+
+    # 回放卡：动画文件在才渲染，数据地址指向静态挂载
+    (wa / "animation.json").write_text(json.dumps({
+        "schema": "skibot.animation/0.1", "fps": 30.0, "n_frames": 12,
+        "source": "mock", "gravity_source": "adapter", "note": "",
+        "joints": ["Nose"] * 26, "edges": [[5, 6]],
+        "phases": {"fps": 30.0, "fallback": None, "turns": [], "discarded": []},
+        "series": {}, "confidence": [[1.0] * 26] * 12,
+        "frames": [[[0.0, 0.0, 0.0]] * 26] * 12}), encoding="utf-8")
+    body = client.get(f"/report/{ta}").text
+    assert "三维骨架回放" in body and "/files/" in body and "拖动旋转" in body
+    assert "MotionBERT" not in body and "未做多机位真值验证" not in body
+    body_b = client.get(f"/report/{tb}").text
+    assert "三维骨架回放" not in body_b and "标注视频" in body_b
+
+    # 对比页：未选 → 选择器；选两个 → 行渲染；坏 id → 404
+    page = client.get("/compare").text
+    assert "前后对比" in page and ta in page
+    page = client.get("/compare", params={"a": ta, "b": tb}).text
+    assert "按相位" in page and "差值（B−A）" in page and "105.0" in page
+    assert "全程三维六项" in page and "假设与口径" not in page
+    assert client.get("/compare", params={"a": "bad", "b": "nope"}
+                      ).status_code == 404
+    board.stop()
+    print("  web：回放卡按动画存在渲染 / 对比页选择器与行渲染 ✓")
+
+
+def test_corrupt_report_and_restore_lifter(tmp: Path):
+    """坏报告不把页面打成 500；历史结果重建时按 data_source 恢复 lifter。"""
+    import threading
+
+    from skibot.web.tasks import TaskBoard
+
+    # 让 worker 卡在分析里：否则它在 mark_done 之后才写 FAILED，
+    # 会把用例里刚标记的完成态覆盖掉（纯时序竞争）
+    hold = threading.Event()
+
+    def _stub(video, opts):
+        hold.wait(10)
+        raise RuntimeError("stub")
+
+    rd = tmp / "w"
+    app = create_app(rd, enable_precheck=False, analyze_fn=_stub)
+    client = TestClient(app)
+    board = app.state.board
+
+    def _mk_done(name: str):
+        r = client.post("/api/upload",
+                        files={"video": (f"{name}.mp4", b"x", "video/mp4")},
+                        data={"level": "novice", "blur": "off"})
+        tid = r.json()["task_id"]
+        work = rd / tid
+        work.mkdir(parents=True, exist_ok=True)
+        (work / "report.json").write_text(
+            json.dumps(_report_dict(), ensure_ascii=False), encoding="utf-8")
+        board.mark_done(tid, work / "report.json")
+        return tid, work
+
+    ta, wa = _mk_done("a")
+    tb, wb = _mk_done("b")
+    # 报告被截断：报告页给可操作提示（500 是数据坏了，不是路由崩了）
+    (wa / "report.json").write_text('{"level": "novice"', encoding="utf-8")
+    page = client.get(f"/report/{ta}")
+    assert page.status_code == 500 and "报告文件缺失或损坏" in page.text
+    # 对比页：A 坏了仍渲染页面并指出坏的是谁，B 侧数据不跟着消失
+    page = client.get("/compare", params={"a": ta, "b": tb})
+    assert page.status_code == 200 and "报告文件缺失或损坏" in page.text
+    assert f"任务 {ta}" in page.text
+    # 报告文件整份消失同样处理
+    (wb / "report.json").unlink()
+    page = client.get("/compare", params={"a": tb, "b": ta})
+    assert page.status_code == 200 and f"任务 {tb}" in page.text
+    board.stop()
+
+    # 历史结果目录重建：报告记了 motionbert 的带三维改选重跑，其余按二维
+    rd2 = tmp / "hist"
+    (rd2 / "mv").mkdir(parents=True)
+    (rd2 / "mv" / "report.json").write_text(json.dumps(
+        {"level": "novice", "data_source": "motionbert"}), encoding="utf-8")
+    (rd2 / "old").mkdir(parents=True)
+    (rd2 / "old" / "report.json").write_text(
+        json.dumps({"level": "novice"}), encoding="utf-8")
+    board2 = TaskBoard(rd2)
+    assert board2.get("mv").lifter == "motionbert"
+    assert board2.get("old").lifter == "none"
+    board2.stop()
+    print("  web：坏报告不 500 / 历史结果按 data_source 恢复 lifter ✓")
+
+
 if __name__ == "__main__":
     with tempfile.TemporaryDirectory() as td:
         test_web_flow(Path(td))
@@ -553,4 +737,10 @@ if __name__ == "__main__":
         test_relative_result_dir(Path(td))
     with tempfile.TemporaryDirectory() as td:
         test_bad_records(Path(td))
+    with tempfile.TemporaryDirectory() as td:
+        test_lifter_wiring(Path(td))
+    with tempfile.TemporaryDirectory() as td:
+        test_report_viewer_and_compare(Path(td))
+    with tempfile.TemporaryDirectory() as td:
+        test_corrupt_report_and_restore_lifter(Path(td))
     print("全部通过")
