@@ -11,8 +11,8 @@
      变量名沿用深色版（--ice-white 现在是正文墨色），只用系统字体。 */
   :root {
     --void:#eef5fa; --night:#e6eff6; --deep:#ffffff; --solid:#f6fafd;
-    --ice-white:#12324a; --mist:#49697f; --dim:#5d7d93;
-    --cyan:#067fa0; --mint:#0a8f6f; --violet:#6658cc; --glacier:#0b6f95;
+    --ice-white:#12324a; --mist:#49697f; --dim:#54748a;
+    --cyan:#056b88; --mint:#0a7a5c; --violet:#6658cc; --glacier:#0b6f95;
     --amber:#a06207; --coral:#c93b3b;
     --hair:rgba(18,74,110,.14);
     --din:"Bahnschrift","Arial Narrow","Segoe UI Semibold","Segoe UI",sans-serif;
@@ -116,23 +116,23 @@
   }
   /* ---------- 按钮 ---------- */
   .btn {
-    position:relative; border:1px solid rgba(210,246,255,.6); border-radius:11px;
+    position:relative; border:1px solid rgba(10,110,145,.35); border-radius:11px;
     padding:12px 30px; font-size:15px; font-weight:600; letter-spacing:.08em;
-    color:#04121c; cursor:pointer;
-    background:linear-gradient(180deg,#dff9ff 0%,#9fe4ff 46%,#5fc8f2 100%);
-    box-shadow:0 6px 20px rgba(60,180,235,.30), inset 0 1px 0 #fff;
+    color:#fff; cursor:pointer;
+    background:linear-gradient(180deg,#2ba6c9 0%,#0d7fa3 55%,#0a6585 100%);
+    box-shadow:0 6px 18px rgba(10,110,145,.28), inset 0 1px 0 rgba(255,255,255,.35);
     transition:transform .15s ease, box-shadow .22s ease, filter .2s ease;
   }
-  .btn:hover { filter:brightness(1.08); transform:translateY(-1px);
-               box-shadow:0 9px 26px rgba(95,230,255,.45), inset 0 1px 0 #fff; }
+  .btn:hover { filter:brightness(1.07); transform:translateY(-1px);
+               box-shadow:0 9px 24px rgba(10,110,145,.35), inset 0 1px 0 rgba(255,255,255,.35); }
   .btn:active { transform:translateY(1px) scale(.97); }
-  .btn:disabled { opacity:.42; cursor:default; transform:none; filter:grayscale(.5); box-shadow:none; }
+  .btn:disabled { opacity:.45; cursor:default; transform:none; filter:grayscale(.5); box-shadow:none; }
   button.retry {
-    position:relative; background:none; border:1px solid rgba(255,138,138,.42);
+    position:relative; background:none; border:1px solid rgba(201,59,59,.38);
     border-radius:8px; color:var(--coral); padding:5px 15px; font-size:13px;
     cursor:pointer; transition:background .2s, transform .12s;
   }
-  button.retry:hover { background:rgba(255,138,138,.10); }
+  button.retry:hover { background:rgba(201,59,59,.08); }
   button.retry:active { transform:scale(.95); }
   /* ---------- 点击特效：霜环 + 冰晶飞溅 ---------- */
   .burst { position:absolute; inset:0; pointer-events:none; overflow:visible; z-index:5; }
@@ -164,7 +164,7 @@
   }
   select, input[type=text] {
     color:var(--ice-white); background:var(--deep); max-width:100%;
-    border:1px solid rgba(18,74,110,.24); border-radius:9px;
+    border:1px solid rgba(18,74,110,.22); border-radius:9px;
     padding:9px 13px; font-size:14px; transition:border-color .2s, box-shadow .2s;
   }
   select:hover, input[type=text]:hover { border-color:rgba(6,140,180,.55); }
@@ -184,7 +184,7 @@
   input[type=file] { color:var(--mist); font-size:14px; max-width:100%; }
   input[type=file]::file-selector-button {
     font-family:inherit; font-weight:600; font-size:13px; letter-spacing:.06em;
-    color:#04121c; background:linear-gradient(180deg,#dff9ff,#7fd4f5);
+    color:#fff; background:linear-gradient(180deg,#2ba6c9,#0d7fa3);
     border:none; border-radius:8px; padding:9px 18px; margin-right:15px; cursor:pointer;
     transition:filter .18s;
   }
@@ -459,7 +459,7 @@
     let W = 0, H = 0, flakes = [], wind = 8, windTarget = 8,
         pointerX = null, raf = 0, last = 0, t = 0;
 
-    // 浅色主题：雪花用冷蓝晶体 + 淡光晕，白点在浅底上会消失
+    // 六角雪花精灵：冷蓝晶体 + 淡光晕（浅底上也看得见），逐帧只做 drawImage
     const sprite = document.createElement('canvas');
     sprite.width = sprite.height = 64;
     (() => {
@@ -488,7 +488,8 @@
       const depth = Math.pow(rnd(), 1.7);
       return {
         x: rnd() * W, y: fromTop ? -20 : rnd() * H,
-        r: 0.7 + depth * 4.6,
+        // 大小刻意拉开：近处大颗、远处小点，比例差到 8 倍
+        r: 0.8 + Math.pow(depth, 1.15) * 6.4,
         vy: 9 + depth * 38,
         windBase: 8 + depth * 14,
         swayAmp: 6 + depth * 22,
@@ -504,9 +505,10 @@
       cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
       cv.style.width = W + 'px'; cv.style.height = H + 'px';
       g.setTransform(DPR, 0, 0, DPR, 0, 0);
-      const n = Math.max(36, Math.min(150, Math.round(W * H / 16000)));
-      const count = Math.round(n * (lowDensity ? 0.55 : 1));
-      flakes = Array.from({ length: count }, () => makeFlake(false));
+      // 数量加密：1080p 下约 240 颗，大屏封顶 400，窄屏仍有 130
+      const n = Math.round(W * H / 4800);
+      const count = Math.max(130, Math.min(400, n)) * (lowDensity ? 0.55 : 1);
+      flakes = Array.from({ length: Math.round(count) }, () => makeFlake(false));
     }
     function step(dt) {
       const windBase = pointerX == null ? 8 : 8 + (pointerX / W - 0.5) * 18;

@@ -211,8 +211,10 @@ def create_app(result_dir: Path, *, enable_precheck: bool = True,
     @app.get("/compare", response_class=HTMLResponse)
     def compare_page(request: Request, a: str = "", b: str = ""):
         done = [t for t in board.all() if t.done]
-        opts = [{"id": t.id, "label": f"{t.video_name}（{t.level}，"
-                                     f"{t.created_at:%Y-%m-%d}）"} for t in done]
+        level_cn = {"novice": "初学", "intermediate": "中级", "advanced": "竞技"}
+        opts = [{"id": t.id,
+                 "label": f"{t.video_name}（{level_cn.get(t.level, t.level)}，"
+                          f"{t.created_at:%Y-%m-%d}）"} for t in done]
         ctx: dict = {"active": "compare", "tasks": opts,
                      "a": a, "b": b, "result": None, "error": "",
                      "a_task": None, "b_task": None}

@@ -12,12 +12,12 @@
             <stop offset=".84" stop-color="#93cde9"/><stop offset="1" stop-color="#5c9cbe"/>
           </linearGradient>
           <linearGradient id="igRed" x1="0" y1="0" x2="0" y2="100" gradientUnits="userSpaceOnUse">
-            <stop offset="0" stop-color="#ff8a72"/><stop offset=".42" stop-color="#f0453f"/>
-            <stop offset="1" stop-color="#c01a2a"/>
+            <stop offset="0" stop-color="#ff9a80"/><stop offset=".42" stop-color="#ee4a42"/>
+            <stop offset="1" stop-color="#cf2130"/>
           </linearGradient>
           <linearGradient id="igShade" x1="0" y1="0" x2="0" y2="100" gradientUnits="userSpaceOnUse">
-            <stop offset=".55" stop-color="#08304a" stop-opacity="0"/>
-            <stop offset="1" stop-color="#08304a" stop-opacity=".5"/>
+            <stop offset=".55" stop-color="#0d4566" stop-opacity="0"/>
+            <stop offset="1" stop-color="#0d4566" stop-opacity=".34"/>
           </linearGradient>
           <linearGradient id="igSheen" x1="0" y1="0" x2="40" y2="100" gradientUnits="userSpaceOnUse">
             <stop offset="0" stop-color="#ffffff" stop-opacity=".95"/>
@@ -25,7 +25,7 @@
           </linearGradient>
           <linearGradient id="igSweep">
             <stop offset="0" stop-color="#ffffff" stop-opacity="0"/>
-            <stop offset=".5" stop-color="#ffffff" stop-opacity=".85"/>
+            <stop offset=".5" stop-color="#ffffff" stop-opacity=".72"/>
             <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
           </linearGradient>
           <radialGradient id="igPtr">
@@ -33,7 +33,7 @@
             <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
           </radialGradient>
           <pattern id="igDots" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(14)">
-            <circle cx="2.1" cy="2.1" r="1.25" fill="rgba(255,255,255,.32)"/>
+            <circle cx="2.1" cy="2.1" r="1.25" fill="rgba(10,58,90,.16)"/>
           </pattern>
           <!-- 手凿冰砖字母（歪斜与豁口已烘焙进坐标）；p*=字母，pk*=红色双板。
                clipPath 里的 use 只能引用单个 path（引用 g 会被 Chromium 裁成空），所以每个字形都是独立路径 -->
@@ -83,35 +83,33 @@
             <use href="#pT1"/><use href="#pU"/><use href="#pT2"/><use href="#pO"/><use href="#pR"/>
           </clipPath>
         </defs>
-        <!-- 漫画式阴影挤出：两层柔化色阶 + 墨线勾边（比纯黑柔和，读作冰体投影） -->
-        <use href="#wfill" transform="translate(4.5,6.5)" fill="#0b3a57"/>
-        <use href="#wski" transform="translate(4.5,6.5)" fill="#0b3a57"/>
-        <use href="#wfill" transform="translate(2,3)" fill="#14567c"/>
-        <use href="#wski" transform="translate(2,3)" fill="#14567c"/>
-        <use href="#wfill" fill="none" stroke="#04202f" stroke-width="5" stroke-linejoin="round"/>
-        <use href="#wski" fill="none" stroke="#04202f" stroke-width="5" stroke-linejoin="round"/>
+        <!-- 漫画式阴影挤出：两层柔化色阶 + 墨线勾边（浅底上阴影更淡，避免发脏） -->
+        <use href="#wfill" transform="translate(4.5,6.5)" fill="#2f7fa3"/>
+        <use href="#wski" transform="translate(4.5,6.5)" fill="#2f7fa3"/>
+        <use href="#wfill" transform="translate(2,3)" fill="#17597d"/>
+        <use href="#wski" transform="translate(2,3)" fill="#17597d"/>
+        <use href="#wfill" fill="none" stroke="#0a2b40" stroke-width="5" stroke-linejoin="round"/>
+        <use href="#wski" fill="none" stroke="#0a2b40" stroke-width="5" stroke-linejoin="round"/>
         <!-- 字母冰面：渐变 + 底部暗面 + 网点 + 左上亮层 + 冰棱描边 -->
         <use href="#wfill" fill="url(#igBody)"/>
         <use href="#wfill" fill="url(#igShade)"/>
-        <use href="#wfill" fill="url(#igDots)" opacity=".55"/>
+        <use href="#wfill" fill="url(#igDots)" opacity=".42"/>
         <use href="#wfill" fill="url(#igSheen)" opacity=".85"/>
         <use href="#wfill" fill="none" stroke="rgba(228,250,255,.55)" stroke-width="1.3"/>
         <!-- 双板：红板面 + 同套质感层 -->
         <use href="#wski" fill="url(#igRed)"/>
-        <use href="#wski" fill="url(#igShade)"/>
-        <use href="#wski" fill="url(#igDots)" opacity=".45"/>
-        <use href="#wski" fill="url(#igSheen)" opacity=".9"/>
-        <use href="#wski" fill="none" stroke="rgba(255,235,230,.7)" stroke-width="1.3"/>
+        <use href="#wski" fill="url(#igSheen)" opacity=".7"/>
+        <use href="#wski" fill="none" stroke="rgba(255,240,238,.85)" stroke-width="1.4"/>
         <use href="#wdet"/>
-        <!-- 切面亮斑（漫画式反光三角） -->
+        <!-- 切面亮斑：贴在各字母左上棱的小倒角高光，浅底上只留一道薄亮 -->
         <g fill="rgba(255,255,255,.55)">
-          <path d="M9 6L21 7L10 14Z"/>
-          <path d="M89 9L97 8L90 15Z"/>
-          <path d="M253 4L265 4L254 12Z"/>
-          <path d="M335 7L343 8L336 14Z"/>
-          <path d="M419 12L430 12L420 20Z"/>
-          <path d="M515 5L523 5L516 10Z"/>
-          <path d="M581 9L590 8L582 16Z"/>
+          <path d="M2 2L14 2L2 11Z"/>
+          <path d="M84 3L95 2L85 9Z"/>
+          <path d="M250 0L261 0L251 7Z"/>
+          <path d="M330 3L341 4L331 10Z"/>
+          <path d="M410 7L421 7L411 14Z"/>
+          <path d="M496 1L505 1L497 6Z"/>
+          <path d="M576 4L587 4L577 11Z"/>
         </g>
         <!-- 裁剪进字形的光效与冰裂：细裂芯半透明，亮边收窄，弱化存在感 -->
         <g clip-path="url(#wclip)">
@@ -124,12 +122,13 @@
         <g transform="translate(146,-3)"><path class="spk" d="M0 -7L1.6 -1.6L7 0L1.6 1.6L0 7L-1.6 1.6L-7 0L-1.6 -1.6Z" fill="#ffffff"/></g>
         <g transform="translate(494,87)"><path class="spk s2" d="M0 -6L1.4 -1.4L6 0L1.4 1.4L0 6L-1.4 1.4L-6 0L-1.4 -1.4Z" fill="#ffffff"/></g>
         <g transform="translate(470,8)"><path class="spk s3" d="M0 -5L1.2 -1.2L5 0L1.2 1.2L0 5L-1.2 1.2L-5 0L-1.2 -1.2Z" fill="#ffffff"/></g>
-        <g fill="rgba(190,242,255,.85)">
-          <path transform="translate(148,111) rotate(25)" d="M0 -10L9 7L-9 4Z"/>
-          <path transform="translate(240,-13) rotate(-15)" d="M0 -4.5L3.6 3L-3.6 2.2Z"/>
-          <path transform="translate(336,111) rotate(40)" opacity=".8" d="M0 -7L6 5L-6 3.5Z"/>
-          <path transform="translate(500,-12) rotate(-30)" opacity=".9" d="M0 -5L4 3.2L-4 2.5Z"/>
-          <path transform="translate(620,108) rotate(20)" d="M0 -6.5L5.5 4.5L-5.5 3Z"/>
+        <!-- 崩落的冰碴：冰蓝面 + 细墨边，大小与角度各异 -->
+        <g stroke="#15597d" stroke-width="1" stroke-linejoin="round">
+          <path transform="translate(148,112) rotate(25)" fill="url(#igBody)" d="M0 -10L9 7L-9 4Z"/>
+          <path transform="translate(240,-14) rotate(-15)" fill="url(#igBody)" d="M0 -4.5L3.6 3L-3.6 2.2Z"/>
+          <path transform="translate(336,112) rotate(40)" fill="url(#igBody)" opacity=".85" d="M0 -7L6 5L-6 3.5Z"/>
+          <path transform="translate(500,-13) rotate(-30)" fill="url(#igBody)" opacity=".9" d="M0 -5L4 3.2L-4 2.5Z"/>
+          <path transform="translate(620,109) rotate(20)" fill="url(#igBody)" d="M0 -6.5L5.5 4.5L-5.5 3Z"/>
         </g>
       </svg>
     </h1>
