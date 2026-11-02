@@ -17,7 +17,12 @@
     --hair:rgba(18,74,110,.14);
     --din:"Bahnschrift","Arial Narrow","Segoe UI Semibold","Segoe UI",sans-serif;
     --mono:"Cascadia Mono","Consolas",monospace;
+    /* iOS 弹簧曲线：轻微过冲后回稳，用于位移/缩放类过渡 */
+    --spring:cubic-bezier(.34,1.4,.52,1);
+    --spring-soft:cubic-bezier(.32,.72,0,1);
   }
+  html { -webkit-tap-highlight-color:transparent; }
+  button, a, label, .feature, .btn, .pick { touch-action:manipulation; }
   * { box-sizing:border-box; }
   html { scroll-behavior:smooth; }
   body {
@@ -56,37 +61,80 @@
   button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
     outline:2px solid var(--cyan); outline-offset:3px; border-radius:8px;
   }
-  /* ---------- 导航 ---------- */
+  /* ---------- 导航：iOS 大标题式材质，顶部完全透明，滚动后凝结成霜玻璃 ---------- */
   nav {
     position:sticky; top:0; z-index:10; height:64px;
-    display:flex; align-items:center; gap:28px; padding:0 28px;
-    background:rgba(255,255,255,.72);
-    backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
-    border-bottom:1px solid var(--hair);
+    display:flex; align-items:center; gap:6px; padding:0 22px 0 16px;
+    background:transparent;
+    border-bottom:1px solid transparent;
+    transition:height .34s var(--spring), background .34s ease,
+               border-color .34s ease, box-shadow .34s ease;
   }
-  @supports not (backdrop-filter:blur(2px)) { nav { background:rgba(255,255,255,.97); } }
-  nav .brand {
-    font-family:var(--din); font-weight:700; font-size:14px;
-    letter-spacing:.3em; text-transform:uppercase; margin-right:auto;
-    color:transparent; -webkit-text-fill-color:transparent;
-    background:linear-gradient(180deg,#123a52,#2d7ea6);
-    -webkit-background-clip:text; background-clip:text;
+  nav.scrolled {
+    height:56px;
+    background:rgba(255,255,255,.82);
+    backdrop-filter:blur(20px) saturate(180%);
+    -webkit-backdrop-filter:blur(20px) saturate(180%);
+    border-bottom-color:rgba(18,74,110,.13);
+    box-shadow:0 1px 0 rgba(255,255,255,.85) inset, 0 8px 26px rgba(23,58,84,.10);
   }
-  nav a {
-    position:relative; color:var(--mist); text-decoration:none;
-    font-size:13px; letter-spacing:.16em; padding:21px 2px;
-    transition:color .2s;
+  @supports not (backdrop-filter:blur(2px)) { nav.scrolled { background:rgba(255,255,255,.96); } }
+
+  /* 品牌：六棱冰砖 + 红色雪板斜线，和标题里的双板呼应 */
+  .brand {
+    display:inline-flex; align-items:center; gap:11px; margin-right:auto;
+    text-decoration:none; padding:6px 10px 6px 6px; border-radius:14px;
+    -webkit-tap-highlight-color:transparent;
+    transition:transform .42s var(--spring), background .22s ease;
   }
-  nav a::after {
-    content:""; position:absolute; left:0; right:100%; bottom:14px; height:2px;
-    background:var(--cyan); box-shadow:0 0 6px rgba(6,127,160,.4);
-    transition:right .25s ease;
+  .brand:active { transform:scale(.95); }
+  .brand .mark {
+    width:27px; height:27px; flex:none; display:block; overflow:visible;
+    transition:transform .55s var(--spring);
   }
-  nav a:hover { color:var(--ice-white); }
-  nav a.active { color:var(--ice-white); }
-  nav a.active::after, nav a:hover::after { right:0; }
+  .brand:hover .mark { transform:rotate(-6deg) scale(1.06); }
+  .brand .mark .crystal {
+    animation:mark-glow 5s ease-in-out infinite;
+    transform-box:fill-box; transform-origin:center;
+  }
+  @keyframes mark-glow {
+    0%, 100% { opacity:.9; } 50% { opacity:1; }
+  }
+  /* 与首页同款的手凿冰块艺术字，缩到导航高度（精简版：无裂纹/网点/碎冰） */
+  .brand .wordmark-svg {
+    display:block; height:26px; width:auto; flex:none;
+    transition:height .34s var(--spring), opacity .3s ease;
+  }
+  nav.scrolled .brand .wordmark-svg { height:22px; }
+
+  /* 导航项：iOS 分段控件式滑动的药丸高亮 */
+  .nav-links { position:relative; display:flex; align-items:center; gap:2px; }
+  .nav-pill {
+    position:absolute; top:50%; left:0; height:38px; width:0;
+    margin-top:-19px; border-radius:11px; pointer-events:none;
+    background:rgba(6,107,136,.10);
+    box-shadow:inset 0 0 0 1px rgba(6,107,136,.13);
+    transition:transform .42s var(--spring), width .42s var(--spring), opacity .2s ease;
+    opacity:0;
+  }
+  .nav-pill.on { opacity:1; }
+  nav .nav-links a {
+    position:relative; z-index:1; color:var(--mist); text-decoration:none;
+    display:inline-flex; align-items:center; min-height:44px;
+    font-size:13px; letter-spacing:.1em; padding:0 15px; border-radius:11px;
+    -webkit-tap-highlight-color:transparent;
+    transition:color .22s ease, transform .42s var(--spring);
+  }
+  nav .nav-links a:hover { color:var(--ice-white); }
+  nav .nav-links a:active { transform:scale(.94); }
+  nav .nav-links a.active { color:var(--ice-white); font-weight:600; }
   /* ---------- 主内容与面板 ---------- */
-  main { position:relative; z-index:2; max-width:1080px; margin:0 auto; padding:0 20px 64px; }
+  main { position:relative; z-index:2; max-width:1080px; margin:0 auto; padding:0 20px 64px;
+         animation:page-in .5s var(--spring-soft) both; }
+  @keyframes page-in {
+    from { opacity:0; transform:translate3d(0,10px,0) scale(.995); }
+    to   { opacity:1; transform:none; }
+  }
   .panel {
     position:relative; border:1px solid var(--hair); border-radius:16px;
     padding:24px 28px; margin:18px 0;
@@ -123,9 +171,10 @@
     box-shadow:0 6px 18px rgba(10,110,145,.28), inset 0 1px 0 rgba(255,255,255,.35);
     transition:transform .15s ease, box-shadow .22s ease, filter .2s ease;
   }
-  .btn:hover { filter:brightness(1.07); transform:translateY(-1px);
+  .btn { transition:transform .42s var(--spring), box-shadow .28s ease, filter .2s ease; }
+  .btn:hover { filter:brightness(1.07); transform:translateY(-1px) scale(1.015);
                box-shadow:0 9px 24px rgba(10,110,145,.35), inset 0 1px 0 rgba(255,255,255,.35); }
-  .btn:active { transform:translateY(1px) scale(.97); }
+  .btn:active { transform:scale(.955); transition-duration:.12s; }
   .btn:disabled { opacity:.45; cursor:default; transform:none; filter:grayscale(.5); box-shadow:none; }
   button.retry {
     position:relative; background:none; border:1px solid rgba(201,59,59,.38);
@@ -158,6 +207,9 @@
   }
   /* ---------- 表单 ---------- */
   .field { margin:0 0 16px; min-width:0; }
+  /* 对比页的两个下拉：各占一半宽度，长文件名也不会把整行挤换行 */
+  .compare-form .field { flex:1 1 260px; }
+  .compare-form .field select { width:100%; }
   .field > .label {
     display:block; font-size:12px; letter-spacing:.14em; color:var(--dim);
     margin-bottom:7px;
@@ -167,9 +219,12 @@
     border:1px solid rgba(18,74,110,.22); border-radius:9px;
     padding:9px 13px; font-size:14px; transition:border-color .2s, box-shadow .2s;
   }
+  select, input[type=text] { transition:border-color .22s ease, box-shadow .3s ease,
+                             transform .42s var(--spring); }
   select:hover, input[type=text]:hover { border-color:rgba(6,140,180,.55); }
   select:focus, input[type=text]:focus {
-    border-color:var(--cyan); box-shadow:0 0 0 3px rgba(6,140,180,.14); outline:none;
+    border-color:var(--cyan); box-shadow:0 0 0 4px rgba(6,140,180,.14); outline:none;
+    transform:scale(1.008);
   }
   select option { background:var(--deep); color:var(--ice-white); }
   input[type=checkbox] { accent-color:var(--cyan); width:15px; height:15px; vertical-align:-2px; }
@@ -191,7 +246,25 @@
   input[type=file]::file-selector-button:hover { filter:brightness(1.08); }
   .checkline { display:flex; gap:24px; flex-wrap:wrap; align-items:center;
                color:var(--mist); font-size:14px; }
-  .checkline label { cursor:pointer; }
+  .checkline label { cursor:pointer; display:inline-flex; align-items:center; gap:10px; }
+  /* 复选项做成 iOS 开关：按压时滑块拉长，松手弹回 */
+  .checkline input[type=checkbox] {
+    -webkit-appearance:none; appearance:none;
+    width:44px; height:26px; margin:0; border-radius:999px; position:relative;
+    background:rgba(18,74,110,.20); cursor:pointer; flex:none;
+    transition:background .28s ease, box-shadow .28s ease;
+  }
+  .checkline input[type=checkbox]::after {
+    content:""; position:absolute; top:2px; left:2px; width:22px; height:22px;
+    border-radius:50%; background:#fff;
+    box-shadow:0 2px 5px rgba(23,58,84,.30), 0 1px 1px rgba(23,58,84,.16);
+    transition:transform .46s var(--spring), width .3s var(--spring);
+  }
+  .checkline input[type=checkbox]:checked { background:var(--cyan); }
+  .checkline input[type=checkbox]:checked::after { transform:translateX(18px); }
+  .checkline input[type=checkbox]:active::after { width:27px; }
+  .checkline input[type=checkbox]:checked:active::after { transform:translateX(13px); }
+  .checkline input[type=checkbox]:focus-visible { outline:2px solid var(--cyan); outline-offset:3px; }
   /* ---------- 表格 ---------- */
   table { width:100%; border-collapse:collapse; font-size:14px; }
   .table-scroll { overflow-x:auto; }
@@ -261,9 +334,10 @@
     background:radial-gradient(closest-side, rgba(56,128,168,.28), transparent);
     filter:blur(11px);
   }
+  /* 视差量走变量：动画终值继续持有，滚动时变量在变，位移随之更新 */
   @keyframes ice-in {
-    from { opacity:0; transform:translateY(10px); filter:blur(5px); }
-    to   { opacity:1; transform:none; filter:blur(0); }
+    from { opacity:0; transform:translate3d(0, calc(var(--py,0px) + 10px), 0); filter:blur(5px); }
+    to   { opacity:1; transform:translate3d(0, var(--py,0px), 0); filter:blur(0); }
   }
   .hero-sub {
     margin:30px 0 0; color:var(--mist);
@@ -275,7 +349,10 @@
   }
   .hero-sub::before { margin-right:1.2em; }
   .hero-sub::after { margin-left:1.2em; }
-  @keyframes rise { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+  @keyframes rise {
+    from { opacity:0; transform:translate3d(0, calc(var(--pyf,0px) + 12px), 0); }
+    to   { opacity:1; transform:translate3d(0, var(--pyf,0px), 0); }
+  }
   /* ---------- 功能按钮 ---------- */
   .features {
     display:flex; gap:18px; flex-wrap:wrap; justify-content:center;
@@ -287,14 +364,15 @@
     color:var(--ice-white); border:1px solid var(--hair); border-radius:18px;
     background:linear-gradient(180deg, #ffffff, rgba(238,246,251,.85));
     box-shadow:0 10px 24px rgba(23,58,84,.10), inset 0 1px 0 #fff;
-    transition:transform .18s ease, border-color .22s ease, box-shadow .25s ease;
+    transition:transform .46s var(--spring), border-color .24s ease,
+               box-shadow .28s ease, background .24s ease;
   }
   .feature:hover {
-    transform:translateY(-5px); border-color:rgba(6,140,180,.5);
-    box-shadow:0 16px 34px rgba(23,58,84,.16), 0 0 20px rgba(6,140,180,.12),
+    transform:translateY(-6px) scale(1.02); border-color:rgba(6,140,180,.5);
+    box-shadow:0 18px 38px rgba(23,58,84,.17), 0 0 24px rgba(6,140,180,.13),
                inset 0 1px 0 #fff;
   }
-  .feature:active { transform:translateY(-1px) scale(.96); }
+  .feature:active { transform:scale(.955); transition-duration:.13s; }
   .feature svg {
     width:32px; height:32px; stroke:var(--cyan); fill:none; stroke-width:1.5;
     stroke-linecap:round; stroke-linejoin:round;
@@ -404,8 +482,9 @@
     border:2px solid var(--hair); color:var(--ice-white); cursor:pointer;
     transition:border-color .2s, transform .15s, box-shadow .2s;
   }
-  button.pick:hover { border-color:rgba(6,140,180,.5); transform:translateY(-2px); }
-  button.pick:active { transform:scale(.97); }
+  button.pick { transition:border-color .22s ease, transform .46s var(--spring), box-shadow .26s ease; }
+  button.pick:hover { border-color:rgba(6,140,180,.5); transform:translateY(-3px) scale(1.015); }
+  button.pick:active { transform:scale(.955); transition-duration:.13s; }
   button.pick[aria-pressed="true"] {
     border-color:var(--cyan); box-shadow:0 0 0 3px rgba(6,127,160,.16);
   }
@@ -417,16 +496,27 @@
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior:auto; }
     body::before, .ice-slab, .sweep, .spk, .scroll-hint, .hero-sub, .eyebrow,
-    .features, .st-running::before { animation:none !important; }
+    .features, .st-running::before, .brand .mark .crystal { animation:none !important; }
+    nav, .nav-pill, .btn, .feature, button.pick, .brand, .brand .wordmark-svg,
+    .brand .mark, .checkline input[type=checkbox],
+    .checkline input[type=checkbox]::after { transition:none !important; }
+    main { animation:none !important; }
     .burst { display:none; }
   }
   @media (max-width:720px) {
     main { padding:0 14px 48px; }
     .panel { padding:20px; }
-    nav { padding:0 14px; gap:14px; }
-    nav .brand { font-size:12px; letter-spacing:.16em; }
-    nav a { font-size:12px; letter-spacing:.08em; }
+    nav { padding:0 8px 0 6px; }
+    .brand { gap:8px; padding:6px 8px 6px 4px; }
+    .brand .mark { width:26px; height:26px; }
+    .brand .wordmark-svg { height:20px; }
+    nav.scrolled .brand .wordmark-svg { height:18px; }
+    nav .nav-links a { font-size:12.5px; letter-spacing:.04em; padding:0 11px; min-height:44px; }
     .feature { width:calc(50% - 9px); }
+  }
+  @media (max-width:420px) {
+    .brand .wordmark-svg { height:17px; }
+    .brand { gap:7px; padding:6px 6px 6px 4px; }
   }
   @media (max-width:400px) {
     .hero { padding-bottom:104px; }
@@ -437,11 +527,76 @@
 </head>
 <body{% if low_density %} data-density="low"{% endif %}>
 <canvas id="snow" aria-hidden="true"></canvas>
-<nav>
-  <span class="brand">SKITUTOR</span>
-  <a href="/" {% if active == 'upload' %}class="active"{% endif %}>上传分析</a>
-  <a href="/tasks" {% if active == 'tasks' %}class="active"{% endif %}>任务</a>
-  <a href="/compare" {% if active == 'compare' %}class="active"{% endif %}>对比</a>
+<nav id="topnav">
+  <a class="brand" href="/" aria-label="SKITUTOR 首页">
+    <!-- 技术标识：六棱冰砖切面 + 红色雪板斜切，和标题里的双板同一套语言 -->
+    <svg class="mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="mkIce" x1="0" y1="0" x2="0" y2="32" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#bfe8fa"/><stop offset=".55" stop-color="#7cc6e6"/>
+          <stop offset="1" stop-color="#3f93bd"/>
+        </linearGradient>
+        <linearGradient id="mkSki" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#ff8f74"/><stop offset="1" stop-color="#cf2130"/>
+        </linearGradient>
+      </defs>
+      <g class="crystal">
+        <!-- 六棱冰砖：外轮廓 + 中心切面 -->
+        <path d="M16 2.6 27.4 9.2v13.6L16 29.4 4.6 22.8V9.2Z"
+              fill="url(#mkIce)" stroke="#0a2b40" stroke-width="1.7" stroke-linejoin="round"/>
+        <path d="M16 16 4.6 9.2M16 16l11.4-6.8M16 16v13.4"
+              fill="none" stroke="rgba(255,255,255,.8)" stroke-width="1"/>
+        <path d="M4.6 9.2 16 16l11.4-6.8" fill="none"
+              stroke="rgba(10,43,64,.4)" stroke-width="1"/>
+      </g>
+      <!-- 一对红色雪板斜切过冰砖：两条平行板，板头圆角 -->
+      <g stroke="#0a2b40" stroke-width="1.1" stroke-linecap="round">
+        <path d="M8.4 22.6 19.6 7.6" stroke="url(#mkSki)" stroke-width="3.4"/>
+        <path d="M12.6 25.6 23.8 10.6" stroke="url(#mkSki)" stroke-width="3"/>
+      </g>
+      <g stroke="rgba(255,255,255,.55)" stroke-width=".9" stroke-linecap="round">
+        <path d="M8.9 22 19.2 8.2"/><path d="M13.1 25 23.4 11.2"/>
+      </g>
+    </svg>
+    <svg class="wordmark-svg" viewBox="-4 -8 662 118" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="nbBody" x1="0" y1="-4" x2="0" y2="104" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#6bb4d6"/><stop offset=".3" stop-color="#a9dcf3"/>
+          <stop offset=".55" stop-color="#e2f7ff"/><stop offset=".72" stop-color="#f7ffff"/>
+          <stop offset="1" stop-color="#5c9cbe"/>
+        </linearGradient>
+        <linearGradient id="nbRed" x1="0" y1="0" x2="0" y2="100" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#ff9a80"/><stop offset=".42" stop-color="#ee4a42"/>
+          <stop offset="1" stop-color="#cf2130"/>
+        </linearGradient>
+        <g id="nbLetters">
+            <path d="M-1.7 2.5L7.5 0.0L15.6 0.6L24.3 -0.4L27.0 5.1L29.5 -0.0L39.1 -1.6L51.4 -1.3L61.4 -1.2L61.4 7.2L62.9 18.5L51.8 19.2L41.7 19.1L30.1 19.7L18.6 21.0L18.4 26.0L22.2 31.6L19.0 28.3L19.8 40.0L29.6 39.6L42.3 38.5L51.3 37.9L62.6 38.0L64.3 51.2L64.2 61.9L64.7 73.8L66.7 86.3L66.1 97.6L54.6 99.5L41.9 98.9L28.4 101.5L15.8 102.1L2.1 102.5L0.9 91.5L0.7 82.3L13.2 82.3L24.6 81.7L34.7 81.3L45.9 79.0L46.3 69.0L43.9 58.6L33.4 59.1L23.8 61.7L10.7 60.0L0.6 61.1L0.1 50.6L-1.4 37.5L-0.2 25.5L-2.3 14.8Z"/>
+            <path d="M84.3 1.6L94.3 1.1L104.0 2.2L103.7 13.4L102.3 26.3L103.2 39.3L102.1 52.5L100.5 64.4L100.6 76.7L101.6 88.4L101.1 100.8L92.4 101.4L90.9 96.3L90.4 101.1L80.7 100.0L80.4 89.1L80.1 76.8L80.8 63.8L81.1 50.8L82.3 37.2L83.5 25.8L83.8 13.5Z M103.0 25.6L110.5 21.0L118.1 15.2L128.5 8.5L136.2 3.0L147.9 2.8L147.3 7.0L142.5 11.7L147.2 8.4L147.1 17.7L138.1 24.6L128.4 31.1L118.9 38.2L110.3 47.3L102.0 52.9L102.2 43.2L102.8 34.8Z M102.7 49.2L111.6 56.8L120.5 65.8L126.3 74.1L135.6 80.8L144.1 89.7L143.4 96.8L144.0 103.4L131.9 101.9L125.6 96.8L115.7 91.4L110.1 83.0L100.2 77.7L100.4 68.8L101.6 59.5Z"/>
+            <path d="M248.3 -2.8L260.8 -2.5L271.9 -2.8L282.7 -2.5L285.8 3.2L289.0 -1.9L301.0 -0.9L312.8 -0.6L311.6 7.7L308.1 11.2L311.4 9.9L312.1 20.4L299.3 18.6L289.8 19.1L287.5 29.5L288.9 42.1L287.9 51.9L287.1 62.9L286.3 75.3L287.2 87.2L285.6 97.9L275.3 98.4L265.8 96.9L267.2 86.4L268.1 74.8L267.6 63.1L268.1 53.1L269.6 40.9L268.7 27.8L269.9 17.4L258.1 15.9L246.5 16.4L249.0 7.4Z"/>
+            <path d="M326.7 2.4L335.6 0.9L346.4 0.6L346.9 14.1L347.2 25.7L346.4 39.4L347.0 52.6L348.0 65.1L349.4 77.6L361.0 76.2L372.6 77.5L371.8 63.3L372.0 51.4L372.4 38.0L372.4 24.6L371.5 13.5L370.9 -0.0L380.8 1.5L390.5 -0.8L391.9 12.0L389.9 22.3L390.1 31.0L392.2 43.3L387.8 48.0L392.0 50.2L392.7 63.8L393.3 75.2L392.8 86.3L387.0 91.9L380.3 99.7L366.9 99.6L356.2 100.2L344.6 100.7L337.4 95.5L329.4 88.2L329.7 76.2L327.4 64.4L327.6 51.5L327.6 40.1L327.0 27.7L325.5 14.0Z"/>
+            <path d="M408.6 5.2L421.0 4.4L432.1 3.0L442.8 2.2L446.4 7.7L449.2 2.3L461.2 2.1L472.9 1.3L472.6 9.7L469.5 13.5L472.6 11.9L474.3 22.2L461.4 21.7L451.9 23.1L450.7 33.7L453.3 46.1L453.3 56.0L453.4 67.0L453.9 79.4L455.9 91.2L455.4 101.9L445.1 103.5L435.5 102.9L435.9 92.2L435.7 80.6L434.1 69.0L433.6 59.0L434.0 46.8L431.8 33.8L432.0 23.3L420.1 23.0L408.7 24.6L410.3 15.4Z"/>
+            <path d="M510.9 -1.6L522.3 -2.0L532.8 0.2L542.0 -0.7L548.7 7.5L547.2 11.2L550.0 8.7L557.7 16.8L557.4 29.2L557.3 40.3L555.2 50.9L556.2 62.6L556.0 74.5L553.5 84.6L545.4 91.4L537.3 100.7L527.5 98.2L515.4 98.2L506.1 98.0L496.8 89.7L489.8 80.5L491.1 71.3L492.2 59.4L491.0 47.5L493.0 36.8L493.2 23.5L494.6 13.0L502.9 5.7Z M522.1 18.6L512.5 26.3L512.5 38.2L511.7 48.9L511.1 60.0L510.2 71.0L519.3 77.9L527.0 79.7L535.2 70.9L536.1 61.4L536.3 50.9L537.8 39.1L538.0 27.1L529.2 19.3Z"/>
+            <path d="M572.3 3.9L585.5 3.0L598.1 3.0L600.7 7.6L603.7 1.8L614.0 0.7L624.0 0.8L635.8 0.1L636.6 11.9L638.3 24.5L638.0 36.2L637.2 45.5L638.5 57.3L640.0 69.2L639.7 80.3L626.9 81.7L617.5 80.9L607.3 83.3L595.4 83.3L596.8 91.3L596.2 102.8L586.3 102.3L575.9 103.3L576.3 89.3L574.6 77.6L575.2 64.5L572.8 52.1L572.5 40.5L574.1 27.7L571.6 16.2Z M592.7 22.5L594.0 32.3L594.4 42.7L595.0 53.1L595.1 62.8L605.7 62.0L618.9 62.1L618.6 52.6L618.5 41.7L617.6 30.3L617.0 22.0L606.2 23.0Z M609.2 64.4L619.6 69.3L629.2 75.3L638.4 80.9L638.4 90.8L639.1 100.3L627.6 101.7L622.4 91.6L618.9 84.0L614.2 73.8Z"/>
+        </g>
+        <g id="nbSkis">
+            <path d="M180.7 10.5C180.0 4.1 182.5 1.1 185.6 0.9C188.7 0.7 191.5 3.3 191.7 9.7L192.8 17.7C192.9 29.7 192.0 34.8 192.4 41.7C192.8 48.7 194.2 55.7 195.8 65.6L196.9 77.5C197.4 84.5 197.6 91.5 197.5 96.0L197.5 97.7L187.2 100.0L186.8 96.8C185.9 90.3 185.2 83.3 185.0 74.3L184.5 58.3C184.7 50.3 184.8 45.3 184.6 42.3C184.3 38.3 182.6 28.4 181.3 20.5Z"/>
+            <path d="M204.0 9.7C204.0 3.3 206.9 0.7 210.0 0.9C213.1 1.1 215.6 4.0 214.9 10.4L214.9 18.4C213.5 30.4 212.0 35.3 211.5 42.3C211.0 49.2 211.4 56.3 211.7 66.3L211.3 78.3C210.9 85.3 210.1 92.3 209.5 96.7L209.2 98.4L198.7 99.4L198.7 96.1C198.7 89.6 198.9 82.6 199.8 73.6L201.4 57.7C202.7 49.7 203.4 44.8 203.6 41.8C203.8 37.8 203.5 27.7 203.2 19.7Z"/>
+        </g>
+      </defs>
+      <use href="#nbLetters" transform="translate(1.6,2.4)" fill="#2f7fa3"/>
+      <use href="#nbSkis" transform="translate(1.6,2.4)" fill="#2f7fa3"/>
+      <use href="#nbLetters" fill="none" stroke="#0a2b40" stroke-width="7" stroke-linejoin="round"/>
+      <use href="#nbSkis" fill="none" stroke="#0a2b40" stroke-width="7" stroke-linejoin="round"/>
+      <use href="#nbLetters" fill="url(#nbBody)"/>
+      <use href="#nbSkis" fill="url(#nbRed)"/>
+    </svg>
+  </a>
+  <div class="nav-links" id="navlinks">
+    <span class="nav-pill" id="navpill" aria-hidden="true"></span>
+    <a href="/" {% if active == 'upload' %}class="active"{% endif %}>上传分析</a>
+    <a href="/tasks" {% if active == 'tasks' %}class="active"{% endif %}>任务</a>
+    <a href="/compare" {% if active == 'compare' %}class="active"{% endif %}>对比</a>
+  </div>
 </nav>
 <main>
 {% block content %}{% endblock %}
@@ -449,6 +604,58 @@
 <script>
 (() => {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+
+  /* ---------- 顶部栏：滚动后凝结成霜玻璃 + 药丸高亮跟随 ---------- */
+  const nav = document.getElementById('topnav');
+  const links = document.getElementById('navlinks');
+  const pill = document.getElementById('navpill');
+  function movePill(instant) {
+    if (!links || !pill) return;
+    const cur = links.querySelector('a.active');
+    if (!cur) { pill.classList.remove('on'); return; }
+    const lr = links.getBoundingClientRect(), cr = cur.getBoundingClientRect();
+    if (instant) pill.style.transition = 'none';
+    pill.style.width = cr.width + 'px';
+    pill.style.transform = 'translateX(' + (cr.left - lr.left) + 'px)';
+    if (instant) { pill.offsetWidth; pill.style.transition = ''; }
+    pill.classList.add('on');
+  }
+  if (nav) {
+    // 顶部哨兵离开视口 = 页面已滚动：比逐帧读 scrollY 稳，也是 iOS 导航折叠的做法
+    const sentinel = document.createElement('div');
+    sentinel.setAttribute('aria-hidden', 'true');
+    sentinel.style.cssText =
+      'position:absolute;top:0;left:0;width:1px;height:1px;pointer-events:none';
+    document.body.prepend(sentinel);
+    const apply = () => nav.classList.toggle('scrolled', scrollY > 8);
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(([e]) => nav.classList.toggle('scrolled', !e.isIntersecting),
+                               { threshold: 0 }).observe(sentinel);
+    }
+    addEventListener('scroll', apply, { passive: true });
+    apply();
+    movePill(true);
+    addEventListener('resize', () => movePill(true));
+    // 字体加载完成后药丸宽度会变，重新量一次
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => movePill(true));
+  }
+
+  /* ---------- 首页轻微视差：标题随滚动上移，卡片滞后一点 ---------- */
+  const heroEl = document.querySelector('.hero');
+  const slab = document.querySelector('.ice-slab');
+  const feats = document.querySelector('.features');
+  if (heroEl && slab && !reduce.matches) {
+    let hpTicking = false;
+    const parallax = () => {
+      const y = Math.min(scrollY, heroEl.offsetHeight);
+      slab.style.setProperty('--py', (y * -0.10).toFixed(2) + 'px');
+      if (feats) feats.style.setProperty('--pyf', (y * -0.045).toFixed(2) + 'px');
+      hpTicking = false;
+    };
+    addEventListener('scroll', () => {
+      if (!hpTicking) { hpTicking = true; requestAnimationFrame(parallax); }
+    }, { passive: true });
+  }
 
   /* ---------- 雪花：一张 64×64 精灵，逐帧只做 drawImage ---------- */
   const cv = document.getElementById('snow');
