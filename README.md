@@ -1,12 +1,14 @@
 <p align="center">
-  <img src="docs/assets/skitutor-logo.svg" width="560" alt="SKITUTOR">
+  <picture>
+    <img src="docs/assets/skitutor-logo.svg" width="560" alt="SKITUTOR">
+  </picture>
 </p>
 
 # skibot
 
 滑雪视频体态分析：上传一段滑雪视频，输出关键点轨迹、五项体态指标和结构化报告。
 
-架构基于 [Sports2D](https://github.com/davidpagnon/sports2d)（BSD-3-Clause，JOSS 2024），
+架构基于 Sports2D（BSD-3-Clause，JOSS 2024），
 在其管线上叠自建模块：主轨迹选择、视角分类（帧级门控）、五项指标、参考区间判断、
 报告生成、标注视频渲染、人脸打码。
 
@@ -33,7 +35,7 @@ skibot serve [--port 8000] [--host 127.0.0.1] [--result-dir web_results]
 
 ## Web 壳
 
-`skibot serve` 后浏览器开 `http://127.0.0.1:8000`：上传页（视频 + 水平档 +
+`skibot serve` 后浏览器开 `127.0.0.1:8000`：上传页（视频 + 水平档 +
 打码开关）→ 任务页（排队/分析中/完成/失败，自动刷新）→ 报告页（五指标卡、
 带内百分位条、质量提示、标注视频播放）。分析在后台单线程排队；任务表
 持久化到结果目录下的 `tasks.json`（`serve` 默认即 `web_results/tasks.json`，
