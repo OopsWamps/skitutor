@@ -23,3 +23,10 @@ web_demo/
 .scratch/ui_repro/
 .scratch/_*.html
 .scratch/*.log
+
+# impeccable engine binary (downloaded, checksum-pinned, not for git)
+.claude/skills/impeccable/scripts/bin/
+
+# .scratch 只留 phase-2（任务票与引用证据）；根下的调研/设计过程产物不进库
+.scratch/*
+!.scratch/phase-2/

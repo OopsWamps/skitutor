@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "svg-animation": {
+      "source": "iart-ai/web-animation-skills",
+      "sourceType": "github",
+      "skillPath": "skills/svg-animation/SKILL.md",
+      "computedHash": "34619073e227bfb7c4c1daa2487006e7b759116f8f88ec9cde5c2dd0a11dfb96"
+    },
+    "svg-character-animation": {
+      "source": "calesthio/openmontage",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/svg-character-animation/SKILL.md",
+      "computedHash": "65a17b9ab121f1fb11af63ff1cc8ab36accf96a36ce8decb82660fe26df6fbf0"
+    }
+  }
+}
