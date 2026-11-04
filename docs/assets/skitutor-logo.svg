@@ -22,6 +22,6 @@
     <g transform="translate(469 0)"><path fill-rule="evenodd" d="M27 8h6a22 22 0 0 1 22 22v40a22 22 0 0 1 -22 22h-6a22 22 0 0 1 -22 -22v-40a22 22 0 0 1 22 -22Z M27 21h6a9 9 0 0 1 9 9v40a9 9 0 0 1 -9 9h-6a9 9 0 0 1 -9 -9v-40a9 9 0 0 1 9 -9Z"/></g>
     <g transform="translate(552 0)"><path d="M1.5 8.0L1.5 92.0L15.5 92.0L15.5 8.0Z"/><path d="M14.9 22.0L35.9 22.3L36.3 22.4L36.6 22.7L36.8 23.4L37.0 25.3L36.7 39.9L36.6 40.3L36.3 40.6L35.6 40.8L33.7 41.0L15.0 41.0L15.0 55.0L34.3 55.0L38.5 54.6L42.8 53.2L46.5 50.5L49.2 46.8L50.7 42.3L51.0 24.7L50.6 20.5L49.2 16.2L46.5 12.5L42.8 9.8L38.2 8.3L15.1 8.0Z"/><path d="M14.6 54.5L45.6 91.5L56.4 82.5L25.4 45.5Z"/></g>
   </g>
-  <text x="192" y="138" fill="#49697f" font-family="'Cascadia Mono',Consolas,Menlo,monospace"
-        font-size="11" letter-spacing="4">BODY ANALYSIS</text>
+  <text x="190" y="140" fill="#49697f" font-family="'Cascadia Mono',Consolas,Menlo,monospace"
+        font-size="13" letter-spacing="2" textLength="416" lengthAdjust="spacing">BODY ANALYSIS</text>
 </svg>
