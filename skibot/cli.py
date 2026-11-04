@@ -18,16 +18,14 @@ if hasattr(sys.stdout, "reconfigure"):
 
 from . import __version__
 from . import artifacts
-from . import finalize
+from . import runprep
 from .assess import assess
 from .backend import DEFAULT_TRACK_ORDER, discover_tracks, run_sports2d
 from .privacy import blur_faces
-from .reference import load as load_refs
-from .render import probe_video, render_annotated
+from .reference import DEFAULT_REFS, load as load_refs
+from .render import render_annotated
 from .select_person import sample_pants_pixels, select_person
 from .trc_io import load_kp
-
-DEFAULT_REFS = Path(__file__).resolve().parent.parent / "reference_values.toml"
 
 
 @dataclass
@@ -44,7 +42,7 @@ class AnalyzeOptions:
 
 
 def analyze_one(video: Path, opts: AnalyzeOptions) -> Path:
-    work = artifacts.work_dir(opts.result_dir, video.stem)
+    work = Path(opts.result_dir) / video.stem
     work.mkdir(parents=True, exist_ok=True)
 
     src = video
@@ -106,20 +104,14 @@ def analyze_one(video: Path, opts: AnalyzeOptions) -> Path:
     kp = kps[chosen]
     print(f"[skibot] 关键点：{tracks[chosen].name}，{kp.shape[0]} 帧")
 
-    refs = load_refs(opts.refs)
-    _, frame_h, fps = probe_video(src)
-    # 三维提升是可选旁路：默认关，二维报告与序列逐位不变（spec「三维提升」）
-    lifter = None
-    if opts.lifter == "motionbert":
-        from .motionbert import MotionBERTLifter  # torch 可选依赖，按需加载
-        lifter = MotionBERTLifter()
-        print(f"[skibot] 三维提升：motionbert（权重 {lifter.checkpoint}）")
-    res = finalize.assess_and_publish(
-        kp, src, refs=refs, level=opts.level, label=str(video),
+    # refs / fps / 身高 / lifter 的前置与改选共用一条链（runprep）；
+    # 报告与标注视频经评估收尾成对原子发布
+    res = runprep.publish(
+        kp, src, level=opts.level, label=str(video),
         report_path=artifacts.report_path(work),
         video_path=artifacts.annotated_path(work),
         person={"id": chosen, "selection": reason},
-        frame_height=frame_h, fps=fps, lifter=lifter)
+        refs_path=opts.refs, lifter=opts.lifter)
     report = res.report
     print(f"[skibot] 视角判定：{report['view']['detected']}"
           f"（score={report['view']['score']:.2f}，{report['view']['n_valid_frames']} 有效帧）")

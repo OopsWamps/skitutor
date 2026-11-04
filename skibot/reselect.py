@@ -18,11 +18,10 @@ import cv2
 import numpy as np
 
 from . import artifacts
-from . import finalize
+from . import runprep
 from .backend import find_all_trc_px
-from .cli import DEFAULT_REFS
-from .reference import load as load_refs
-from .render import _draw_skeleton, probe_video
+from .render import _draw_skeleton
+from .report_io import read_report, read_report_meta
 from .trc_io import load_kp
 
 
@@ -31,13 +30,6 @@ class Candidate:
     pid: int
     n_valid: int   # 有任一关键点置信度 > 0 的帧数
     trc: Path
-
-
-def source_video(work: Path, fallback_video: Path,
-                 blur: bool | None = None) -> Path:
-    """首次分析用的视频源（三态语义见 artifacts.source_video，此处保留
-    改选模块的名义入口）。"""
-    return artifacts.source_video(work, fallback_video, blur)
 
 
 def list_candidates(work: Path) -> list[Candidate]:
@@ -71,29 +63,24 @@ def reselect_one(work: Path, person: int, *, level: str,
     if person not in tracks:
         raise ValueError(f"指定了 person {person}，但只有 {sorted(tracks)}")
 
-    src = source_video(work, fallback_video, blur)
+    src = artifacts.source_video(work, fallback_video, blur)
 
     kp = load_kp(tracks[person])
     prev = artifacts.report_path(work)
-    # 报告里的 "video" 是首次分析时的源标签；沿用它能保持改选前后一致
+    # 报告里的 "video" 是首次分析时的源标签；沿用它能保持改选前后一致。
+    # 旧报告可能渲染不出（没有 view/metrics）但标签仍有效：这是元数据
+    # 抢救，走 read_report_meta，不设页面判据的门槛
     label = str(fallback_video)
     if prev.exists():
-        try:
-            label = json.loads(prev.read_text(encoding="utf-8")).get("video", label)
-        except Exception:
-            pass
-    refs = load_refs(refs_path or DEFAULT_REFS)
-    _, frame_h, fps = probe_video(src)
-    # make_lifter 对 "none" 返回 None；motionbert 分支在函数内按需载 torch
-    from .motionbert import make_lifter
+        label = str(read_report_meta(prev).get("video") or label)
+    # refs / fps / 身高 / lifter 的前置与首次分析同一条链（runprep）；
     # 报告与标注视频成对原子发布（评估收尾 module）：任何一步失败都保持
     # 旧人物，报告与标注视频不会错配，也不会读到半截 JSON
-    finalize.assess_and_publish(
-        kp, src, refs=refs, level=level, label=label,
+    runprep.publish(
+        kp, src, level=level, label=label,
         report_path=prev, video_path=artifacts.annotated_path(work),
         person={"id": person, "selection": f"人工改选 person {person}"},
-        frame_height=frame_h, fps=fps,
-        lifter=make_lifter(lifter))
+        refs_path=refs_path, lifter=lifter)
     return prev
 
 
@@ -108,15 +95,14 @@ def _nearest_valid_frame(kp: np.ndarray, mid: int) -> int | None:
 def current_person(work: Path) -> int | None:
     """当前报告选中的 person id；报告缺失或不可读返回 None。
 
-    report schema 的 person 约定由改选模块认领，web 层不再自己解 JSON。
+    report schema 的 person 约定由改选模块认领，web 层不再自己解 JSON；
+    可读判据全站唯一（report_io.read_report），与报告页同一标准。
     """
-    rp = artifacts.report_path(work)
-    if not rp.exists():
+    data = read_report(artifacts.report_path(work))
+    if data is None:
         return None
-    try:
-        return json.loads(rp.read_text(encoding="utf-8")).get("person", {}).get("id")
-    except Exception:  # noqa: BLE001 —— 半截/坏报告不给 id，页面照常渲染
-        return None
+    person = data.get("person")
+    return person.get("id") if isinstance(person, dict) else None
 
 
 _preview_lock = threading.Lock()

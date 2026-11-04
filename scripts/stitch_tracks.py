@@ -45,7 +45,7 @@ from skibot.trc_io import load_kp, stitch, write_trc  # noqa: E402
 from skibot.view import ViewResult, classify_view, classify_view_frames  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
-WORK = artifacts.work_dir(ROOT / "results", "video")
+WORK = ROOT / "results" / "video"
 S2D_DIR = WORK / "video_blurred_Sports2D"
 BLURRED = WORK / "video_blurred.mp4"
 ANNOTATED = artifacts.annotated_path(WORK)

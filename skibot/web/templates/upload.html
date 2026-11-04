@@ -2,160 +2,69 @@
 {% block title %}SKITUTOR · 滑雪体态分析{% endblock %}
 {% block content %}
 <section class="hero">
-  <div class="ice-slab">
-    <h1 class="ice-word" aria-label="SKITUTOR">
-      <svg viewBox="-8 -20 654 142" aria-hidden="true" focusable="false">
-        <defs>
-          <linearGradient id="igBody" x1="0" y1="0" x2="0" y2="100" gradientUnits="userSpaceOnUse">
-            <stop offset="0" stop-color="#6bb4d6"/><stop offset=".26" stop-color="#a9dcf3"/>
-            <stop offset=".52" stop-color="#e2f7ff"/><stop offset=".66" stop-color="#f7ffff"/>
-            <stop offset=".84" stop-color="#93cde9"/><stop offset="1" stop-color="#5c9cbe"/>
-          </linearGradient>
-          <linearGradient id="igRed" x1="0" y1="0" x2="0" y2="100" gradientUnits="userSpaceOnUse">
-            <stop offset="0" stop-color="#ff9a80"/><stop offset=".42" stop-color="#ee4a42"/>
-            <stop offset="1" stop-color="#cf2130"/>
-          </linearGradient>
-          <linearGradient id="igShade" x1="0" y1="0" x2="0" y2="100" gradientUnits="userSpaceOnUse">
-            <stop offset=".55" stop-color="#0d4566" stop-opacity="0"/>
-            <stop offset="1" stop-color="#0d4566" stop-opacity=".34"/>
-          </linearGradient>
-          <linearGradient id="igSheen" x1="0" y1="0" x2="40" y2="100" gradientUnits="userSpaceOnUse">
-            <stop offset="0" stop-color="#ffffff" stop-opacity=".95"/>
-            <stop offset=".5" stop-color="#ffffff" stop-opacity="0"/>
-          </linearGradient>
-          <linearGradient id="igSweep">
-            <stop offset="0" stop-color="#ffffff" stop-opacity="0"/>
-            <stop offset=".5" stop-color="#ffffff" stop-opacity=".72"/>
-            <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
-          </linearGradient>
-          <radialGradient id="igPtr">
-            <stop offset="0" stop-color="#ffffff" stop-opacity=".38"/>
-            <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
-          </radialGradient>
-          <pattern id="igDots" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(14)">
-            <circle cx="2.1" cy="2.1" r="1.25" fill="rgba(10,58,90,.16)"/>
-          </pattern>
-          <!-- 手凿冰砖字母（歪斜与豁口已烘焙进坐标）；p*=字母，pk*=红色双板。
-               clipPath 里的 use 只能引用单个 path（引用 g 会被 Chromium 裁成空），所以每个字形都是独立路径 -->
-          <path id="pS" d="M-1.7 2.5L7.5 0.0L15.6 0.6L24.3 -0.4L27.0 5.1L29.5 -0.0L39.1 -1.6L51.4 -1.3L61.4 -1.2L61.4 7.2L62.9 18.5L51.8 19.2L41.7 19.1L30.1 19.7L18.6 21.0L18.4 26.0L22.2 31.6L19.0 28.3L19.8 40.0L29.6 39.6L42.3 38.5L51.3 37.9L62.6 38.0L64.3 51.2L64.2 61.9L64.7 73.8L66.7 86.3L66.1 97.6L54.6 99.5L41.9 98.9L28.4 101.5L15.8 102.1L2.1 102.5L0.9 91.5L0.7 82.3L13.2 82.3L24.6 81.7L34.7 81.3L45.9 79.0L46.3 69.0L43.9 58.6L33.4 59.1L23.8 61.7L10.7 60.0L0.6 61.1L0.1 50.6L-1.4 37.5L-0.2 25.5L-2.3 14.8Z"/>
-          <path id="pK" d="M84.3 1.6L94.3 1.1L104.0 2.2L103.7 13.4L102.3 26.3L103.2 39.3L102.1 52.5L100.5 64.4L100.6 76.7L101.6 88.4L101.1 100.8L92.4 101.4L90.9 96.3L90.4 101.1L80.7 100.0L80.4 89.1L80.1 76.8L80.8 63.8L81.1 50.8L82.3 37.2L83.5 25.8L83.8 13.5Z M103.0 25.6L110.5 21.0L118.1 15.2L128.5 8.5L136.2 3.0L147.9 2.8L147.3 7.0L142.5 11.7L147.2 8.4L147.1 17.7L138.1 24.6L128.4 31.1L118.9 38.2L110.3 47.3L102.0 52.9L102.2 43.2L102.8 34.8Z M102.7 49.2L111.6 56.8L120.5 65.8L126.3 74.1L135.6 80.8L144.1 89.7L143.4 96.8L144.0 103.4L131.9 101.9L125.6 96.8L115.7 91.4L110.1 83.0L100.2 77.7L100.4 68.8L101.6 59.5Z"/>
-          <path id="pT1" d="M248.3 -2.8L260.8 -2.5L271.9 -2.8L282.7 -2.5L285.8 3.2L289.0 -1.9L301.0 -0.9L312.8 -0.6L311.6 7.7L308.1 11.2L311.4 9.9L312.1 20.4L299.3 18.6L289.8 19.1L287.5 29.5L288.9 42.1L287.9 51.9L287.1 62.9L286.3 75.3L287.2 87.2L285.6 97.9L275.3 98.4L265.8 96.9L267.2 86.4L268.1 74.8L267.6 63.1L268.1 53.1L269.6 40.9L268.7 27.8L269.9 17.4L258.1 15.9L246.5 16.4L249.0 7.4Z"/>
-          <path id="pU" d="M326.7 2.4L335.6 0.9L346.4 0.6L346.9 14.1L347.2 25.7L346.4 39.4L347.0 52.6L348.0 65.1L349.4 77.6L361.0 76.2L372.6 77.5L371.8 63.3L372.0 51.4L372.4 38.0L372.4 24.6L371.5 13.5L370.9 -0.0L380.8 1.5L390.5 -0.8L391.9 12.0L389.9 22.3L390.1 31.0L392.2 43.3L387.8 48.0L392.0 50.2L392.7 63.8L393.3 75.2L392.8 86.3L387.0 91.9L380.3 99.7L366.9 99.6L356.2 100.2L344.6 100.7L337.4 95.5L329.4 88.2L329.7 76.2L327.4 64.4L327.6 51.5L327.6 40.1L327.0 27.7L325.5 14.0Z"/>
-          <path id="pT2" d="M408.6 5.2L421.0 4.4L432.1 3.0L442.8 2.2L446.4 7.7L449.2 2.3L461.2 2.1L472.9 1.3L472.6 9.7L469.5 13.5L472.6 11.9L474.3 22.2L461.4 21.7L451.9 23.1L450.7 33.7L453.3 46.1L453.3 56.0L453.4 67.0L453.9 79.4L455.9 91.2L455.4 101.9L445.1 103.5L435.5 102.9L435.9 92.2L435.7 80.6L434.1 69.0L433.6 59.0L434.0 46.8L431.8 33.8L432.0 23.3L420.1 23.0L408.7 24.6L410.3 15.4Z"/>
-          <path id="pO" d="M510.9 -1.6L522.3 -2.0L532.8 0.2L542.0 -0.7L548.7 7.5L547.2 11.2L550.0 8.7L557.7 16.8L557.4 29.2L557.3 40.3L555.2 50.9L556.2 62.6L556.0 74.5L553.5 84.6L545.4 91.4L537.3 100.7L527.5 98.2L515.4 98.2L506.1 98.0L496.8 89.7L489.8 80.5L491.1 71.3L492.2 59.4L491.0 47.5L493.0 36.8L493.2 23.5L494.6 13.0L502.9 5.7Z M522.1 18.6L512.5 26.3L512.5 38.2L511.7 48.9L511.1 60.0L510.2 71.0L519.3 77.9L527.0 79.7L535.2 70.9L536.1 61.4L536.3 50.9L537.8 39.1L538.0 27.1L529.2 19.3Z"/>
-          <path id="pR" d="M572.3 3.9L585.5 3.0L598.1 3.0L600.7 7.6L603.7 1.8L614.0 0.7L624.0 0.8L635.8 0.1L636.6 11.9L638.3 24.5L638.0 36.2L637.2 45.5L638.5 57.3L640.0 69.2L639.7 80.3L626.9 81.7L617.5 80.9L607.3 83.3L595.4 83.3L596.8 91.3L596.2 102.8L586.3 102.3L575.9 103.3L576.3 89.3L574.6 77.6L575.2 64.5L572.8 52.1L572.5 40.5L574.1 27.7L571.6 16.2Z M592.7 22.5L594.0 32.3L594.4 42.7L595.0 53.1L595.1 62.8L605.7 62.0L618.9 62.1L618.6 52.6L618.5 41.7L617.6 30.3L617.0 22.0L606.2 23.0Z M609.2 64.4L619.6 69.3L629.2 75.3L638.4 80.9L638.4 90.8L639.1 100.3L627.6 101.7L622.4 91.6L618.9 84.0L614.2 73.8Z"/>
-          <path id="pk1" d="M180.7 10.5C180.0 4.1 182.5 1.1 185.6 0.9C188.7 0.7 191.5 3.3 191.7 9.7L192.8 17.7C192.9 29.7 192.0 34.8 192.4 41.7C192.8 48.7 194.2 55.7 195.8 65.6L196.9 77.5C197.4 84.5 197.6 91.5 197.5 96.0L197.5 97.7L187.2 100.0L186.8 96.8C185.9 90.3 185.2 83.3 185.0 74.3L184.5 58.3C184.7 50.3 184.8 45.3 184.6 42.3C184.3 38.3 182.6 28.4 181.3 20.5Z"/>
-          <path id="pk2" d="M204.0 9.7C204.0 3.3 206.9 0.7 210.0 0.9C213.1 1.1 215.6 4.0 214.9 10.4L214.9 18.4C213.5 30.4 212.0 35.3 211.5 42.3C211.0 49.2 211.4 56.3 211.7 66.3L211.3 78.3C210.9 85.3 210.1 92.3 209.5 96.7L209.2 98.4L198.7 99.4L198.7 96.1C198.7 89.6 198.9 82.6 199.8 73.6L201.4 57.7C202.7 49.7 203.4 44.8 203.6 41.8C203.8 37.8 203.5 27.7 203.2 19.7Z"/>
-          <g id="wfill"><use href="#pS"/><use href="#pK"/><use href="#pT1"/><use href="#pU"/><use href="#pT2"/><use href="#pO"/><use href="#pR"/></g>
-          <!-- 双板：一对红色滑雪板（俯视板形：板头板尾宽、板腰窄） -->
-          <g id="wski"><use href="#pk1"/><use href="#pk2"/></g>
-          <!-- 双板细节：板芯纵线 + 前后两片式固定器（前固定器带侧翼） -->
-          <g id="wdet">
-            <g transform="translate(181,0) rotate(-4 8 50)">
-              <path d="M8 13V98" stroke="rgba(255,255,255,.35)" stroke-width=".9" fill="none"/>
-              <path d="M5.6 26.5H10.4A1.8 1.8 0 0 1 12.2 28.3V31.7A1.8 1.8 0 0 1 10.4 33.5H5.6A1.8 1.8 0 0 1 3.8 31.7V28.3A1.8 1.8 0 0 1 5.6 26.5Z" fill="rgba(6,26,40,.8)"/>
-              <path d="M3.0 28.2L3.8 29.4V31.2L3.0 32.2Z M13.0 28.2L12.2 29.4V31.2L13.0 32.2Z" fill="rgba(6,26,40,.8)"/>
-              <path d="M5.6 51.5H10.4A1.8 1.8 0 0 1 12.2 53.3V56.7A1.8 1.8 0 0 1 10.4 58.5H5.6A1.8 1.8 0 0 1 3.8 56.7V53.3A1.8 1.8 0 0 1 5.6 51.5Z" fill="rgba(6,26,40,.8)"/>
-              <path d="M4.6 30H11.4 M4.6 55H11.4" stroke="rgba(255,255,255,.5)" stroke-width="1.1" fill="none"/>
-            </g>
-            <g transform="translate(199,0) rotate(3.5 8 50)">
-              <path d="M8 13V98" stroke="rgba(255,255,255,.35)" stroke-width=".9" fill="none"/>
-              <path d="M5.6 26.5H10.4A1.8 1.8 0 0 1 12.2 28.3V31.7A1.8 1.8 0 0 1 10.4 33.5H5.6A1.8 1.8 0 0 1 3.8 31.7V28.3A1.8 1.8 0 0 1 5.6 26.5Z" fill="rgba(6,26,40,.8)"/>
-              <path d="M3.0 28.2L3.8 29.4V31.2L3.0 32.2Z M13.0 28.2L12.2 29.4V31.2L13.0 32.2Z" fill="rgba(6,26,40,.8)"/>
-              <path d="M5.6 51.5H10.4A1.8 1.8 0 0 1 12.2 53.3V56.7A1.8 1.8 0 0 1 10.4 58.5H5.6A1.8 1.8 0 0 1 3.8 56.7V53.3A1.8 1.8 0 0 1 5.6 51.5Z" fill="rgba(6,26,40,.8)"/>
-              <path d="M4.6 30H11.4 M4.6 55H11.4" stroke="rgba(255,255,255,.5)" stroke-width="1.1" fill="none"/>
-            </g>
-          </g>
-          <!-- 冰裂纹：只从豁口与棱角处自然延伸，共 8 条主裂 3 条分叉 -->
-          <g id="wcracks" fill="none">
-            <path d="M28 6L31 12L29 18"/><path d="M31 12L35 14"/>
-            <path d="M59 60L55 66L57 73"/>
-            <path d="M92 30L94 44L92 58"/>
-            <path d="M281 7L290 9L298 8"/><path d="M290 9L293 13"/>
-            <path d="M348 88L358 85L368 88"/>
-            <path d="M443 40L445 54L443 68"/>
-            <path d="M502 8L510 6L518 7"/><path d="M510 6L514 3"/>
-            <path d="M544 88L539 92L543 96"/>
-            <path d="M628 30L630 42L628 54"/>
-          </g>
-          <clipPath id="wclip">
-            <use href="#pS"/><use href="#pK"/><use href="#pk1"/><use href="#pk2"/>
-            <use href="#pT1"/><use href="#pU"/><use href="#pT2"/><use href="#pO"/><use href="#pR"/>
-          </clipPath>
-        </defs>
-        <!-- 漫画式阴影挤出：两层柔化色阶 + 墨线勾边（浅底上阴影更淡，避免发脏） -->
-        <use href="#wfill" transform="translate(4.5,6.5)" fill="#2f7fa3"/>
-        <use href="#wski" transform="translate(4.5,6.5)" fill="#2f7fa3"/>
-        <use href="#wfill" transform="translate(2,3)" fill="#17597d"/>
-        <use href="#wski" transform="translate(2,3)" fill="#17597d"/>
-        <use href="#wfill" fill="none" stroke="#0a2b40" stroke-width="5" stroke-linejoin="round"/>
-        <use href="#wski" fill="none" stroke="#0a2b40" stroke-width="5" stroke-linejoin="round"/>
-        <!-- 字母冰面：渐变 + 底部暗面 + 网点 + 左上亮层 + 冰棱描边 -->
-        <use href="#wfill" fill="url(#igBody)"/>
-        <use href="#wfill" fill="url(#igShade)"/>
-        <use href="#wfill" fill="url(#igDots)" opacity=".42"/>
-        <use href="#wfill" fill="url(#igSheen)" opacity=".85"/>
-        <use href="#wfill" fill="none" stroke="rgba(228,250,255,.55)" stroke-width="1.3"/>
-        <!-- 双板：红板面 + 同套质感层 -->
-        <use href="#wski" fill="url(#igRed)"/>
-        <use href="#wski" fill="url(#igSheen)" opacity=".7"/>
-        <use href="#wski" fill="none" stroke="rgba(255,240,238,.85)" stroke-width="1.4"/>
-        <use href="#wdet"/>
-        <!-- 切面亮斑：贴在各字母左上棱的小倒角高光，浅底上只留一道薄亮 -->
-        <g fill="rgba(255,255,255,.55)">
-          <path d="M2 2L14 2L2 11Z"/>
-          <path d="M84 3L95 2L85 9Z"/>
-          <path d="M250 0L261 0L251 7Z"/>
-          <path d="M330 3L341 4L331 10Z"/>
-          <path d="M410 7L421 7L411 14Z"/>
-          <path d="M496 1L505 1L497 6Z"/>
-          <path d="M576 4L587 4L577 11Z"/>
-        </g>
-        <!-- 裁剪进字形的光效与冰裂：细裂芯半透明，亮边收窄，弱化存在感 -->
-        <g clip-path="url(#wclip)">
-          <use href="#wcracks" stroke="rgba(240,252,255,.5)" stroke-width="2.2" stroke-linecap="round"/>
-          <use href="#wcracks" stroke="rgba(13,54,86,.55)" stroke-width="1.2" stroke-linecap="round"/>
-          <circle class="ptr" cx="150" cy="30" r="180" fill="url(#igPtr)"/>
-          <rect class="sweep" x="-180" y="-25" width="120" height="172" fill="url(#igSweep)"/>
-        </g>
-        <!-- 冰晶闪点 + 崩出的碎冰碴 -->
-        <g transform="translate(146,-3)"><path class="spk" d="M0 -7L1.6 -1.6L7 0L1.6 1.6L0 7L-1.6 1.6L-7 0L-1.6 -1.6Z" fill="#ffffff"/></g>
-        <g transform="translate(494,87)"><path class="spk s2" d="M0 -6L1.4 -1.4L6 0L1.4 1.4L0 6L-1.4 1.4L-6 0L-1.4 -1.4Z" fill="#ffffff"/></g>
-        <g transform="translate(470,8)"><path class="spk s3" d="M0 -5L1.2 -1.2L5 0L1.2 1.2L0 5L-1.2 1.2L-5 0L-1.2 -1.2Z" fill="#ffffff"/></g>
-        <!-- 崩落的冰碴：冰蓝面 + 细墨边，大小与角度各异 -->
-        <g stroke="#15597d" stroke-width="1" stroke-linejoin="round">
-          <path transform="translate(148,112) rotate(25)" fill="url(#igBody)" d="M0 -10L9 7L-9 4Z"/>
-          <path transform="translate(240,-14) rotate(-15)" fill="url(#igBody)" d="M0 -4.5L3.6 3L-3.6 2.2Z"/>
-          <path transform="translate(336,112) rotate(40)" fill="url(#igBody)" opacity=".85" d="M0 -7L6 5L-6 3.5Z"/>
-          <path transform="translate(500,-13) rotate(-30)" fill="url(#igBody)" opacity=".9" d="M0 -5L4 3.2L-4 2.5Z"/>
-          <path transform="translate(620,109) rotate(20)" fill="url(#igBody)" d="M0 -6.5L5.5 4.5L-5.5 3Z"/>
-        </g>
-      </svg>
+  <p class="hero-kicker">滑雪体态分析</p>
+
+  <div class="hero-lockup">
+    <svg class="mark hero-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+      <path class="mk-ski" d="M26.76 24.3 8.93 28.8Q6.7 29.35 4.7 27.9"/>
+      <path class="mk-bone" d="M15.03 5.17 21.47 15.17M21.47 15.17 17.56 16.44M15.14 20.35 16.18 26.44"/>
+      <circle class="mk-joint" cx="15.03" cy="5.17" r="3.55"/>
+      <circle class="mk-joint" cx="21.47" cy="15.17" r="3.3"/>
+      <circle class="mk-joint" cx="16.18" cy="26.44" r="2.3"/>
+      <circle class="mk-knee" cx="14.68" cy="17.36" r="2.5"/>
+    </svg>
+    <h1 class="hero-word">
+      <span class="sr-only">SKITUTOR</span>
+      <svg class="wordmark hero-wordmark" viewBox="0 0 612 100" aria-hidden="true" focusable="false"><use href="#ski-wordmark"/></svg>
     </h1>
   </div>
-  <p class="hero-sub">你的滑雪体态分析助手</p>
+
+  {% if hero_bands %}
+  <dl class="hero-bands" aria-label="中级档侧面指标参考区间示例">
+    {% for b in hero_bands %}
+    <div class="hero-band">
+      <dt>{{ b.name }}</dt>
+      <dd>{{ b.lo | round(0) | int }}–{{ b.hi | round(0) | int }}°</dd>
+    </div>
+    {% endfor %}
+  </dl>
+  <p class="hero-band-note">侧面三项参考区间示例 · 中级档 · 未校准</p>
+  {% endif %}
+
+  <p class="hero-sub">逐帧骨架追踪，量化五项体态指标与参考区间</p>
 
   <div class="features">
     <a class="feature feature--primary" href="#upload">
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M12 16V4"/><path d="M7.5 8.5 12 4l4.5 4.5"/>
-        <path d="M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15"/>
+      <!-- 分析：取景框 + 播放三角，底部一支上传箭头 -->
+      <svg viewBox="0 0 32 32" aria-hidden="true" class="fic">
+        <rect class="ic-soft" x="3.5" y="5" width="25" height="17" rx="5"/>
+        <rect class="ic-line" x="3.5" y="5" width="25" height="17" rx="5"/>
+        <path class="ic-solid" d="M13 10.2l8 4.3-8 4.3z"/>
+        <path class="ic-line" d="M16 27.4v-4.6M12.6 26.4 16 23l3.4 3.4"/>
       </svg>
       <span class="f-cn">开始分析</span>
       <span class="f-en">Analyse</span>
     </a>
     <a class="feature" href="/tasks" data-nav>
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M8 6h12M8 12h12M8 18h12"/>
-        <path d="M4 6h.01M4 12h.01M4 18h.01"/>
+      <!-- 任务：夹板 + 三行记录 + 勾选 -->
+      <svg viewBox="0 0 32 32" aria-hidden="true" class="fic">
+        <rect class="ic-soft" x="5" y="7.5" width="22" height="20" rx="5"/>
+        <rect class="ic-line" x="5" y="7.5" width="22" height="20" rx="5"/>
+        <rect class="ic-line" x="11.5" y="4.5" width="9" height="5.5" rx="2.4"/>
+        <path class="ic-line" d="M9.6 15h7M9.6 19.4h7M9.6 23.4h4.4"/>
+        <path class="ic-line" d="M20.4 19.2l1.7 1.7 3.2-3.2"/>
       </svg>
       <span class="f-cn">任务记录</span>
       <span class="f-en">History</span>
     </a>
     <a class="feature" href="/compare" data-nav>
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M4 7h9M4 17h9"/><path d="M13 4l3 3-3 3"/>
-        <path d="M20 7v10"/><path d="M20 20l-3-3 3-3"/>
+      <!-- 对比：左右两块面板，中间双向箭头 -->
+      <svg viewBox="0 0 32 32" aria-hidden="true" class="fic">
+        <rect class="ic-soft" x="3" y="8" width="11" height="16" rx="3.4"/>
+        <rect class="ic-line" x="3" y="8" width="11" height="16" rx="3.4"/>
+        <rect class="ic-line" x="18" y="8" width="11" height="16" rx="3.4"/>
+        <path class="ic-line" d="M8.5 13.5v5M6.8 15.2 8.5 13.5l1.7 1.7"/>
+        <path class="ic-line" d="M23.5 18.5v-5M21.8 16.8l1.7 1.7 1.7-1.7"/>
       </svg>
       <span class="f-cn">前后对比</span>
       <span class="f-en">Compare</span>
@@ -171,19 +80,300 @@
     支持 mp4 / mov / m4v / avi。上传即预检：分辨率不足、时长短于 3 秒、人物过小都会被当场退回，
     并给出重拍建议。分析在服务器排队执行，通常几分钟，完成后到任务页查看报告。
   </p>
-  <form id="f">
-    <label class="dropzone field">
-      <input type="file" name="video" accept=".mp4,.mov,.m4v,.avi" required>
-      <span class="muted" style="display:block;margin-top:10px">点击选择视频 · mp4 / mov / m4v / avi</span>
+  <form id="f" class="upload-form">
+    <label class="dropzone field" id="dropzone">
+      <input class="sr-only" type="file" name="video" accept=".mp4,.mov,.m4v,.avi" required>
+      <span class="file-cta">选择文件</span>
+      <span class="muted drop-hint">或把视频拖到这里 · mp4 / mov / m4v / avi</span>
+      <span class="file-name" id="filename" aria-live="polite"></span>
     </label>
-    <div class="field">
-      <label class="label" for="level">水平档</label>
-      <select name="level" id="level">
-        <option value="novice">novice（初学）</option>
-        <option value="intermediate" selected>intermediate（中级）</option>
-        <option value="advanced">advanced（竞技）</option>
-      </select>
+
+    <div class="field levels" role="group" aria-labelledby="lvlabel">
+      <span class="label" id="lvlabel">水平档</span>
+      <input type="hidden" name="level" id="level" value="intermediate">
+      <div class="level-row">
+        <button type="button" class="level-card" data-level="novice" aria-pressed="false">
+          <span class="lv-anim" aria-hidden="true"><span class="lv-zoom">
+            <svg class="lv-svg" viewBox="0 0 200 150">
+              <defs>
+                <linearGradient id="n1-sky" x1="0" y1="0" x2="0" y2="100" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stop-color="#f8fdff"/><stop offset="1" stop-color="#dceef9"/>
+                </linearGradient>
+                <linearGradient id="n1-snow" x1="0" y1="94" x2="0" y2="150" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#eef8fe"/><stop offset="1" stop-color="#d3e8f4"/>
+                </linearGradient>
+                <linearGradient id="n1-body" x1="80" y1="24" x2="120" y2="120" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stop-color="#1d425c"/><stop offset=".45" stop-color="#0e2b40"/><stop offset="1" stop-color="#071a28"/>
+                </linearGradient>
+                <linearGradient id="n1-ski" x1="0" y1="0" x2="0" y2="34" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stop-color="#ff8274"/><stop offset=".45" stop-color="#e33238"/><stop offset="1" stop-color="#b81c2b"/>
+                </linearGradient>
+                <filter id="n1-soft" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="2.2"/></filter>
+                <!-- 单支雪板：板尖在 (0,0)，板尾在 y=34；两侧板的板尖都朝画面下方收拢 -->
+                <g id="n1-ski-art">
+                  <path d="M-2.6 36 C-3.2 27 -3.3 14 -2.9 5 C-2.6 1.4 -1.4 -.4 0 -.5 C1.4 -.6 2.6 1.4 2.9 5 C3.3 14 3.2 27 2.6 36 Z" fill="url(#n1-ski)"/>
+                  <path d="M-2.1 34.5 L-2.4 6" stroke="#ffdcd5" stroke-width=".9" stroke-linecap="round" opacity=".72" fill="none"/>
+                  <path d="M-1.2 33.5 L-1.5 7" stroke="#861422" stroke-width=".6" opacity=".55" fill="none"/>
+                  <rect x="-4" y="18.2" width="8" height="3.2" rx="1" fill="#051622"/>
+                  <rect x="-3.6" y="21.6" width="7.2" height="2.4" rx=".8" fill="#0a2334"/>
+                  <path d="M-3.8 16.2 C-4.2 18.4 -3.9 21.6 -3.4 23.4 L3.4 23.4 C3.9 21.6 4.2 18.4 3.8 16.2 Z" fill="#081c2b"/>
+                  <path d="M-3.5 17.5 Q0 16 3.5 17.5" stroke="#3d6d8c" stroke-width=".9" fill="none" opacity=".75"/>
+                </g>
+              </defs>
+              <rect width="200" height="150" fill="url(#n1-sky)"/>
+              <path d="M0 94 Q46 85 92 92 T200 89 V150 H0Z" fill="#e7f3fb"/>
+              <path d="M0 103 Q54 96 108 101 T200 98 V150 H0Z" fill="url(#n1-snow)"/>
+              <path d="M0 123 Q60 118 120 122 T200 120" fill="none" stroke="#c9e2f1" stroke-width="1" opacity=".7"/>
+              <ellipse cx="100" cy="129" rx="29" ry="3.8" fill="#7fa9c4" opacity=".3" filter="url(#n1-soft)"/>
+
+              <g class="anim n1-figure">
+                <!-- 雪杖在身后 -->
+                <g fill="none" stroke-linecap="round">
+                  <path d="M85 79 L64 110" stroke="#17384d" stroke-width="1.5"/>
+                  <path d="M115 79 L136 110" stroke="#17384d" stroke-width="1.5"/>
+                </g>
+                <circle cx="64" cy="110" r="2" fill="none" stroke="#17384d" stroke-width=".9"/>
+                <circle cx="136" cy="110" r="2" fill="none" stroke="#17384d" stroke-width=".9"/>
+
+                <!-- 双板：板尖固定在中间，板尾向两侧张开 -->
+                <g transform="translate(97 128) rotate(140)">
+                  <g class="anim n1-ski-l"><use href="#n1-ski-art"/></g>
+                </g>
+                <g transform="translate(103 128) rotate(-140)">
+                  <g class="anim n1-ski-r"><use href="#n1-ski-art"/></g>
+                </g>
+
+                <!-- 腿：7.5 头身，膝盖微内扣 -->
+                <g fill="none" stroke-linecap="round">
+                  <path d="M94 66 L91 92" stroke="#0a1f2f" stroke-width="8.5"/>
+                  <path d="M91 92 L86 115" stroke="#0a1f2f" stroke-width="6.5"/>
+                  <path d="M106 66 L109 92" stroke="#0a1f2f" stroke-width="8.5"/>
+                  <path d="M109 92 L114 115" stroke="#0a1f2f" stroke-width="6.5"/>
+                  <path d="M94 66 L91 92" stroke="#2a5470" stroke-width="1.3" opacity=".4" transform="translate(1.2 0)"/>
+                  <path d="M106 66 L109 92" stroke="#2a5470" stroke-width="1.3" opacity=".4" transform="translate(1.2 0)"/>
+                </g>
+                <circle cx="91" cy="92" r="4.2" fill="#0a1f2f"/>
+                <circle cx="109" cy="92" r="4.2" fill="#0a1f2f"/>
+
+                <!-- 上身：平肩、收腰、略放宽的髋部 -->
+                <path d="M88 41 C90 39 95 38.5 100 38.5 C105 38.5 110 39 112 41 C113 47 112 53 110 58 L111 66 C105 68 95 68 89 66 L90 58 C88 53 87 47 88 41 Z" fill="url(#n1-body)"/>
+                <path d="M91 41 C94 43 106 43 109 41" fill="none" stroke="#356b8c" stroke-width=".7" opacity=".4"/>
+                <path d="M89.5 65 C95 67 105 67 110.5 65" fill="none" stroke="#356b8c" stroke-width=".7" opacity=".4"/>
+                <path d="M100 39.5 L100 67" fill="none" stroke="#2a5a79" stroke-width=".7" opacity=".45"/>
+                <path d="M94 42.5 L92.5 63" fill="none" stroke="#2a5a79" stroke-width=".6" opacity=".28"/>
+                <path d="M106 42.5 L107.5 63" fill="none" stroke="#2a5a79" stroke-width=".6" opacity=".28"/>
+
+                <!-- 手臂与手套：手在髋前，雪杖向后拖 -->
+                <g fill="none" stroke-linecap="round">
+                  <path d="M89 42 C85 48 82 54 82 58" stroke="#0a1f2f" stroke-width="7"/>
+                  <path d="M82 58 C83 65 85 73 86 77" stroke="#0a1f2f" stroke-width="5.5"/>
+                  <path d="M111 42 C115 48 118 54 118 58" stroke="#0a1f2f" stroke-width="7"/>
+                  <path d="M118 58 C117 65 115 73 114 77" stroke="#0a1f2f" stroke-width="5.5"/>
+                  <path d="M89 42 C85 48 82 54 82 58" stroke="#2a5470" stroke-width="1.2" opacity=".4" transform="translate(-.7 -.5)"/>
+                  <path d="M111 42 C115 48 118 54 118 58" stroke="#2a5470" stroke-width="1.2" opacity=".4" transform="translate(.7 -.5)"/>
+                </g>
+                <circle cx="82" cy="58" r="3.4" fill="#0a1f2f"/>
+                <circle cx="118" cy="58" r="3.4" fill="#0a1f2f"/>
+                <circle cx="86" cy="78" r="2.9" fill="#061725"/>
+                <circle cx="114" cy="78" r="2.9" fill="#061725"/>
+                <path d="M84.8 76.2 L87.2 76.2" stroke="#4a7591" stroke-width=".8" opacity=".6"/>
+                <path d="M112.8 76.2 L115.2 76.2" stroke="#4a7591" stroke-width=".8" opacity=".6"/>
+
+                <!-- 头与雪镜：约 1/7 身高 -->
+                <path d="M97.6 34.5 L102.4 34.5 L103 40 L97 40 Z" fill="#081c2a"/>
+                <path d="M94.8 29 C94.8 23.8 97 21 100 21 C103 21 105.2 23.8 105.2 29 C105.2 32.6 103 34.8 100 34.8 C97 34.8 94.8 32.6 94.8 29 Z" fill="url(#n1-body)"/>
+                <path d="M95.8 27.6 Q100 25.6 104.2 27.6 L104.2 29.8 Q100 28.2 95.8 29.8 Z" fill="#3d7797" opacity=".9"/>
+                <path d="M96.6 26.6 Q100 25 103.4 26.6" fill="none" stroke="#bfe6f8" stroke-width=".75" opacity=".7"/>
+                <path d="M97.4 33.4 Q100 34.8 102.6 33.4" fill="none" stroke="#2f6280" stroke-width=".9" opacity=".5"/>
+              </g>
+            </svg>
+          </span></span>
+          <span class="lv-name">初学</span>
+          <span class="lv-en">Novice · 雪犁</span>
+        </button>
+
+        <button type="button" class="level-card" data-level="intermediate" aria-pressed="true">
+          <span class="lv-anim" aria-hidden="true"><span class="lv-zoom">
+            <svg class="lv-svg" viewBox="0 0 200 150">
+              <defs>
+                <linearGradient id="n2-sky" x1="0" y1="0" x2="0" y2="100" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stop-color="#f8fdff"/><stop offset="1" stop-color="#dceef9"/>
+                </linearGradient>
+                <linearGradient id="n2-snow" x1="0" y1="100" x2="0" y2="150" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#eef8fe"/><stop offset="1" stop-color="#d3e8f4"/>
+                </linearGradient>
+                <linearGradient id="n2-body" x1="88" y1="50" x2="116" y2="118" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stop-color="#1d425c"/><stop offset=".45" stop-color="#0e2b40"/><stop offset="1" stop-color="#071a28"/>
+                </linearGradient>
+                <linearGradient id="n2-ski" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#ff8274"/><stop offset=".45" stop-color="#e33238"/><stop offset="1" stop-color="#b81c2b"/>
+                </linearGradient>
+                <filter id="n2-soft" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="2.4"/></filter>
+              </defs>
+              <rect width="200" height="150" fill="url(#n2-sky)"/>
+              <path d="M0 97 Q50 90 100 96 T200 93 V150 H0Z" fill="#e7f3fb"/>
+              <path d="M0 108 Q60 102 120 107 T200 104 V150 H0Z" fill="url(#n2-snow)"/>
+              <ellipse cx="101" cy="127" rx="46" ry="3.6" fill="#7fa9c4" opacity=".28" filter="url(#n2-soft)"/>
+
+              <g class="anim n2-figure">
+                <!-- 远侧雪板 -->
+                <rect x="50" y="118.6" width="88" height="3.2" rx="1.6" fill="#9e202d"/>
+                <path d="M136 118.8 C142 118.4 146 115.9 148 112.6 C145.4 117.6 141.6 120.2 136 120.6 Z" fill="#9e202d"/>
+                <!-- 近侧雪板：长度接近身高的真实比例 -->
+                <rect x="54" y="122.6" width="88" height="3.4" rx="1.7" fill="url(#n2-ski)"/>
+                <path d="M140 122.8 C146 122.4 150 119.7 152 116.4 C149.4 121.4 145.6 124 140 124.4 Z" fill="url(#n2-ski)"/>
+                <path d="M56 124.4 L138 124.4" stroke="#8d1423" stroke-width=".7" opacity=".6"/>
+                <path d="M56 123.1 L138 123.1" stroke="#ffd3cc" stroke-width=".6" opacity=".65"/>
+                <rect x="98" y="120.8" width="10" height="2.4" rx="1" fill="#051622"/>
+                <rect x="92" y="117" width="9" height="2.3" rx="1" fill="#051622" opacity=".75"/>
+
+                <!-- 远侧腿与靴 -->
+                <g fill="none" stroke-linecap="round" stroke="#071a28">
+                  <path d="M98 75 L103 93" stroke-width="8.2"/>
+                  <path d="M103 93 L97 114" stroke-width="6.4"/>
+                </g>
+                <path d="M92.4 114 C91 116 91 118.4 92.6 119.2 L100.6 119.2 C102 117.6 101.6 115.2 100.4 114 Z" fill="#061724"/>
+                <!-- 近侧腿与靴 -->
+                <g fill="none" stroke-linecap="round" stroke="#0a1f2f">
+                  <path d="M102 75 L109 94" stroke-width="8.5"/>
+                  <path d="M109 94 L103 116" stroke-width="6.6"/>
+                </g>
+                <path d="M97.4 114.4 C95.8 116.4 95.8 119 97.4 120 L106.4 120 C107.8 118.2 107.4 115.6 106 114.4 Z" fill="#081c2b"/>
+                <path d="M98 116.2 Q101.8 114.8 105.8 116.2" fill="none" stroke="#3d6d8c" stroke-width=".9" opacity=".7"/>
+
+                <!-- 远侧手臂（被躯干挡住大半） -->
+                <path d="M105 51 C101 57 100 62 103 66 C105 68.5 107 69 108 70" fill="none" stroke="#071a28" stroke-width="6.4" stroke-linecap="round"/>
+                <circle cx="108" cy="70" r="2.7" fill="#051521"/>
+
+                <!-- 上身：前倾约 15°，肩、髋、踝叠在雪板上方 -->
+                <path d="M95 76 C90 71 89 62 93 55 C97 49 103 46 109 48 C114 50 116 55 116 61 C116 67 114 72 111 76 C106 80 99 80 95 76 Z" fill="url(#n2-body)"/>
+                <path d="M95 76 C91 70 91 61 95 55" fill="none" stroke="#2a5a79" stroke-width=".7" opacity=".4"/>
+                <path d="M112 55 C114 60 114 66 112 72" fill="none" stroke="#356b8c" stroke-width=".7" opacity=".4"/>
+                <path d="M96 75 C100 78 107 78 111 75" fill="none" stroke="#356b8c" stroke-width=".7" opacity=".38"/>
+                <path d="M104 49 L104 77" fill="none" stroke="#2a5a79" stroke-width=".7" opacity=".3"/>
+
+                <!-- 夹在腋下的雪杖：横穿身后，杖尖向后 -->
+                <path d="M64 69 L118 64" fill="none" stroke="#24475c" stroke-width="1.7" stroke-linecap="round"/>
+                <path d="M65 68.2 L116 63.6" fill="none" stroke="#a8c5d5" stroke-width=".5" opacity=".7"/>
+                <ellipse cx="64" cy="69" rx="2.7" ry="1.1" transform="rotate(-5 64 69)" fill="none" stroke="#24475c" stroke-width=".85"/>
+                <rect x="114" y="62.9" width="5.6" height="1.9" rx=".9" transform="rotate(-5 116.8 63.8)" fill="#0a2334"/>
+
+                <!-- 近侧手臂：上臂夹住雪杖，前臂收向髋前 -->
+                <path d="M109 51 C106 57 105 63 108 67 C110 69 112 70 113 71" fill="none" stroke="#0a1f2f" stroke-width="6.8" stroke-linecap="round"/>
+                <path d="M109 51 C106 57 105 63 108 67" fill="none" stroke="#2a5470" stroke-width="1.2" opacity=".42" transform="translate(.7 -.5)"/>
+                <circle cx="113" cy="71" r="2.9" fill="#061725"/>
+
+                <!-- 头：侧面头盔，雪镜朝前 -->
+                <path d="M109 40 L115 40 L116 47 L108 47 Z" fill="#081c2a"/>
+                <path d="M110 40 C109 34 112 28.5 117 28.5 C122 28.5 125 32.5 125 37.5 C125 39.5 124 41 123 42 L123 44 C123 46.4 120 47.4 117 47.4 L112 47.4 C111 47.4 110 44 110 40 Z" fill="url(#n2-body)"/>
+                <path d="M114 33.5 L124 35 L123.5 38 L114 37 Z" fill="#3d7797" opacity=".9"/>
+                <path d="M115 32.8 L123.4 34" fill="none" stroke="#bfe6f8" stroke-width=".7" opacity=".7"/>
+                <path d="M123 40 C125.4 40.6 125.6 43 123.4 44" fill="none" stroke="#2f6280" stroke-width=".9" opacity=".55"/>
+              </g>
+            </svg>
+          </span></span>
+          <span class="lv-name">中级</span>
+          <span class="lv-en">Intermediate · 平行</span>
+        </button>
+
+        <button type="button" class="level-card" data-level="advanced" aria-pressed="false">
+          <span class="lv-anim" aria-hidden="true"><span class="lv-zoom">
+            <svg class="lv-svg" viewBox="0 0 200 150">
+              <defs>
+                <linearGradient id="n3-sky" x1="0" y1="0" x2="0" y2="100" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stop-color="#f6fcff"/><stop offset="1" stop-color="#d6eaf7"/>
+                </linearGradient>
+                <linearGradient id="n3-snow" x1="0" y1="96" x2="0" y2="150" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#ecf7fe"/><stop offset="1" stop-color="#cfe5f3"/>
+                </linearGradient>
+                <linearGradient id="n3-body" x1="76" y1="28" x2="116" y2="120" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stop-color="#1f4661"/><stop offset=".42" stop-color="#0e2b40"/><stop offset="1" stop-color="#071a28"/>
+                </linearGradient>
+                <linearGradient id="n3-ski" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#ff8274"/><stop offset=".45" stop-color="#e33238"/><stop offset="1" stop-color="#b81c2b"/>
+                </linearGradient>
+                <filter id="n3-soft" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="2.3"/></filter>
+              </defs>
+              <rect width="200" height="150" fill="url(#n3-sky)"/>
+              <path d="M0 88 Q52 80 104 86 T200 82 V150 H0Z" fill="#e2f0fa"/>
+              <path d="M0 100 Q64 92 128 98 T200 95 V150 H0Z" fill="url(#n3-snow)"/>
+              <path d="M0 118 Q66 112 132 116 T200 113" fill="none" stroke="#c4dff0" stroke-width="1" opacity=".65"/>
+
+              <!-- 身后的刻滑弧线 -->
+              <path class="anim n3-track" d="M170 88 C152 97 134 108 118 120" fill="none" stroke="#a9cde3" stroke-width="6.2" stroke-linecap="round" opacity=".42"/>
+              <path class="anim n3-track" d="M170 88 C152 97 134 108 118 120" fill="none" stroke="#f2fbff" stroke-width="1.2" stroke-linecap="round" opacity=".5" style="animation-delay:-.06s"/>
+
+              <ellipse cx="110" cy="128" rx="29" ry="4" fill="#7fa9c4" opacity=".3" filter="url(#n3-soft)"/>
+
+              <g class="anim n3-figure">
+                <!-- 腿：外腿长成支柱，内腿深折上提；髋部压低并坐进弯内 -->
+                <g fill="none" stroke-linecap="round">
+                  <path d="M108 86 L111 105" stroke="#0a1f2f" stroke-width="8.5"/>
+                  <path d="M111 105 L118 121" stroke="#0a1f2f" stroke-width="6.5"/>
+                  <path d="M94 92 L87 98" stroke="#0a1f2f" stroke-width="8.5"/>
+                  <path d="M87 98 L99 118" stroke="#0a1f2f" stroke-width="6.5"/>
+                  <path d="M108 86 L111 105" stroke="#2a5470" stroke-width="1.3" opacity=".45" transform="translate(1.2 0)"/>
+                  <path d="M94 92 L87 98" stroke="#2a5470" stroke-width="1.3" opacity=".42" transform="translate(-1.2 0)"/>
+                </g>
+                <circle cx="111" cy="105" r="4.2" fill="#0a1f2f"/>
+                <circle cx="87" cy="98" r="4.2" fill="#0a1f2f"/>
+
+                <!-- 双板：两条向画面左下探出的长板，板尾露在身体右侧，板尖穿过腿下方 -->
+                <g transform="translate(118 121) rotate(30)">
+                  <g class="anim n3-ski">
+                    <path d="M-3.1 -25 L3.1 -25 C3.9 -12 3.9 8 3.1 18 C2.6 23 -2.6 23 -3.1 18 C-3.9 8 -3.9 -12 -3.1 -25 Z" fill="url(#n3-ski)" stroke="#eaf7ff" stroke-width=".5" stroke-opacity=".55"/>
+                    <path d="M-2.6 -22 L-2.8 14" stroke="#ffe2dc" stroke-width="1" stroke-linecap="round" opacity=".92"/>
+                    <path d="M-1.6 -21 L-1.9 12" stroke="#8d1423" stroke-width=".55" opacity=".6"/>
+                    <rect x="-4.4" y="-4.6" width="8.8" height="3.6" rx="1" fill="#051622"/>
+                  </g>
+                  <path d="M-4.4 -3.4 C-5.1 -1.2 -5 2.6 -4.2 4.6 L4.2 4.6 C5 2.6 5.1 -1.2 4.4 -3.4 Z" fill="#081c2b"/>
+                  <path d="M-4.1 -2 Q0 -3.5 4.1 -2" fill="none" stroke="#3d6d8c" stroke-width=".95" opacity=".78"/>
+                </g>
+                <g transform="translate(99 118) rotate(30)">
+                  <g class="anim n3-ski">
+                    <path d="M-3 -24 L3 -24 C3.7 -11 3.7 8 3 17 C2.5 22 -2.5 22 -3 17 C-3.7 8 -3.7 -11 -3 -24 Z" fill="#c92733" stroke="#eaf7ff" stroke-width=".45" stroke-opacity=".5"/>
+                    <path d="M-2.5 -21 L-2.7 13.5" stroke="#ffddd7" stroke-width=".95" stroke-linecap="round" opacity=".85"/>
+                    <rect x="-4.2" y="-4.4" width="8.4" height="3.4" rx="1" fill="#051622"/>
+                  </g>
+                  <path d="M-4.2 -3.2 C-4.9 -1 -4.8 2.4 -4 4.4 L4 4.4 C4.8 2.4 4.9 -1 4.2 -3.2 Z" fill="#081c2b"/>
+                  <path d="M-3.9 -1.9 Q0 -3.3 3.9 -1.9" fill="none" stroke="#3d6d8c" stroke-width=".9" opacity=".7"/>
+                </g>
+
+
+                <!-- 上身：髋在内、肩在外，肩线水平；楔形收向髋部 -->
+                <path d="M99 52 C95 62 94 75 96 81 L97 88 L110 85 C114 78 119 68 122 52 C118 48 105 48 99 52 Z" fill="url(#n3-body)"/>
+                <path d="M96 88 C101 89 107 88 110 86" fill="none" stroke="#356b8c" stroke-width=".7" opacity=".42"/>
+                <path d="M110 54 L108 87" fill="none" stroke="#2a5a79" stroke-width=".7" opacity=".45"/>
+                <path d="M102 58 L99 85" fill="none" stroke="#2a5a79" stroke-width=".65" opacity=".3"/>
+                <path d="M117 57 L114 83" fill="none" stroke="#2a5a79" stroke-width=".65" opacity=".3"/>
+
+                <!-- 内侧手压向雪面，外侧手抬到下巴高度 -->
+                <g fill="none" stroke-linecap="round">
+                  <path d="M102 58 C97 68 93 84 86 99 C84 103 83 105 82 107" stroke="#0a1f2f" stroke-width="6.6"/>
+                  <path d="M102 58 C97 68 93 84 86 99" stroke="#2a5470" stroke-width="1.2" opacity=".42" transform="translate(-.7 -.5)"/>
+                  <path d="M120 56 C124 59 126 61 127 63" stroke="#0a1f2f" stroke-width="6.6"/>
+                  <path d="M127 63 C130 61 131 58 132 55" stroke="#0a1f2f" stroke-width="6.6"/>
+                  <path d="M120 56 C124 59 126 61 127 63" stroke="#2a5470" stroke-width="1.2" opacity=".42" transform="translate(.7 -.5)"/>
+                </g>
+                <circle cx="82" cy="108" r="2.9" fill="#061725"/>
+                <circle cx="127" cy="63" r="3.2" fill="#0a1f2f"/>
+                <circle cx="132" cy="55" r="2.8" fill="#061725"/>
+
+                <!-- 头与雪镜：小头、短颈，落在外侧板正上方 -->
+                <path d="M109 47 L115 47 L115.5 55 L108.5 55 Z" fill="#081c2a"/>
+                <path d="M106.8 40 C106.8 34.8 109 32 112 32 C115 32 117.2 34.8 117.2 40 C117.2 43.6 115 45.8 112 45.8 C109 45.8 106.8 43.6 106.8 40 Z" fill="url(#n3-body)"/>
+                <path d="M107.8 38.6 Q112 36.6 116.2 38.6 L116.2 40.8 Q112 39.2 107.8 40.8 Z" fill="#3d7797" opacity=".9"/>
+                <path d="M108.6 37.6 Q112 36 115.4 37.6" fill="none" stroke="#bfe6f8" stroke-width=".7" opacity=".7"/>
+                <path d="M109.4 44.4 Q112 45.8 114.6 44.4" fill="none" stroke="#2f6280" stroke-width=".85" opacity=".5"/>
+              </g>
+            </svg>
+          </span></span>
+          <span class="lv-name">高级</span>
+          <span class="lv-en">Advanced · 卡宾</span>
+        </button>
+      </div>
     </div>
+
     <div class="field checkline">
       <label><input type="checkbox" name="blur" checked> 人脸打码</label>
       {% if lifter_enabled %}
@@ -192,48 +382,18 @@
       </label>
       {% endif %}
     </div>
-    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+
+    <div class="submit-row">
       <button class="btn" id="go" type="submit">开始分析</button>
-      <span id="msg" class="muted"></span>
+      <div class="upload-progress" id="progress" hidden>
+        <div class="upload-progress-bar" id="progress-bar"></div>
+      </div>
+      <span id="pct" class="muted" hidden></span>
+      <span id="msg" class="muted" role="status" aria-live="polite"></span>
     </div>
   </form>
-  <div id="reject" class="error" style="display:none;margin-top:16px"></div>
+  <div id="reject" class="error" role="alert" style="display:none;margin-top:16px"></div>
 </section>
 
-<script>
-function showReject(detail) {
-  // 预检拒绝：结构化列出每条原因与重拍建议；其他错误按字符串展示
-  const box = document.getElementById('reject');
-  box.replaceChildren();
-  if (detail && typeof detail === 'object' && detail.issues) {
-    const h = document.createElement('strong');
-    h.textContent = detail.message || '视频未通过上传预检';
-    box.append(h);
-    const ul = document.createElement('ul');
-    ul.style.margin = '8px 0 0';
-    ul.style.paddingLeft = '18px';
-    for (const it of detail.issues) {
-      const li = document.createElement('li');
-      li.textContent = it.problem + ' —— ' + it.advice;
-      ul.append(li);
-    }
-    box.append(ul);
-  } else {
-    box.textContent = String(detail || '上传失败');
-  }
-  box.style.display = 'block';
-}
-document.getElementById('f').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const btn = document.getElementById('go'), msg = document.getElementById('msg');
-  document.getElementById('reject').style.display = 'none';
-  btn.disabled = true; msg.textContent = '上传并预检中…';
-  try {
-    const r = await fetch('/api/upload', {method: 'POST', body: new FormData(e.target)});
-    const j = await r.json().catch(() => ({detail: '服务端返回了无法解析的响应'}));
-    if (!r.ok) { showReject(j.detail); msg.textContent = ''; btn.disabled = false; return; }
-    location.href = '/tasks';
-  } catch (err) { showReject('上传失败：' + err); btn.disabled = false; }
-});
-</script>
+<script src="/static/js/upload.js"></script>
 {% endblock %}

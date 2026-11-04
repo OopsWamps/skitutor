@@ -19,6 +19,7 @@ from fastapi.testclient import TestClient  # noqa: E402
 
 from skibot.web.app import create_app  # noqa: E402
 from skibot.web import tasks as tasks_mod  # noqa: E402
+from skibot.reference import load as load_refs  # noqa: E402
 
 
 def _report_dict() -> dict:
@@ -60,16 +61,25 @@ def _report_dict() -> dict:
 
 def test_web_flow(tmp: Path):
     # 本用例用假字节验证落盘/失败进表：分析函数走构造注入，不跑 Sports2D；
-    # 预检拒绝路径另有专门用例，这里关掉
+    # 预检拒绝路径另有专门用例，这里关掉。start_worker=False + run_pending
+    # 同步驱动任务表，不靠线程时序
     def _stub_fail(video, opts):
         raise RuntimeError("stub 分析失败")
 
     app = create_app(tmp / "web_results", enable_precheck=False,
-                     analyze_fn=_stub_fail)
+                     analyze_fn=_stub_fail, start_worker=False)
     client = TestClient(app)
+    board = client.app.state.board
 
     # 页面路由
-    assert client.get("/").status_code == 200
+    home = client.get("/").text
+    assert "hero-word" in home and "BODY ANALYSIS" in home
+    # 首页参考带读数必须来自 reference_values.toml，改表不用回头改模板
+    refs = load_refs(Path(__file__).resolve().parents[1] / "reference_values.toml")
+    for metric in ("hip_flexion", "knee_flexion", "trunk_lean"):
+        ref = refs[metric]["intermediate"]
+        assert f"{round(ref.lo)}–{round(ref.hi)}°" in home
+    assert "未校准" in home
     assert client.get("/tasks").status_code == 200
     assert client.get("/report/不存在").status_code == 404
 
@@ -85,21 +95,20 @@ def test_web_flow(tmp: Path):
     # 未打码原件不对 /files 开放：uploads/* 一律 404（拒绝路由先于挂载注册）
     assert client.get(f"/files/uploads/{tid}/{tid}.mp4").status_code == 404
 
-    # 假字节 + 替身分析：秒失败进表（不拖垮服务）
-    deadline = time.time() + 30
-    t = {"status": tasks_mod.STATUS_QUEUED}
-    while time.time() < deadline:
-        t = client.get(f"/api/tasks/{tid}").json()
-        if t["status"] == tasks_mod.STATUS_FAILED:
-            break
-        time.sleep(0.5)
+    # 假字节 + 替身分析：同步驱动一次，秒失败进表（不拖垮服务）
+    assert board.run_pending()
+    t = client.get(f"/api/tasks/{tid}").json()
     assert t["status"] == tasks_mod.STATUS_FAILED, t
-    assert "Error" in t["error"] or "error" in t["error"].lower() or t["error"]
+    assert t["error"]
 
     # 任务页展示失败原因与重试按钮；重试端点的 404/409 语义
     tasks_page = client.get("/tasks").text
     assert "重试" in tasks_page and t["error"] in tasks_page
     assert client.post("/api/tasks/不存在/retry").status_code == 404
+
+    # 上传页带来的预检放行说明走服务端传递（?notes=…），不经 sessionStorage
+    page = client.get("/tasks", params={"notes": "帧率未知，人物占比未检"}).text
+    assert "预检放行说明" in page and "帧率未知，人物占比未检" in page
 
     # 源视频被清理后重试：409 + 可操作提示，不把任务重新入队
     saved.unlink()
@@ -110,12 +119,8 @@ def test_web_flow(tmp: Path):
     # 重试真的重新入队执行：同一个替身再失败一次，错误进表
     r = client.post(f"/api/tasks/{tid}/retry")
     assert r.status_code == 200 and r.json()["status"] == tasks_mod.STATUS_QUEUED
-    deadline = time.time() + 30
-    while time.time() < deadline:
-        t = client.get(f"/api/tasks/{tid}").json()
-        if t["status"] == tasks_mod.STATUS_FAILED:
-            break
-        time.sleep(0.2)
+    assert board.run_pending()
+    t = client.get(f"/api/tasks/{tid}").json()
     assert t["status"] == tasks_mod.STATUS_FAILED and "stub" in t["error"]
 
     # 参数校验
@@ -136,8 +141,12 @@ def test_web_flow(tmp: Path):
     body = page.text
     assert "膝弯曲角" in body and "155.0" in body and "达标" in body
     assert "left:50.0%" in body and f"{tid}_annotated.mp4" in body
-    # 报告页只出体态读数：原理、口径、水印、辅助量一律不展示
-    assert "测试水印" not in body
+    # 报告页要明确读出可信度、前提和数据来源，不能只给数字
+    assert "数据可信度" in body and "测试水印" in body
+    assert "数据来源" in body and "mock" in body
+    assert "人物高度占比" in body and "30%" in body
+    assert "这次读数的前提与假设" in body and "测试假设" in body
+    # 指标定义和辅助量仍不进页面，避免把技术细节塞给用户
     assert "基准 2d" not in body and "髋-膝-踝夹角" not in body
     assert "三维来源 mock" not in body
     assert "三维列只作描述统计" not in body and "hip_flexion_3pt_deg" not in body
@@ -213,9 +222,10 @@ def test_upload_precheck(tmp: Path):
     assert r.status_code == 422
     assert r.json()["detail"]["issues"][0]["check"] == "duration"
 
-    # 上传页能展示拒绝原因（结构化渲染脚本在页面里）
-    page = TestClient(app2).get("/").text
-    assert "showReject" in page and "预检" in page
+    # 上传页能展示拒绝原因（结构化渲染脚本在 /static/js/upload.js）
+    c2 = TestClient(app2)
+    assert "预检" in c2.get("/").text
+    assert "showReject" in c2.get("/static/js/upload.js").text
 
     print("  预检接入：合格入队 / 422 结构化拒绝并清盘 / 判据可配置 / 页面展示 ✓")
 
@@ -250,7 +260,7 @@ def test_web_reselect(tmp: Path):
     (work / "report.json").write_text(json.dumps(report, ensure_ascii=False),
                                       encoding="utf-8")
 
-    app = create_app(result_dir, enable_precheck=False)
+    app = create_app(result_dir, enable_precheck=False, start_worker=False)
     client = TestClient(app)
 
     # 重新扫描恢复的完成任务
@@ -265,15 +275,11 @@ def test_web_reselect(tmp: Path):
     body = client.get("/report/clip1").text
     assert "分析对象" in body and "人物 1" in body
 
-    # 异步改选：立即返回，轮询结束后报告与标注视频都换成 person 1
+    # 异步改选：立即返回，run_pending 同步跑完后报告与标注视频都换成 person 1
     r = client.post("/api/tasks/clip1/person", data={"person": 1})
     assert r.status_code == 200 and r.json()["person"] == 1
-    deadline = time.time() + 60
-    while time.time() < deadline:
-        j = client.get("/api/tasks/clip1").json()
-        if not j["reselecting"]:
-            break
-        time.sleep(0.2)
+    assert client.app.state.board.run_pending(60)
+    j = client.get("/api/tasks/clip1").json()
     assert not j["reselecting"] and not j["reselect_error"], j
     updated = json.loads((work / "report.json").read_text(encoding="utf-8"))
     assert updated["person"]["id"] == 1
@@ -331,7 +337,7 @@ def test_task_persistence(tmp: Path):
 
     # “重启”：新实例从 JSON 恢复；运行中 → 失败（可重试），元数据原样
     board_a.stop()  # 旧实例停表，避免它稍后醒来用过期快照覆写 tasks.json
-    board_b = TaskBoard(result_dir, analyze_fn=fake_analyze)
+    board_b = TaskBoard(result_dir, analyze_fn=fake_analyze, start_worker=False)
     t = board_b.get("t1")
     assert t is not None and t.status == STATUS_FAILED
     assert "中断" in t.error
@@ -341,16 +347,15 @@ def test_task_persistence(tmp: Path):
     # 手动重试 → 重新入队并执行成功；返回值里的状态是锁内快照
     res = board_b.retry("t1")
     assert res.task is t and res.requeued is True and res.status == "queued"
-    deadline = time.time() + 10
-    while time.time() < deadline and board_b.get("t1").status != STATUS_DONE:
-        time.sleep(0.05)
+    assert res.view["status"] == "queued"  # 序列化视图随快照给出
+    assert board_b.run_pending()
     t = board_b.get("t1")
     assert t.status == STATUS_DONE and t.report_path is not None
     assert t.report_path.exists()
     board_b.stop()
 
     # 再“重启”：完成态与现状一致地恢复
-    board_c = TaskBoard(result_dir, analyze_fn=fake_analyze)
+    board_c = TaskBoard(result_dir, analyze_fn=fake_analyze, start_worker=False)
     t = board_c.get("t1")
     assert t.status == STATUS_DONE and t.report_path.exists()
     assert not (result_dir / "tasks.json.tmp").exists()
@@ -370,7 +375,7 @@ def test_task_persistence(tmp: Path):
     (legacy / "report.json").write_text(
         json.dumps({"level": "advanced", "video": str(legacy_src)}),
         encoding="utf-8")
-    board_d = TaskBoard(result_dir, analyze_fn=fake_analyze)
+    board_d = TaskBoard(result_dir, analyze_fn=fake_analyze, start_worker=False)
     t = board_d.get("legacy")
     assert t.status == STATUS_DONE and t.level == "advanced"
     assert t.video_path == legacy_src.resolve()  # 源视频从报告取回
@@ -379,7 +384,7 @@ def test_task_persistence(tmp: Path):
 
     # 损坏的 tasks.json 不阻塞启动：回退到结果目录扫描
     (result_dir / "tasks.json").write_text("{broken", encoding="utf-8")
-    board_e = TaskBoard(result_dir, analyze_fn=fake_analyze)
+    board_e = TaskBoard(result_dir, analyze_fn=fake_analyze, start_worker=False)
     t = board_e.get("t1")
     assert t is not None and t.status == STATUS_DONE
     assert board_e.get("legacy").status == STATUS_DONE
@@ -388,7 +393,8 @@ def test_task_persistence(tmp: Path):
     # 合法 JSON 但任务表形状不对（null/非列表）同样按损坏处理，不当崩
     for bad in ('{"tasks": null}', '{"tasks": 1}', '{"tasks": {"a": 1}}', "[]"):
         (result_dir / "tasks.json").write_text(bad, encoding="utf-8")
-        board_bad = TaskBoard(result_dir, analyze_fn=fake_analyze)
+        board_bad = TaskBoard(result_dir, analyze_fn=fake_analyze,
+                              start_worker=False)
         assert board_bad.get("t1").status == STATUS_DONE
         board_bad.stop()
 
@@ -406,7 +412,8 @@ def test_task_persistence(tmp: Path):
         raise PermissionError("被占用")
 
     with mock.patch.object(Path, "read_text", _locked):
-        board_locked = TaskBoard(result_dir, analyze_fn=fake_analyze)
+        board_locked = TaskBoard(result_dir, analyze_fn=fake_analyze,
+                                 start_worker=False)
         assert board_locked.get("t9") is None      # 本次没恢复
         # 下次落盘前仍读不出：先备份原文件再重建，排队记录留在备份里
         board_locked.enqueue("newone", video, "n.mp4", "novice", False)
@@ -426,10 +433,8 @@ def test_task_persistence(tmp: Path):
     (result_dir / "tasks.json").write_text(
         json.dumps({"version": 1, "tasks": [entry]}, ensure_ascii=False),
         encoding="utf-8")
-    board_g = TaskBoard(result_dir, analyze_fn=fake_analyze)
-    deadline = time.time() + 10
-    while time.time() < deadline and board_g.get("t2").status != STATUS_DONE:
-        time.sleep(0.05)
+    board_g = TaskBoard(result_dir, analyze_fn=fake_analyze, start_worker=False)
+    assert board_g.run_pending()
     t = board_g.get("t2")
     assert t.status == STATUS_DONE
     assert t.video_name == "第二条.mp4" and t.level == "intermediate"
@@ -460,7 +465,7 @@ def test_bad_records(tmp: Path):
     (result_dir / "tasks.json").write_text(
         json.dumps({"version": 1, "tasks": entries}), encoding="utf-8")
 
-    board = TaskBoard(result_dir)  # 不应崩溃
+    board = TaskBoard(result_dir, start_worker=False)  # 不应崩溃
     assert [t.id for t in board.all()] == ["ok1"]
     t = board.get("ok1")
     assert t.level == "intermediate"   # 未知水平档降级
@@ -482,7 +487,7 @@ def test_relative_result_dir(tmp: Path):
             raise RuntimeError("stub 分析失败")
 
         app = create_app(Path("web_results"), enable_precheck=False,
-                         analyze_fn=_stub)
+                         analyze_fn=_stub, start_worker=False)
         client = TestClient(app)
         r = client.post("/api/upload",
                         files={"video": ("c.mp4", b"fake", "video/mp4")},
@@ -513,7 +518,7 @@ def test_restore_variants(tmp: Path):
     up.parent.mkdir(parents=True)
     up.write_bytes(b"fake")
 
-    board = TaskBoard(result_dir)
+    board = TaskBoard(result_dir, start_worker=False)
     t = board.get("abc")
     assert t.video_path == up  # 报告没记 video，按 uploads 布局找回
     board.stop()
@@ -529,7 +534,7 @@ def test_restore_variants(tmp: Path):
              "created_at": "2026-10-23T00:00:00"}
     (result_dir / "tasks.json").write_text(
         json.dumps({"version": 1, "tasks": [entry]}), encoding="utf-8")
-    board2 = TaskBoard(result_dir)
+    board2 = TaskBoard(result_dir, start_worker=False)
     t2 = board2.get("xyz")
     assert t2.status == STATUS_DONE and t2.report_path == work2 / "report.json"
     board2.stop()
@@ -543,7 +548,7 @@ def test_restore_variants(tmp: Path):
               "reselecting": True, "reselect_error": ""}
     (result_dir / "tasks.json").write_text(
         json.dumps({"version": 1, "tasks": [entry3]}), encoding="utf-8")
-    board3 = TaskBoard(result_dir)
+    board3 = TaskBoard(result_dir, start_worker=False)
     t3 = board3.get("xyz")
     assert t3.reselecting is False and "中断" in t3.reselect_error
     assert t3.done
@@ -559,7 +564,8 @@ def test_lifter_wiring(tmp: Path):
         raise RuntimeError("stub")
 
     # 服务级默认 motionbert：勾选框发 "on" → motionbert
-    app = create_app(tmp / "w1", enable_precheck=False, analyze_fn=_stub)
+    app = create_app(tmp / "w1", enable_precheck=False, analyze_fn=_stub,
+                     start_worker=False)
     client = TestClient(app)
     r = client.post("/api/upload",
                     files={"video": ("a.mp4", b"x", "video/mp4")},
@@ -591,7 +597,7 @@ def test_lifter_wiring(tmp: Path):
     assert client.app.state.board.get(tid2).lifter == "none"
     # 服务级 none：表单开了也被压到关
     app2 = create_app(tmp / "w2", enable_precheck=False, analyze_fn=_stub,
-                      lifter="none")
+                      lifter="none", start_worker=False)
     r = TestClient(app2).post(
         "/api/upload", files={"video": ("c.mp4", b"x", "video/mp4")},
         data={"level": "novice", "blur": "off", "lifter": "on"})
@@ -608,7 +614,8 @@ def test_report_viewer_and_compare(tmp: Path):
     def _stub(video, opts):
         raise RuntimeError("stub")
 
-    app = create_app(tmp / "w", enable_precheck=False, analyze_fn=_stub)
+    app = create_app(tmp / "w", enable_precheck=False, analyze_fn=_stub,
+                     start_worker=False)
     client = TestClient(app)
     board = app.state.board
 
@@ -662,20 +669,16 @@ def test_report_viewer_and_compare(tmp: Path):
 
 def test_corrupt_report_and_restore_lifter(tmp: Path):
     """坏报告不把页面打成 500；历史结果重建时按 data_source 恢复 lifter。"""
-    import threading
-
     from skibot.web.tasks import TaskBoard
 
-    # 让 worker 卡在分析里：否则它在 mark_done 之后才写 FAILED，
-    # 会把用例里刚标记的完成态覆盖掉（纯时序竞争）
-    hold = threading.Event()
-
     def _stub(video, opts):
-        hold.wait(10)
         raise RuntimeError("stub")
 
+    # start_worker=False：任务停在排队态，mark_done 注入完成态不会被
+    # worker 的失败写回覆盖——此前的线程暂停补丁（threading.Event）不再需要
     rd = tmp / "w"
-    app = create_app(rd, enable_precheck=False, analyze_fn=_stub)
+    app = create_app(rd, enable_precheck=False, analyze_fn=_stub,
+                     start_worker=False)
     client = TestClient(app)
     board = app.state.board
 
@@ -715,11 +718,23 @@ def test_corrupt_report_and_restore_lifter(tmp: Path):
     (rd2 / "old").mkdir(parents=True)
     (rd2 / "old" / "report.json").write_text(
         json.dumps({"level": "novice"}), encoding="utf-8")
-    board2 = TaskBoard(rd2)
+    board2 = TaskBoard(rd2, start_worker=False)
     assert board2.get("mv").lifter == "motionbert"
     assert board2.get("old").lifter == "none"
     board2.stop()
     print("  web：坏报告不 500 / 历史结果按 data_source 恢复 lifter ✓")
+
+
+def test_static_js_clean(tmp: Path):
+    """模板抽出的 JS 必须是纯 JS：一行 HTML 标签泄漏就会让整段脚本
+    语法错误、静默失效（report.js 曾因混入 </div> 断过一整个页面）。"""
+    app = create_app(tmp / "w", enable_precheck=False, start_worker=False)
+    c = TestClient(app)
+    for name in ("base", "tasks", "upload", "report", "replay"):
+        r = c.get(f"/static/js/{name}.js")
+        assert r.status_code == 200, name
+        assert "</div>" not in r.text and "<script" not in r.text, name
+    print("  web：静态 JS 无 HTML 泄漏 ✓")
 
 
 if __name__ == "__main__":
@@ -743,4 +758,6 @@ if __name__ == "__main__":
         test_report_viewer_and_compare(Path(td))
     with tempfile.TemporaryDirectory() as td:
         test_corrupt_report_and_restore_lifter(Path(td))
+    with tempfile.TemporaryDirectory() as td:
+        test_static_js_clean(Path(td))
     print("全部通过")

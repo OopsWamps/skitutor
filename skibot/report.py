@@ -320,7 +320,3 @@ def save_json(report: dict, path: str | Path) -> Path:
     path = Path(path)
     artifacts.write_text_atomic(path, json.dumps(report, ensure_ascii=False, indent=2))
     return path
-
-
-def to_html(report: dict) -> str:
-    raise NotImplementedError("HTML 报告随 Web 壳一起实现（二期，见 docs/DECISIONS.md）")

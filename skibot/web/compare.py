@@ -7,15 +7,70 @@
 
 from __future__ import annotations
 
-from ..phases import PHASE_METRICS
+from ..phases import PHASE_LABELS, PHASE_METRICS
 
-PHASE_LABELS = {"entry": "入弯", "control": "控制", "exit": "出弯"}
 # 与 phases.PHASE_METRICS 对应的展示名（键名变更在这里断）
 PHASE_METRIC_LABELS = {
     "hip_flexion": "屈髋角（三维）",
     "knee_flexion": "膝弯曲角（三维）",
     "trunk_lean_sagittal": "躯干前倾·矢状（三维）",
 }
+# 相位聚合里的躯干键与报告 metrics[].metric 不同名
+PHASE_TO_REPORT = {"trunk_lean_sagittal": "trunk_lean"}
+
+
+def _norm_ref(ref) -> list[float] | None:
+    if isinstance(ref, (list, tuple)) and len(ref) == 2:
+        try:
+            return [float(ref[0]), float(ref[1])]
+        except (TypeError, ValueError):
+            return None
+    return None
+
+
+def _metric_ref(report: dict, metric: str) -> list[float] | None:
+    key = PHASE_TO_REPORT.get(metric, metric)
+    for m in report.get("metrics", []):
+        if m.get("metric") == key and m.get("basis") == "3d":
+            return _norm_ref(m.get("reference"))
+    return None
+
+
+def _band_state(v: float, ref: list[float]) -> str:
+    if v < ref[0]:
+        return "low"
+    if v > ref[1]:
+        return "high"
+    return "ok"
+
+
+def _interpret(va: float, vb: float, ref_a, ref_b) -> tuple[str, str]:
+    """返回 (解释, 参考带标签)。
+
+    三维指标当前没有校准参考带时不冒充好坏判断；等参考带建立后，
+    同一个函数会自动给出“进入/离开参考带”的解释。
+    """
+    if ref_a is None or ref_b is None:
+        return "无参考带，不判断好坏", "—"
+    if ref_a != ref_b:
+        return ("参考带不同，不判断好坏",
+                f"A {ref_a[0]:g}–{ref_a[1]:g}° / B {ref_b[0]:g}–{ref_b[1]:g}°")
+    ref = ref_a
+    sa, sb = _band_state(va, ref), _band_state(vb, ref)
+    label = f"参考 {ref[0]:g}–{ref[1]:g}°"
+    if sa == sb == "ok":
+        return "都在参考带内", label
+    if sa == "ok" and sb != "ok":
+        return "变差（离开参考带）", label
+    if sa != "ok" and sb == "ok":
+        return "变好（进入参考带）", label
+    if sa == sb == "high":
+        return ("仍偏大，但更接近参考带"
+                if abs(vb - ref[1]) < abs(va - ref[1]) else "仍偏大"), label
+    if sa == sb == "low":
+        return ("仍偏小，但更接近参考带"
+                if abs(vb - ref[0]) < abs(va - ref[0]) else "仍偏小"), label
+    return "方向改变（需结合动作判断）", label
 
 
 def _phase_value(report: dict, metric: str, phase: str) -> tuple[float | None, str]:
@@ -64,14 +119,18 @@ def compare_reports(a: dict, b: dict) -> dict:
                 "phase": phase, "phase_label": PHASE_LABELS[phase],
                 "a": va, "b": vb,
             }
+            ref_a = _metric_ref(a, metric)
+            ref_b = _metric_ref(b, metric)
             if va is not None and vb is not None:
                 delta = round(vb - va, 1)
                 n_comparable += 1
+                verdict, ref_label = _interpret(va, vb, ref_a, ref_b)
                 row.update({
                     "delta": delta,
                     "direction": "增大" if delta > 0 else
                                  ("减小" if delta < 0 else "持平"),
                     "status": "ok", "reason": "",
+                    "verdict": verdict, "ref_label": ref_label,
                 })
             else:
                 # 原因取先缺数据的一侧；两侧都缺就并列
@@ -81,6 +140,7 @@ def compare_reports(a: dict, b: dict) -> dict:
                 row.update({
                     "delta": None, "direction": None,
                     "status": "no_data", "reason": reason,
+                    "verdict": "无可比数据", "ref_label": "—",
                 })
             rows.append(row)
 
@@ -99,20 +159,25 @@ def compare_reports(a: dict, b: dict) -> dict:
             "metric_label": (ma or mb or {}).get("name", metric),
             "a": va, "b": vb,
         }
+        ref_a = _norm_ref((ma or {}).get("reference")) if ma else None
+        ref_b = _norm_ref((mb or {}).get("reference")) if mb else None
         if va is not None and vb is not None:
             delta = round(vb - va, 1)
             n_comparable += 1
+            verdict, ref_label = _interpret(va, vb, ref_a, ref_b)
             row2.update({
                 "delta": delta,
                 "direction": "增大" if delta > 0 else
                              ("减小" if delta < 0 else "持平"),
                 "status": "ok", "reason": "",
+                "verdict": verdict, "ref_label": ref_label,
             })
         else:
             row2.update({
                 "delta": None, "direction": None, "status": "no_data",
                 "reason": "无三维列（未开三维）" if (ma is None or mb is None)
                           else "无有效帧",
+                "verdict": "无可比数据", "ref_label": "—",
             })
         overall.append(row2)
 
@@ -120,6 +185,9 @@ def compare_reports(a: dict, b: dict) -> dict:
         "phase_rows": rows,
         "overall_rows": overall,
         "notes": _notes(a, b),
+        "interpretation_note": (
+            "差值只表示角度变化方向。三维指标目前没有校准参考带，"
+            "因此“解释”列不判断动作变好或变差；参考带建立后会自动给出判断。"),
         "n_comparable": n_comparable,
         "a_turns": (a.get("phases") or {}).get("n_turns"),
         "b_turns": (b.get("phases") or {}).get("n_turns"),

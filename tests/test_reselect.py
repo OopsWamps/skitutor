@@ -261,14 +261,14 @@ def test_no_pose_rerun(tmp: Path):
 def test_blurred_source(tmp: Path):
     """打过码的首次分析：改选与预览都从打码副本取画面，不回退原片。"""
     import skibot.finalize as F
-    import skibot.reselect as R
+    import skibot.runprep as P
 
     work, video = make_work(tmp / "blur")
     blurred = work / "t1_blurred.mp4"
     blurred.write_bytes(video.read_bytes())  # 内容不重要，路径选择才是契约
 
     seen = {}
-    orig_probe, orig_render = R.probe_video, F.render_annotated
+    orig_probe, orig_render = P.probe_video, F.render_annotated
 
     def fake_probe(p):
         seen["probe"] = Path(p)
@@ -279,7 +279,7 @@ def test_blurred_source(tmp: Path):
         Path(out).write_bytes(b"x")
         return Path(out)
 
-    R.probe_video, F.render_annotated = fake_probe, fake_render
+    P.probe_video, F.render_annotated = fake_probe, fake_render
     try:
         # 未显式给 blur：副本存在 → 用副本
         reselect_one(work, 1, level="novice", fallback_video=video)
@@ -305,7 +305,7 @@ def test_blurred_source(tmp: Path):
         except FileNotFoundError as e:
             assert "打码副本" in str(e)
     finally:
-        R.probe_video, F.render_annotated = orig_probe, orig_render
+        P.probe_video, F.render_annotated = orig_probe, orig_render
 
     print("  改选：打码副本优先 / 显式 blur 设置 / 副本丢失报错 ✓")
 

@@ -45,23 +45,42 @@ def probe_video(video_src: str | Path) -> tuple[int, int, float]:
     return w, h, fps
 
 
-def ensure_browser_mp4(path: Path) -> Path:
-    """把 OpenCV 写出的 FMP4（MPEG-4 Part 2）原地转成浏览器可解的 H.264。
+_H264_FOURCC = ("avc1", "h264", "x264")
 
-    cv2.VideoWriter 只有 mp4v 可用，浏览器 <video> 解不了 FMP4——报告页与
-    回放卡的视频会黑屏。这里用 imageio-ffmpeg 自带的 ffmpeg 转 H.264
-    （CRF 18 近无损、yuv420p、faststart），帧数与源 1:1（2026-10-26 在
-    标注服务器上逐帧核对过）。ffmpeg 不可用时保留原编码并告警：视频仍能
-    下载播放，只是网页内可能黑屏，不让整个分析失败。
+
+def _codec_of(path: Path) -> str | None:
+    """读视频容器的 fourcc；打不开返回 None（按需转码处理）。"""
+    cap = cv2.VideoCapture(str(path))
+    try:
+        if not cap.isOpened():
+            return None
+        fcc = int(cap.get(cv2.CAP_PROP_FOURCC))
+        return "".join(chr((fcc >> 8 * i) & 0xFF) for i in range(4)).lower()
+    finally:
+        cap.release()
+
+
+def ensure_h264(path: Path, *, crf: int = 18, preset: str = "veryfast") -> Path:
+    """保证 path 是浏览器 <video> 可解的 H.264；已经是就原样返回（幂等）。
+
+    cv2.VideoWriter 只有 mp4v（MPEG-4 Part 2）可用，浏览器解不了——报告页
+    与回放卡的视频会黑屏。全项目只此一份转码策略：imageio-ffmpeg 自带的
+    ffmpeg 转 H.264（CRF 18 近无损、yuv420p、faststart），帧数与源 1:1
+    （2026-10-26 在标注服务器上逐帧核对过）。render_annotated 出口与
+    finalize 发布链都走这一个函数，重复调用不产生第二次有损转码。
+    ffmpeg 不可用时保留原编码并告警：视频仍能下载播放，只是网页内可能
+    黑屏，不让整个分析失败。
     """
+    if _codec_of(path) in _H264_FOURCC:
+        return path
     tmp = path.with_name(path.name + ".h264.mp4")
     try:
         try:
             # imageio_ffmpeg 无类型标记（pyproject 已声明依赖）
             from imageio_ffmpeg import get_ffmpeg_exe  # type: ignore[import-untyped]
             r = subprocess.run(
-                [get_ffmpeg_exe(), "-y", "-i", str(path),
-                 "-c:v", "libx264", "-crf", "18", "-preset", "veryfast",
+                [get_ffmpeg_exe(), "-y", "-loglevel", "error", "-i", str(path),
+                 "-c:v", "libx264", "-crf", str(crf), "-preset", preset,
                  "-pix_fmt", "yuv420p", "-movflags", "+faststart", "-an", str(tmp)],
                 capture_output=True)
             if r.returncode != 0 or not tmp.exists() or tmp.stat().st_size == 0:
@@ -83,7 +102,6 @@ def render_annotated(
     assessment: Assessment,               # assess 的评估结果：序列、视角、参考区间
     out_path: str | Path,
     view: str | None = None,              # 覆盖叠加哪套指标；默认按评估判定（画面留痕）
-    transcode_h264: bool = True,          # 发布链自己转编码时置 False，免二次转码
 ) -> Path:
     cap = cv2.VideoCapture(str(video_src))
     if not cap.isOpened():
@@ -121,46 +139,9 @@ def render_annotated(
 
     cap.release()
     writer.release()
-    # 发布链（finalize）在临时文件上再转一次 H.264；这里关掉，避免同一段
-    # 视频被完整转码两遍（一遍 CRF 缺省、一遍 CRF 18，白耗一倍时间且二次
-    # 有损）。直接调用 render_annotated 的场景保留默认转码。
-    if not transcode_h264:
-        return out_path
-    return _transcode_h264(out_path)
-
-
-def _transcode_h264(out_path: Path) -> Path:
-    """mp4v 浏览器 <video> 不支持，转 H.264 + yuv420p + faststart。
-
-    转码失败（ffmpeg 缺失等）保留原文件并降级——本地播放器仍可播 mp4v。
-    """
-    import subprocess
-
-    try:
-        import imageio_ffmpeg  # type: ignore[import-untyped]
-        ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
-    except ImportError:
-        print("[skibot] imageio_ffmpeg 不可用，标注视频保持 mp4v（浏览器或无法播放）",
-              file=sys.stderr)
-        return out_path
-
-    tmp = out_path.with_suffix(".h264.mp4")
-    try:
-        r = subprocess.run(
-            [ffmpeg, "-y", "-loglevel", "error", "-i", str(out_path),
-             "-c:v", "libx264", "-pix_fmt", "yuv420p", "-movflags", "+faststart",
-             str(tmp)],
-            check=False, capture_output=True)
-        if r.returncode == 0 and tmp.exists() and tmp.stat().st_size > 0:
-            artifacts.replace_with_retry(tmp, out_path)
-            return out_path
-        print(f"[skibot] 标注视频 H.264 转码失败，保留 mp4v：{r.stderr[-200:]!r}",
-              file=sys.stderr)
-    except OSError as e:
-        print(f"[skibot] 标注视频 H.264 替换失败，保留 mp4v：{e}", file=sys.stderr)
-    finally:
-        tmp.unlink(missing_ok=True)  # 替换成功后已不存在，仅清理失败残留
-    return out_path
+    # 出口契约：本函数写出的文件浏览器可播。转码策略只在 ensure_h264 一处；
+    # 幂等，发布链（finalize）重复调用不会产生第二次有损转码。
+    return ensure_h264(out_path)
 
 
 def _draw_skeleton(frame, kp_f) -> None:

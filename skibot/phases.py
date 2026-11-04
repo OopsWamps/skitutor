@@ -32,6 +32,8 @@ NEAR_ZERO_DEG = 0.5              # 没有足够过零帧时的近零回退阈值
 
 PHASE_NAMES = ("entry", "control", "exit")
 PHASE_METRICS = ("hip_flexion", "knee_flexion", "trunk_lean_sagittal")
+# 相位的中文显示名：对比页、报告页与回放卡的唯一来源，模板与 JS 不再各抄一份
+PHASE_LABELS = {"entry": "入弯", "control": "控制", "exit": "出弯"}
 
 
 @dataclass(frozen=True)

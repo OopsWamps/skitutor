@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block title %}报告 · {{ task.video_name }} · SKITUTOR{% endblock %}
 {% block content %}
-{% set level_cn = {'novice': '初学', 'intermediate': '中级', 'advanced': '竞技'}.get(report.level, report.level) %}
 {% set view_cn = {'sagittal': '侧面视角', 'frontal': '正面视角', 'mixed': '混合视角'}.get(report.view.detected, '视角未定') %}
 
 <div class="panel panel--solid report-head">
@@ -9,21 +8,46 @@
     <p class="eyebrow">Ski Posture Report</p>
     <h1>{{ task.video_name }}</h1>
     <div class="chips">
-      <span class="chip chip-neutral">{{ level_cn }}</span>
+      <span class="chip chip-neutral">{{ level_label }}</span>
       <span class="chip chip-neutral">{{ view_cn }}</span>
       {% if report.person %}<span class="chip chip-neutral">{{ report.person.selection }}</span>{% endif %}
       <span class="chip chip-neutral">{{ report.generated_at[:16] | replace('T', ' ') }}</span>
     </div>
   </div>
-  <a class="ghost-link" href="/tasks">← 任务列表</a>
+  <div class="report-actions">
+    <a class="ghost-link" href="{{ annotated_url }}" download>下载标注视频</a>
+    <a class="ghost-link" href="#" onclick="window.print();return false;">打印 / 另存为 PDF</a>
+    <a class="ghost-link" href="/tasks">← 任务列表</a>
+  </div>
 </div>
+
+{% if report.notice or report.assumptions or report.quality or report.data_source %}
+<div class="panel panel--solid">
+  <h2>数据可信度</h2>
+  {% if report.notice %}<div class="notice">{{ report.notice }}</div>{% endif %}
+  {% if report.data_source or report.quality %}
+  <dl class="trust-grid">
+    {% if report.data_source %}<div><dt>数据来源</dt><dd>{{ report.data_source }}</dd></div>{% endif %}
+    {% if report.quality and report.quality.person_height_ratio is not none %}<div><dt>人物高度占比</dt><dd>{{ (report.quality.person_height_ratio * 100) | round(0) | int }}%</dd></div>{% endif %}
+    {% if report.quality and report.quality.low_conf_frame_ratio is not none %}<div><dt>低置信度帧</dt><dd>{{ (report.quality.low_conf_frame_ratio * 100) | round(0) | int }}%</dd></div>{% endif %}
+  </dl>
+  {% endif %}
+  {% if report.assumptions %}
+  <details class="assumptions">
+    <summary>这次读数的前提与假设</summary>
+    <ul>{% for a in report.assumptions %}<li>{{ a }}</li>{% endfor %}</ul>
+  </details>
+  {% endif %}
+</div>
+{% endif %}
 
 <div class="metric-grid">
 {% for m in metrics %}
 {% set ref = m.reference %}
 {% set med = m.median_deg %}
-{# 相位聚合是三维口径：只配到三维卡上；二维躯干角与三维前倾角键名不同，先换键 #}
-{% set pk = 'trunk_lean_sagittal' if m.metric == 'trunk_lean' else m.metric %}
+{# 相位聚合是三维口径：只配到三维卡上；相位键 → 报告键的映射从服务端来
+   （compare.PHASE_TO_REPORT），模板不再内联键名知识 #}
+{% set pk = phase_to_report.get(m.metric, m.metric) %}
 {% set cells = (phases.aggregate.get(pk) if m.basis == '3d' and phases and phases.aggregate else none) %}
 <article class="panel panel--solid metric">
   <div class="metric-top">
@@ -49,16 +73,17 @@
 
   {% if m.band_percentile is not none %}
   {% set bp = m.band_percentile %}
-  <div class="band" aria-hidden="true">
+  <div class="band" role="img" aria-label="参考带内位置 {{ bp }}%：0 为下沿，100 为上沿{% if bp < 0 %}，低于下沿{% elif bp > 100 %}，高于上沿{% endif %}">
     <div class="band-fill"></div>
     <div class="band-mark{% if bp < 0 or bp > 100 %} out{% endif %}"
          style="left:{{ 0 if bp < 0 else (100 if bp > 100 else bp) }}%"></div>
   </div>
+  <p class="metric-meta" style="margin-top:6px">参考带内位置 {{ bp | round(1) }}%（0=下沿，100=上沿）{% if bp < 0 %} · 低于下沿{% elif bp > 100 %} · 高于上沿{% endif %}</p>
   {% endif %}
 
   {% if cells %}
   <div class="phase-row">
-    {% for ph, cn in (('entry', '入弯'), ('control', '控制'), ('exit', '出弯')) %}
+    {% for ph, cn in phase_labels.items() %}
     {% set c = cells.get(ph, {}) %}
     <div class="phase-cell">
       <span class="ph">{{ cn }}</span>
@@ -75,17 +100,36 @@
   {% else %}
   <p class="metric-empty">有效数据不足，这一项暂不判断</p>
   {% endif %}
+  {% if m.note %}<p class="metric-note">{{ m.note }}</p>{% endif %}
 </article>
 {% endfor %}
 </div>
 
+{% if phases %}
+<div class="panel panel--solid">
+  <h2>相位分段</h2>
+  {% if phases.n_turns %}
+  <p class="turns-note">检出 {{ phases.n_turns }} 个合格弯；每张指标卡里的入弯、控制、出弯读数取自这些弯。</p>
+  {% elif phases.fallback == 'no_valid_turns' %}
+  <p class="turns-note">没有检出合格弯，相位指标不输出。常见原因是人物在画面里偏小、雪板与雪面同色、或弯间停顿不足。换一段侧面跟拍、人物占比更大的素材再试。</p>
+  {% else %}
+  <p class="turns-note">相位数据不可用（{{ phases.fallback or '原因未记录' }}）。</p>
+  {% endif %}
+</div>
+{% endif %}
+
 {% if animation_url %}
 <div class="panel panel--solid">
   <h2>三维骨架回放</h2>
-  <div class="video-wrap">
-    <video id="v3d" controls src="{{ annotated_url }}"></video>
-    <canvas id="sk3d" aria-label="三维骨架，可拖动旋转"></canvas>
+  <div class="video-wrap" id="replay-wrap" aria-busy="true"
+       data-animation-url="{{ animation_url }}">
+    <video id="v3d" controls playsinline preload="metadata" src="{{ annotated_url }}"></video>
+    <canvas id="sk3d" tabindex="0" aria-label="三维骨架，可拖动旋转；方向键旋转，加减号缩放，0 复位"></canvas>
   </div>
+  <p class="muted" id="replay-status" role="status" style="margin:8px 0 0">正在加载回放数据…</p>
+  <p class="muted" id="replay-retry-wrap" hidden style="margin:8px 0 0">
+    <button class="retry" id="replay-retry" type="button">重新加载回放</button>
+  </p>
   <div class="tl-strip" id="tstrip"></div>
   <div class="tl-meta">
     <span class="legend">
@@ -100,161 +144,22 @@
     </label>
     <span id="ov"></span>
   </div>
-  <p class="muted" style="margin:8px 0 0">拖动旋转 · 滚轮缩放 · 与左侧视频共享时间轴</p>
-<script>
-(() => {
-  const v = document.getElementById('v3d');
-  const cv = document.getElementById('sk3d');
-  const g = cv.getContext('2d');
-  const strip = document.getElementById('tstrip');
-  const phEl = document.getElementById('ph3d');
-  const ovBox = document.getElementById('ov');
-  const ovOn = document.getElementById('ov3d');
-  // 浅底配色：相位色取深一档，保证在 #f3f9fc 画布上够对比
-  const PH_COLOR = {entry: '#067fa0', control: '#0a8f6f', exit: '#6658cc', '': '#7d97a8'};
-  const PH_CN = {entry: '入弯', control: '控制', exit: '出弯', '': '弯间 / 未检出'};
-  // 按 CSS 尺寸与 DPR 配画布，避免高分屏发糊
-  let CW = 420, CH = 420;
-  let redraw = () => {};   // resize 可能在动画数据到达前发生
-  function fit() {
-    const dpr = Math.min(devicePixelRatio || 1, 2);
-    CW = cv.clientWidth || 420;
-    CH = CW;
-    cv.width = Math.round(CW * dpr);
-    cv.height = Math.round(CH * dpr);
-    g.setTransform(dpr, 0, 0, dpr, 0, 0);
-  }
-  fit();
-  addEventListener('resize', () => { fit(); redraw(); });
-
-  fetch('{{ animation_url }}')
-    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-    .then(data => {
-    if (!Array.isArray(data.frames) || !data.frames.length)
-      throw new Error('动画数据为空');
-    const fps = data.fps, frames = data.frames;
-    const conf = data.confidence || [], edges = data.edges || [];
-    const series = data.series || {};
-    const phaseOf = new Array(frames.length).fill('');
-    for (const t of ((data.phases || {}).turns) || [])
-      for (const ph of ['entry', 'control', 'exit']) {
-        const iv = t[ph];
-        for (let f = iv.start_frame; f < iv.end_frame && f < frames.length; f++)
-          phaseOf[f] = ph;
-      }
-    let runStart = 0;
-    for (let f = 1; f <= frames.length; f++) {
-      if (f === frames.length || phaseOf[f] !== phaseOf[runStart]) {
-        const seg = document.createElement('div');
-        seg.style.cssText = 'position:absolute;top:0;bottom:0;background:'
-          + PH_COLOR[phaseOf[runStart]] + ';left:' + (runStart / frames.length * 100)
-          + '%;width:' + ((f - runStart) / frames.length * 100) + '%';
-        strip.append(seg);
-        runStart = f;
-      }
-    }
-    const cur = document.createElement('div');
-    cur.style.cssText = 'position:absolute;top:-3px;width:2px;height:18px;'
-      + 'background:#0e3a55;box-shadow:0 0 6px rgba(14,58,85,.45);left:0';
-    strip.append(cur);
-
-    let scale = 0.3;
-    const step = Math.max(1, Math.floor(frames.length / 200));
-    for (let f = 0; f < frames.length; f += step)
-      for (const j of frames[f] || [])
-        if (j) scale = Math.max(scale, Math.abs(j[0]), Math.abs(j[1]));
-
-    let yaw = -0.6, pitch = 0.15, zoom = 1, drag = null;
-    cv.addEventListener('pointerdown', e => {
-      drag = [e.clientX, e.clientY]; cv.setPointerCapture(e.pointerId);
-      cv.style.cursor = 'grabbing';
-    });
-    cv.addEventListener('pointermove', e => {
-      if (!drag) return;
-      yaw += (e.clientX - drag[0]) * 0.01;
-      pitch = Math.max(-1.4, Math.min(1.4, pitch + (e.clientY - drag[1]) * 0.01));
-      drag = [e.clientX, e.clientY];
-      draw();
-    });
-    cv.addEventListener('pointerup', () => { drag = null; cv.style.cursor = 'grab'; });
-    cv.addEventListener('wheel', e => {
-      e.preventDefault();
-      zoom = Math.max(0.3, Math.min(5, zoom * (e.deltaY < 0 ? 1.1 : 0.9)));
-      draw();
-    }, {passive: false});
-
-    function project(p) {
-      const cy = Math.cos(yaw), sy = Math.sin(yaw);
-      const x1 = p[0] * cy + p[2] * sy, z1 = -p[0] * sy + p[2] * cy;
-      const cp = Math.cos(pitch), sp = Math.sin(pitch);
-      const y1 = p[1] * cp - z1 * sp;
-      const s = Math.min(CW, CH) * 0.42 * zoom / scale;
-      return [CW / 2 + x1 * s, CH / 2 - y1 * s];
-    }
-    function curFrame() {
-      return Math.max(0, Math.min(frames.length - 1, Math.round(v.currentTime * fps)));
-    }
-    // 缺失关节序列化成 [null,null,null]（真值数组）：三分量齐全才算有效，
-    // 否则会被投影到画布中心，画成叠在骨盆上的灰团
-    const ok = p => p && p[0] != null && p[1] != null && p[2] != null;
-    function draw() {
-      const f = curFrame(), fr = frames[f] || [];
-      const col = PH_COLOR[phaseOf[f]] || PH_COLOR[''];
-      g.clearRect(0, 0, CW, CH);
-      g.lineWidth = 3; g.lineCap = 'round'; g.strokeStyle = col;
-      for (const [a, b] of edges) {
-        const pa = fr[a], pb = fr[b];
-        if (!ok(pa) || !ok(pb)) continue;
-        const A = project(pa), B = project(pb);
-        g.beginPath(); g.moveTo(A[0], A[1]); g.lineTo(B[0], B[1]); g.stroke();
-      }
-      for (let j = 0; j < fr.length; j++) {
-        if (!ok(fr[j])) continue;
-        const P = project(fr[j]);
-        g.fillStyle = (conf[f] && conf[f][j] != null && conf[f][j] < 0.3)
-          ? 'rgba(125,151,168,.45)' : '#12324a';
-        g.beginPath(); g.arc(P[0], P[1], 3.5, 0, 7); g.fill();
-      }
-      phEl.textContent = 'f=' + f + '/' + frames.length
-        + ' · ' + (PH_CN[phaseOf[f]] || PH_CN['']);
-      cur.style.left = (frames.length > 1 ? f / (frames.length - 1) * 100 : 0) + '%';
-      if (ovOn.checked) {
-        const parts = [];
-        for (const [k, cn] of [['hip_flexion', '屈髋'], ['knee_flexion', '膝'],
-                               ['trunk_lean_sagittal', '前倾']])
-          if (series[k]) {
-            const val = series[k][f];
-            parts.push(cn + ' ' + (val == null ? '—' : val.toFixed(1) + '°'));
-          }
-        ovBox.textContent = parts.join(' · ');
-      } else ovBox.textContent = '';
-    }
-    v.addEventListener('seeked', draw);
-    v.addEventListener('pause', draw);
-    v.addEventListener('timeupdate', draw);
-    ovOn.addEventListener('change', draw);
-    redraw = draw;
-    draw();
-    })
-    .catch(err => {
-      // 404（重跑删了动画）/ 网络失败 / JSON 损坏：给出可见提示，不留黑画布
-      phEl.textContent = '回放数据加载失败：' + err.message;
-      cv.setAttribute('aria-label', '三维骨架加载失败');
-    });
-})();
-</script>
+  <p class="muted" style="margin:8px 0 0">拖动旋转 · 双指或滚轮缩放 · 键盘方向键旋转、+/- 缩放 · 与左侧视频共享时间轴；触屏纵向滑动留给页面</p>
+<script src="/static/js/replay.js"></script>
 </div>
 
 {% else %}
 <div class="panel panel--solid">
   <h2>标注视频</h2>
-  <video controls style="width:100%;border-radius:12px;border:1px solid var(--hair)"
+  <video id="vfallback" controls playsinline preload="metadata"
+         style="width:100%;border-radius:12px;border:1px solid var(--hair)"
          src="{{ annotated_url }}"></video>
+  <p class="muted" id="video-error" hidden style="margin:10px 0 0">标注视频加载失败。视频文件可能已被删除或尚未生成；回任务列表重试分析。</p>
 </div>
 {% endif %}
 
 {% if candidates | length > 1 %}
-<div class="panel panel--solid" id="picker">
+<div class="panel panel--solid" id="picker" data-task-id="{{ task.id }}">
   <h2>分析对象</h2>
   <p class="muted" style="margin-top:-4px">画面里有多个人，选择你要分析的那一个。</p>
   <div class="pick-grid">
@@ -263,46 +168,17 @@
             aria-pressed="{{ 'true' if c.id == current_person else 'false' }}">
       {% if c.preview_url %}
       <img src="{{ c.preview_url }}" alt="人物 {{ c.id }}">
+      {% else %}
+      <span class="pick-placeholder" aria-hidden="true">无预览</span>
       {% endif %}
       <span class="pick-label">人物 {{ c.id }}</span>
     </button>
     {% endfor %}
   </div>
-  <p class="muted" id="pickmsg" style="margin:12px 0 0"></p>
+  <p class="muted" id="pickmsg" role="status" style="margin:12px 0 0"></p>
 </div>
-<script>
-document.querySelectorAll('button.pick').forEach(b => b.onclick = () => {
-  if (b.dataset.current) return;
-  const msg = document.getElementById('pickmsg');
-  document.querySelectorAll('button.pick').forEach(x => x.disabled = true);
-  msg.textContent = '正在切换…';
-  const body = new FormData(); body.append('person', b.dataset.id);
-  const fail = err => {
-    document.querySelectorAll('button.pick').forEach(x => x.disabled = false);
-    msg.textContent = '切换失败：' + err.message;
-  };
-  const poll = async () => {
-    const j = await (await fetch('/api/tasks/{{ task.id }}')).json();
-    if (!j.reselecting) {
-      if (j.reselect_error) throw new Error(j.reselect_error);
-      location.reload();
-      return;
-    }
-    setTimeout(() => poll().catch(fail), 1000);
-  };
-  fetch('/api/tasks/{{ task.id }}/person', {method: 'POST', body})
-    .then(async r => {
-      if (!r.ok) {
-        let detail = r.status;
-        try { detail = (await r.json()).detail || r.status; } catch (_) {}
-        throw new Error(detail);
-      }
-      setTimeout(() => poll().catch(fail), 800);
-    })
-    .catch(fail);
-});
-</script>
 {% endif %}
 
 <div class="foot"><a href="/tasks">← 返回任务列表</a></div>
+<script src="/static/js/report.js"></script>
 {% endblock %}

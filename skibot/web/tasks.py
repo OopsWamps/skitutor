@@ -8,6 +8,15 @@ result_dir/tasks.json：重启后排队任务重新入队继续执行，运行�
 恢复为完成）；改选跑到一半重启的复位改选状态并标中断原因；JSON 缺失或
 损坏时回退到扫描结果目录的 report.json，不阻塞启动。启动时回收孤儿上传
 目录。分析函数可构造注入（analyze_fn），测试不跑 Sports2D。
+
+结构上的三条纪律：
+- 状态转移规则只有一张表（_transition）：Task 状态字段的每一次变更都经
+  它的事件（requeue/start/complete/fail/reselect_start/reselect_finish），
+  重启对账（_reconcile）也复用同一批事件，不另写一套字段赋值。
+- 对外视图只有一个序列化出口（task_view）：API 与任务页模板消费同一份
+  字典，显示口径（状态文案、档位中文名、时间格式化）也定在这里。
+- 时钟可注入（clock），工作线程可不启（start_worker=False + run_pending
+  同步驱动）：测试不再依赖 sleep 轮询与线程时序。
 """
 
 from __future__ import annotations
@@ -23,24 +32,36 @@ from pathlib import Path
 
 from .. import artifacts
 from ..cli import AnalyzeOptions, analyze_one
+from ..reference import LEVEL_CN
 from ..reselect import reselect_one
+from ..report_io import read_report_meta
 
 STATUS_QUEUED = "queued"
 STATUS_RUNNING = "running"
 STATUS_DONE = "done"
 STATUS_FAILED = "failed"
 
+# 状态 → 显示文案：任务页模板与 JS 的唯一来源
+STATUS_LABELS = {
+    STATUS_QUEUED: "排队中",
+    STATUS_RUNNING: "分析中…",
+    STATUS_DONE: "完成",
+    STATUS_FAILED: "失败",
+}
+
 STORE_VERSION = 1
 
 
 @dataclass
 class RetryResult:
-    """retry() 的锁内快照：task 为 None 表示不存在。"""
+    """retry() 的锁内快照：task 为 None 表示不存在；view 是同一时刻的
+    序列化视图，API 直接返回它，不受 worker 在锁释放后抢跑的影响。"""
 
     task: Task | None
     requeued: bool
     status: str
     error: str
+    view: dict | None = None
 
 
 @dataclass
@@ -55,6 +76,7 @@ class Task:
     error: str = ""
     report_path: Path | None = None
     created_at: datetime = field(default_factory=datetime.now)
+    started_at: datetime | None = None
     # 改选人物子状态：随任务表持久化，重启不丢（此前是 web 层手搓的
     # set+dict+裸线程影子状态机）。reselecting=True 意味着 worker 正在跑
     # 改选，报告与标注视频即将被成对替换。
@@ -65,6 +87,112 @@ class Task:
     def done(self) -> bool:
         """「完成且可查看」的唯一判据：状态 done 且报告文件在表。"""
         return self.status == STATUS_DONE and self.report_path is not None
+
+
+def _transition(task: Task, event: str, *, report_path: Path | None = None,
+                error: str = "", now: datetime | None = None) -> None:
+    """唯一的转移规则表：Task 状态字段的每一次变更都从这里过。
+
+    事件 → 字段规则：
+    - requeue         → queued，清错误与开始时间（重试的重新入队）
+    - start           → running，记 started_at（worker 取到排队分析）
+    - complete        → done，记 report_path（分析成功 / mark_done /
+                        重启发现报告已写完）
+    - fail            → failed，记 error，清开始时间（分析异常 / 取消 /
+                        视频丢失 / 重启中断）
+    - reselect_start  置 reselecting，清改选错误
+    - reselect_finish 清 reselecting，记改选错误（空串 = 成功）
+
+    调用方负责持锁与 _save；这里只改内存字段，不做任何 IO。
+    """
+    if event == "requeue":
+        task.status = STATUS_QUEUED
+        task.error = ""
+        task.started_at = None
+    elif event == "start":
+        task.status = STATUS_RUNNING
+        task.started_at = now or datetime.now()
+    elif event == "complete":
+        task.status = STATUS_DONE
+        task.error = ""
+        if report_path is not None:
+            task.report_path = report_path
+    elif event == "fail":
+        task.status = STATUS_FAILED
+        task.error = error
+        task.started_at = None
+    elif event == "reselect_start":
+        task.reselecting = True
+        task.reselect_error = ""
+    elif event == "reselect_finish":
+        task.reselecting = False
+        task.reselect_error = error
+    else:
+        raise ValueError(f"未知任务事件: {event}")
+
+
+def _reconcile(task: Task, result_dir: Path) -> Task | None:
+    """重启对账：tasks.json 快照 + 盘上文件事实 → 一致的内存状态。
+
+    返回 None 表示丢弃该条。规则与 worker 的写回共用 _transition 的事件，
+    不另写一套字段赋值。
+    """
+    if task.reselecting:
+        # 改选跑到一半服务重启：报告与视频是成对原子替换的，仍是旧人物的
+        # 有效产物；标中断原因，用户可再点一次改选
+        _transition(task, "reselect_finish",
+                    error="服务重启时改选被中断，可重试")
+    if task.status == STATUS_RUNNING:
+        # RUNNING 落盘但报告已写完：上一次的 _save 失败（文件被锁）才留下
+        # 这种状态，报告是有效的，恢复成完成而不是当失败重跑
+        rp = task.report_path
+        if rp is None or not rp.exists():
+            guess = artifacts.report_path(result_dir / task.id)
+            rp = guess if guess.exists() else None
+        if rp is not None:
+            _transition(task, "complete", report_path=rp)
+        else:
+            _transition(task, "fail", error="服务重启时任务被中断，可重试")
+    elif task.status == STATUS_DONE and (
+            task.report_path is None or not task.report_path.exists()):
+        # 已完成但报告文件已被删：跳过，与旧的重启行为一致
+        return None
+    elif task.status == STATUS_QUEUED and not task.video_path.exists():
+        # 排队但视频已丢：标失败，不让 worker 去跑一个必然失败的子进程
+        _transition(task, "fail", error="上传的视频文件已丢失，无法执行")
+    return task
+
+
+def task_view(t: Task, *, queue_position: int | None = None,
+              now: datetime | None = None) -> dict:
+    """Task → 对外视图（API 与任务页模板共用的唯一序列化出口）。
+
+    显示口径也在这里定：状态文案、档位中文名、时间格式化。新增字段只进
+    这一个函数，模板与 JS 只消费，不再各自推演状态。
+    """
+    if now is None:
+        now = datetime.now()
+    elapsed = None
+    if t.status == STATUS_RUNNING and t.started_at is not None:
+        elapsed = max(0, int((now - t.started_at).total_seconds()))
+    return {
+        "id": t.id,
+        "video": t.video_name,
+        "level": t.level,
+        "level_label": LEVEL_CN.get(t.level, t.level),
+        "status": t.status,
+        "status_label": STATUS_LABELS.get(t.status, t.status),
+        "error": t.error,
+        "created": t.created_at.isoformat(timespec="seconds"),
+        "created_short": f"{t.created_at:%m-%d %H:%M}",
+        "started": (t.started_at.isoformat(timespec="seconds")
+                    if t.started_at else None),
+        "elapsed_sec": elapsed,
+        "queue_position": queue_position,
+        "reselecting": t.reselecting,
+        "reselect_error": t.reselect_error or None,
+        "report_url": f"/report/{t.id}" if t.done else None,
+    }
 
 
 def _task_dump(t: Task) -> dict:
@@ -79,6 +207,7 @@ def _task_dump(t: Task) -> dict:
         "error": t.error,
         "report_path": str(t.report_path) if t.report_path else None,
         "created_at": t.created_at.isoformat(),
+        "started_at": t.started_at.isoformat() if t.started_at else None,
         "reselecting": t.reselecting,
         "reselect_error": t.reselect_error,
     }
@@ -116,6 +245,11 @@ def _task_load(d: dict) -> Task:
         created_at = datetime.fromisoformat(created) if created else datetime.now()
     except (TypeError, ValueError):
         created_at = datetime.now()
+    started = d.get("started_at")
+    try:
+        started_at = datetime.fromisoformat(started) if started else None
+    except (TypeError, ValueError):
+        started_at = None
     report = d.get("report_path")
     if report is not None and not isinstance(report, str):
         raise ValueError("report_path 不是字符串")
@@ -135,23 +269,27 @@ def _task_load(d: dict) -> Task:
         video_name=video_name, level=level, blur=blur, lifter=lifter,
         status=status, error=str(d.get("error", "")),
         report_path=Path(report) if report else None, created_at=created_at,
+        started_at=started_at,
         reselecting=reselecting, reselect_error=reselect_error)
 
 
 class TaskBoard:
     """内存任务表 + JSON 持久化 + 单工作线程。enqueue 前调用方已把视频落盘。
 
-    analyze_fn 可注入（测试用假分析替身，不用猴补模块属性）。
+    analyze_fn 可注入（测试用假分析替身，不用猴补模块属性）；clock 可注入
+    （默认 datetime.now）；start_worker=False 时不启线程，测试用 run_pending
+    同步驱动，转移规则与持久化走和 worker 完全相同的代码。
     """
 
     def __init__(self, result_dir: Path, *,
-                 analyze_fn=None):
+                 analyze_fn=None, clock=None, start_worker: bool = True):
         # 统一绝对路径：tasks.json 里存的是绝对路径，换个工作目录启动
         # （比如从项目根换成等价的绝对 --result-dir）不会把队列读丢
         self.result_dir = Path(result_dir).resolve()
         # None 哨兵而非默认参数：未注入时 worker 在调用时才解析模块命名
         # 空间里的 analyze_one，测试猴补模块属性（或直接注入）都生效
         self._analyze_fn = analyze_fn
+        self._clock = clock or datetime.now
         self._store = self.result_dir / "tasks.json"
         self._tasks: dict[str, Task] = {}
         self._order: list[str] = []
@@ -163,8 +301,10 @@ class TaskBoard:
         self._load()
         self._restore_reports()
         self._cleanup_uploads()
-        self._worker = threading.Thread(target=self._loop, daemon=True)
-        self._worker.start()
+        self._worker: threading.Thread | None = None
+        if start_worker:
+            self._worker = threading.Thread(target=self._loop, daemon=True)
+            self._worker.start()
 
     def stop(self) -> None:
         """停止工作线程（测试与优雅关停用）。
@@ -175,7 +315,8 @@ class TaskBoard:
         self._stopping = True
         with self._cv:
             self._cv.notify_all()
-        self._worker.join(timeout=0.2)
+        if self._worker is not None:
+            self._worker.join(timeout=0.2)
 
     def _load(self) -> None:
         """从 tasks.json 恢复任务元数据；文件缺失或损坏时不阻塞启动。
@@ -183,7 +324,7 @@ class TaskBoard:
         排队任务保持排队（worker 会接手继续执行）；运行中任务说明上次
         服务重启时被中断，标为失败等待手动重试；已完成但报告文件已被删
         的任务跳过，与旧的重启行为一致；排队但视频文件已丢的标为失败，
-        不让 worker 去跑一个必然失败的子进程。
+        不让 worker 去跑一个必然失败的子进程。逐条规则在 _reconcile。
         """
         if not self._store.exists():
             return
@@ -214,30 +355,9 @@ class TaskBoard:
                 continue
             if t.id in self._tasks:
                 continue
-            if t.reselecting:
-                # 改选跑到一半服务重启：报告与视频是成对原子替换的，仍是
-                # 旧人物的有效产物；标中断原因，用户可再点一次改选
-                t.reselecting = False
-                t.reselect_error = "服务重启时改选被中断，可重试"
-            if t.status == STATUS_RUNNING:
-                # RUNNING 落盘但报告已写完：上一次的 _save 失败（文件被锁）
-                # 才留下这种状态，报告是有效的，恢复成完成而不是当失败重跑
-                rp = t.report_path
-                if rp is None or not rp.exists():
-                    guess = artifacts.report_path(self.result_dir / t.id)
-                    rp = guess if guess.exists() else None
-                if rp is not None:
-                    t.status = STATUS_DONE
-                    t.report_path = rp
-                else:
-                    t.status = STATUS_FAILED
-                    t.error = "服务重启时任务被中断，可重试"
-            elif t.status == STATUS_DONE and (
-                    t.report_path is None or not t.report_path.exists()):
+            t = _reconcile(t, self.result_dir)
+            if t is None:
                 continue
-            elif t.status == STATUS_QUEUED and not t.video_path.exists():
-                t.status = STATUS_FAILED
-                t.error = "上传的视频文件已丢失，无法执行"
             self._tasks[t.id] = t
             self._order.append(t.id)
 
@@ -247,19 +367,15 @@ class TaskBoard:
 
         任务 id 取视频 stem（与 report.json 所在目录同名）；上传期任务
         （uploads/ 下）没有 report.json，不会在这里出现。只在 __init__
-        中、worker 启动前调用；仍按 _save 的约定持锁操作。
+        中、worker 启动前调用；仍按 _save 的约定持锁操作。报告元数据走
+        read_report_meta（恢复是元数据抢救，不设页面渲染判据）。
         """
         with self._lock:
             for rp in sorted(self.result_dir.glob(f"*/{artifacts.REPORT_NAME}")):
                 stem = rp.parent.name
                 if stem in self._tasks:
                     continue
-                try:
-                    data = json.loads(rp.read_text(encoding="utf-8"))
-                except Exception:
-                    data = {}
-                if not isinstance(data, dict):  # 合法 JSON 但不是对象
-                    data = {}
+                data = read_report_meta(rp)
                 level = data.get("level", "intermediate")
                 # 报告没记打码设置，blur=None：改选时按打码副本是否存在推断。
                 # data_source 记了三维来源的，改选重跑要带同一个 lifter——
@@ -319,7 +435,8 @@ class TaskBoard:
         if lifter not in VALID_LIFTERS:
             raise ValueError(f"未知 lifter: {lifter}，可选 {VALID_LIFTERS}")
         task = Task(id=task_id, video_path=video_path, video_name=video_name,
-                    level=level, blur=blur, lifter=lifter)
+                    level=level, blur=blur, lifter=lifter,
+                    created_at=self._clock())
         with self._cv:
             self._tasks[task_id] = task
             self._order.append(task_id)
@@ -328,29 +445,41 @@ class TaskBoard:
         return task
 
     def retry(self, task_id: str) -> RetryResult:
-        """失败任务重新入队，返回锁内快照。
+        """失败任务重新入队，返回锁内快照（含序列化视图）。
 
         任务不存在时 task 为 None；非失败任务原样返回。调用方不要在锁外
         再看 task 的 status/error——worker 可能已经把入队任务改成 running，
-        快照就是锁内取的那一份。复用原视频与 level/blur 设置。
+        view 是锁内取的那一份，API 直接返回它。复用原视频与 level/blur 设置。
         """
         with self._cv:
             task = self._tasks.get(task_id)
             if task is None:
-                return RetryResult(None, False, "", "")
+                return RetryResult(None, False, "", "", None)
             if task.status != STATUS_FAILED:
-                return RetryResult(task, False, task.status, task.error)
+                return RetryResult(task, False, task.status, task.error,
+                                   task_view(task, now=self._clock()))
             if not task.video_path.exists():
                 # 重试也救不回来：直接给出可操作的提示，别让用户
                 # 在"失败→重试→再失败"的循环里空转
-                task.error = "源视频已丢失，请重新上传"
+                _transition(task, "fail", error="源视频已丢失，请重新上传")
                 self._save()
-                return RetryResult(task, False, task.status, task.error)
-            task.status = STATUS_QUEUED
-            task.error = ""
+                return RetryResult(task, False, task.status, task.error,
+                                   task_view(task, now=self._clock()))
+            _transition(task, "requeue")
             self._save()
             self._cv.notify()
-            return RetryResult(task, True, STATUS_QUEUED, "")
+            return RetryResult(task, True, STATUS_QUEUED, "",
+                               task_view(task, now=self._clock()))
+
+    def cancel(self, task_id: str) -> bool:
+        """取消排队中的任务；运行中的分析不可中断，返回 False。"""
+        with self._cv:
+            task = self._tasks.get(task_id)
+            if task is None or task.status != STATUS_QUEUED:
+                return False
+            _transition(task, "fail", error="已取消")
+            self._save()
+            return True
 
     def get(self, task_id: str) -> Task | None:
         with self._lock:
@@ -359,6 +488,35 @@ class TaskBoard:
     def all(self) -> list[Task]:
         with self._lock:
             return [self._tasks[i] for i in reversed(self._order)]
+
+    def view(self, task_id: str) -> dict | None:
+        """单个任务的序列化视图（锁内快照，含队列位置）；不存在返回 None。"""
+        with self._lock:
+            t = self._tasks.get(task_id)
+            if t is None:
+                return None
+            return task_view(t, queue_position=self._positions_locked().get(task_id),
+                             now=self._clock())
+
+    def views(self) -> list[dict]:
+        """全部任务的序列化视图（新→旧）。锁内快照，队列位置一并算好——
+        API 与任务页模板消费同一份，不再各拼一遍。"""
+        with self._lock:
+            pos = self._positions_locked()
+            return [task_view(self._tasks[i], queue_position=pos.get(i),
+                              now=self._clock())
+                    for i in reversed(self._order)]
+
+    def _positions_locked(self) -> dict[str, int]:
+        """排队任务在队列中的 1-based 位置；运行中的任务不计入。"""
+        pos: dict[str, int] = {}
+        n = 0
+        for tid in self._order:
+            t = self._tasks.get(tid)
+            if t is not None and t.status == STATUS_QUEUED:
+                n += 1
+                pos[tid] = n
+        return pos
 
     def mark_done(self, task_id: str, report_path: Path) -> None:
         """直接标记完成（测试与外部工具注入用）：报告文件须已存在。
@@ -369,9 +527,7 @@ class TaskBoard:
             t = self._tasks.get(task_id)
             if t is None:
                 raise KeyError(task_id)
-            t.report_path = Path(report_path)
-            t.status = STATUS_DONE
-            t.error = ""
+            _transition(t, "complete", report_path=Path(report_path))
             self._save()
 
     def start_reselect(self, task_id: str, person: int) -> bool:
@@ -384,11 +540,28 @@ class TaskBoard:
             t = self._tasks.get(task_id)
             if t is None or t.reselecting:
                 return False
-            t.reselecting = True
-            t.reselect_error = ""
+            _transition(t, "reselect_start")
             self._reselect_jobs.append((task_id, person))
             self._save()
             self._cv.notify()
+        return True
+
+    def run_pending(self, timeout: float = 5.0) -> bool:
+        """同步执行一个待办（改选优先，其次最早的排队分析），返回是否执行。
+
+        start_worker=False 的测试用它在确定性时序下驱动任务表：不靠线程
+        调度与轮询，取任务、转移规则、持久化与 worker 走同一段代码。
+        timeout 内没有待办返回 False。
+        """
+        with self._cv:
+            job = self._cv.wait_for(self._take_job_locked, timeout)
+        if job is None:
+            return False
+        task, person = job
+        if person is None:
+            self._run_analysis(task)
+        else:
+            self._run_reselect(task.id, person)
         return True
 
     def _save(self) -> None:
@@ -432,34 +605,42 @@ class TaskBoard:
                   "本次不落盘以免覆盖排队任务")
             self._store_unreadable = True
 
+    def _take_job_locked(self):
+        """取下一个待办并置为运行中；无待办返回 None。调用方需持有 _cv。
+
+        改选优先于排队分析：用户正盯着报告页等结果，且改选只重跑评估与
+        渲染，比分钟级的分析快得多。
+        """
+        if self._reselect_jobs:
+            task_id, person = self._reselect_jobs.pop(0)
+            task = self._tasks[task_id]
+            _transition(task, "reselect_start")  # 幂等：登记时已置位
+            self._save()
+            return task, person
+        todo = [i for i in self._order
+                if self._tasks[i].status == STATUS_QUEUED]
+        if todo:
+            task = self._tasks[todo[0]]
+            _transition(task, "start", now=self._clock())
+            self._save()
+            return task, None
+        return None
+
     def _loop(self) -> None:
         while True:
             with self._cv:
-                person: int | None = None  # None = 本次取的是排队分析，不是改选
-                while True:
+                job = None
+                while job is None:
                     if self._stopping:
                         return
-                    if self._reselect_jobs:
-                        # 改选优先于排队分析：用户正盯着报告页等结果，
-                        # 且改选只重跑评估与渲染，比分钟级的分析快得多
-                        task_id, person = self._reselect_jobs.pop(0)
-                        task = self._tasks[task_id]
-                        task.reselecting = True
-                        self._save()
-                        break
-                    todo = [i for i in self._order
-                            if self._tasks[i].status == STATUS_QUEUED]
-                    if todo:
-                        task = self._tasks[todo[0]]
-                        person = None
-                        task.status = STATUS_RUNNING
-                        self._save()
-                        break
-                    self._cv.wait()
+                    job = self._take_job_locked()
+                    if job is None:
+                        self._cv.wait()
+            task, person = job
             if person is None:
                 self._run_analysis(task)
             else:
-                self._run_reselect(task_id, person)
+                self._run_reselect(task.id, person)
 
     def _run_analysis(self, task: Task) -> None:
         try:
@@ -476,15 +657,13 @@ class TaskBoard:
             with self._lock:
                 if self._stopping:  # 停表后不再写，避免覆盖新实例
                     return
-                task.report_path = report
-                task.status = STATUS_DONE
+                _transition(task, "complete", report_path=report)
                 self._save()
         except Exception as e:  # noqa: BLE001 —— 任务失败进表，不拖垮服务
             with self._lock:
                 if self._stopping:
                     return
-                task.status = STATUS_FAILED
-                task.error = f"{type(e).__name__}: {e}"
+                _transition(task, "fail", error=f"{type(e).__name__}: {e}")
                 self._save()
             traceback.print_exc()
 
@@ -503,6 +682,5 @@ class TaskBoard:
             t = self._tasks.get(task_id)
             if t is None or self._stopping:
                 return
-            t.reselecting = False
-            t.reselect_error = error
+            _transition(t, "reselect_finish", error=error)
             self._save()

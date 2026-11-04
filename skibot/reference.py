@@ -15,6 +15,13 @@ from .metrics import resolve_metric
 
 LEVELS = ("novice", "intermediate", "advanced")
 
+# 仓库根的参考区间表：cli / web / 改选共用的唯一推导，别处不再各写一份路径
+DEFAULT_REFS = Path(__file__).resolve().parent.parent / "reference_values.toml"
+
+# 水平档的中文显示名：报告页、任务页、对比页、cmdk 都从这里取，
+# 模板与 JS 不再各抄一份映射
+LEVEL_CN = {"novice": "初学", "intermediate": "中级", "advanced": "竞技"}
+
 
 @dataclass
 class MetricRef:

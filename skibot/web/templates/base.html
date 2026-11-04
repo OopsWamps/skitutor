@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#eef5fa">
-<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%23050d16'/%3E%3Cpath%20d='M16%204v24M5.6%2010l20.8%2012M26.4%2010L5.6%2022'%20stroke='%235fe6ff'%20stroke-width='2.2'%20stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cstyle%3E.bd%7Bfill%3A%2312324a%7D.sk%7Bstroke%3A%237fd4ee%7D.bn%7Bstroke%3A%23fff%7D.jt%7Bfill%3A%23fff%7D.kn%7Bfill%3A%23ff7b6b%7D%40media%20%28prefers-color-scheme%3Adark%29%7B.bd%7Bfill%3A%23f4f9fc%7D.sk%7Bstroke%3A%23056b88%7D.bn%7Bstroke%3A%2312324a%7D.jt%7Bfill%3A%2312324a%7D.kn%7Bfill%3A%23c93b3b%7D%7D%3C%2Fstyle%3E%3Crect%20class%3D%22bd%22%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%2F%3E%3Cpath%20class%3D%22sk%22%20d%3D%22M26.76%2024.3%208.93%2028.8Q6.7%2029.35%204.7%2027.9%22%20fill%3D%22none%22%20stroke-width%3D%222.9%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20class%3D%22bn%22%20d%3D%22M15.03%205.17%2021.47%2015.17M21.47%2015.17%2017.56%2016.44M15.14%2020.35%2016.18%2026.44%22%20fill%3D%22none%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3Ccircle%20class%3D%22jt%22%20cx%3D%2215.03%22%20cy%3D%225.17%22%20r%3D%223.55%22%2F%3E%3Ccircle%20class%3D%22jt%22%20cx%3D%2221.47%22%20cy%3D%2215.17%22%20r%3D%223.3%22%2F%3E%3Ccircle%20class%3D%22jt%22%20cx%3D%2216.18%22%20cy%3D%2226.44%22%20r%3D%222.3%22%2F%3E%3Ccircle%20class%3D%22kn%22%20cx%3D%2214.68%22%20cy%3D%2217.36%22%20r%3D%222.5%22%2F%3E%3C%2Fsvg%3E">
+<!-- favicon：屈体刻滑徽章。浅色标签栏=深蓝底白滑雪者；prefers-color-scheme:dark=雪面白底墨滑雪者（Safari 等不支持时回退浅色版）。源文件 .scratch/logo_designs/FINAL/favicon.svg -->
 <title>{% block title %}SKITUTOR{% endblock %}</title>
 <style>
   /* skitutor 视觉：晴雪晨光。浅冰蓝底、雪面玻璃面板、冷色点缀。
@@ -15,16 +16,28 @@
     --cyan:#056b88; --mint:#0a7a5c; --violet:#6658cc; --glacier:#0b6f95;
     --amber:#a06207; --coral:#c93b3b;
     --hair:rgba(18,74,110,.14);
-    --din:"Bahnschrift","Arial Narrow","Segoe UI Semibold","Segoe UI",sans-serif;
+    --din:"Bahnschrift","DIN Alternate","Arial Narrow","Segoe UI","Helvetica Neue",Arial,sans-serif;
     --mono:"Cascadia Mono","Consolas",monospace;
     /* iOS 弹簧曲线：轻微过冲后回稳，用于位移/缩放类过渡 */
     --spring:cubic-bezier(.34,1.4,.52,1);
     --spring-soft:cubic-bezier(.32,.72,0,1);
+    --ease-out:cubic-bezier(.23,1,.32,1);
+    --ease-in-out:cubic-bezier(.77,0,.175,1);
   }
   html { -webkit-tap-highlight-color:transparent; }
-  button, a, label, .feature, .btn, .pick { touch-action:manipulation; }
+  button, a, label, .feature, .btn, .pick {
+    touch-action:manipulation;
+    -webkit-touch-callout:none; -webkit-user-select:none; user-select:none;
+  }
+  .ghost-link:active, .scroll-hint:active { opacity:.72; }
   * { box-sizing:border-box; }
-  html { scroll-behavior:smooth; }
+  /* 上传页总是超过一屏，任务页和对比页常常不足一屏：滚动条一出一没，
+     可用宽度就差 15px，右对齐的导航和整页内容跟着横移。常驻装订线抹平。 */
+  html { scroll-behavior:smooth; scrollbar-gutter:stable; }
+  /* Safari 18 之前没有 scrollbar-gutter，退回常驻滚动条轨道 */
+  @supports not (scrollbar-gutter: stable) {
+    html { overflow-y:scroll; }
+  }
   body {
     margin:0; min-height:100vh; color:var(--ice-white);
     font-family:"Microsoft YaHei","PingFang SC","Segoe UI",sans-serif;
@@ -54,6 +67,12 @@
     content:""; position:fixed; inset:0; z-index:3; pointer-events:none; opacity:.022;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");
   }
+  /* 移动端不挂固定背景层：fixed 背景与全屏噪点在滚动时持续参与合成 */
+  @media (max-width:720px), (pointer:coarse) {
+    body { background-attachment:scroll; position:relative; }
+    body::before { position:absolute; inset:0; }
+    body::after { display:none; }
+  }
   ::selection { background:rgba(6,140,180,.22); }
   a { color:var(--glacier); }
   #snow { position:fixed; inset:0; z-index:1; pointer-events:none; }
@@ -67,11 +86,9 @@
     display:flex; align-items:center; gap:6px; padding:0 22px 0 16px;
     background:transparent;
     border-bottom:1px solid transparent;
-    transition:height .34s var(--spring), background .34s ease,
-               border-color .34s ease, box-shadow .34s ease;
+    transition:background .2s ease, border-color .2s ease;
   }
   nav.scrolled {
-    height:56px;
     background:rgba(255,255,255,.82);
     backdrop-filter:blur(20px) saturate(180%);
     -webkit-backdrop-filter:blur(20px) saturate(180%);
@@ -80,32 +97,39 @@
   }
   @supports not (backdrop-filter:blur(2px)) { nav.scrolled { background:rgba(255,255,255,.96); } }
 
-  /* 品牌：六棱冰砖 + 红色雪板斜线，和标题里的双板呼应 */
+  /* 品牌：屈体刻滑的滑雪者。头/髋/踝实心关节，被测膝点嵌在腿笔画断口（珊瑚），
+     雪板是坡面基准线；字标用实时文本，不做描边/渐变 */
+  .mark { display:block; flex:none; }
+  .mark .mk-bone {
+    fill:none; stroke:currentColor; stroke-width:3;
+    stroke-linecap:round; stroke-linejoin:round;
+  }
+  .mark .mk-joint { fill:currentColor; }
+  .mark .mk-knee { fill:var(--coral); }
+  .mark .mk-ski {
+    fill:none; stroke:var(--cyan); stroke-width:2.9;
+    stroke-linecap:round; stroke-linejoin:round;
+  }
   .brand {
-    display:inline-flex; align-items:center; gap:11px; margin-right:auto;
-    text-decoration:none; padding:6px 10px 6px 6px; border-radius:14px;
+    display:inline-flex; align-items:center; gap:9px; margin-right:auto;
+    padding:6px 10px 6px 6px; border-radius:10px;
+    text-decoration:none; color:var(--ice-white);
     -webkit-tap-highlight-color:transparent;
-    transition:transform .42s var(--spring), background .22s ease;
   }
-  .brand:active { transform:scale(.95); }
-  .brand .mark {
-    width:27px; height:27px; flex:none; display:block; overflow:visible;
-    transition:transform .55s var(--spring);
+  .brand:active { opacity:.72; }
+  .brand .mark { width:30px; height:30px; }
+  .brand-text {
+    display:flex; flex-direction:column; justify-content:center; gap:4px;
+    min-width:0; line-height:1; text-align:left;
   }
-  .brand:hover .mark { transform:rotate(-6deg) scale(1.06); }
-  .brand .mark .crystal {
-    animation:mark-glow 5s ease-in-out infinite;
-    transform-box:fill-box; transform-origin:center;
+  .wordmark { display:block; width:auto; flex:none; overflow:visible; }
+  .wordmark-sprite { position:absolute; width:0; height:0; overflow:hidden; }
+  .brand-wordmark { height:15px; color:var(--ice-white); }
+  .brand-sub {
+    font-family:var(--mono); font-size:10px; font-weight:400; line-height:1;
+    letter-spacing:.1em; text-transform:uppercase; color:var(--mist);
+    white-space:nowrap;
   }
-  @keyframes mark-glow {
-    0%, 100% { opacity:.9; } 50% { opacity:1; }
-  }
-  /* 与首页同款的手凿冰块艺术字，缩到导航高度（精简版：无裂纹/网点/碎冰） */
-  .brand .wordmark-svg {
-    display:block; height:26px; width:auto; flex:none;
-    transition:height .34s var(--spring), opacity .3s ease;
-  }
-  nav.scrolled .brand .wordmark-svg { height:22px; }
 
   /* 导航项：iOS 分段控件式滑动的药丸高亮 */
   .nav-links { position:relative; display:flex; align-items:center; gap:2px; }
@@ -114,23 +138,27 @@
     margin-top:-19px; border-radius:11px; pointer-events:none;
     background:rgba(6,107,136,.10);
     box-shadow:inset 0 0 0 1px rgba(6,107,136,.13);
-    transition:transform .42s var(--spring), width .42s var(--spring), opacity .2s ease;
+    transition:opacity .2s ease;
     opacity:0;
   }
   .nav-pill.on { opacity:1; }
+  /* 跨页接力：药丸从上一页的选项滑到当前页的选项，进出页面时都连续 */
+  .nav-pill.is-handoff {
+    transition:transform .34s var(--spring), width .34s var(--spring), opacity 0s;
+  }
   nav .nav-links a {
     position:relative; z-index:1; color:var(--mist); text-decoration:none;
     display:inline-flex; align-items:center; min-height:44px;
     font-size:13px; letter-spacing:.1em; padding:0 15px; border-radius:11px;
     -webkit-tap-highlight-color:transparent;
-    transition:color .22s ease, transform .42s var(--spring);
+    transition:color .2s ease, transform .14s var(--ease-out);
   }
   nav .nav-links a:hover { color:var(--ice-white); }
   nav .nav-links a:active { transform:scale(.94); }
   nav .nav-links a.active { color:var(--ice-white); font-weight:600; }
   /* ---------- 主内容与面板 ---------- */
   main { position:relative; z-index:2; max-width:1080px; margin:0 auto; padding:0 20px 64px;
-         animation:page-in .5s var(--spring-soft) both; }
+         animation:page-in .32s var(--ease-out) both; }
   @keyframes page-in {
     from { opacity:0; transform:translate3d(0,10px,0) scale(.995); }
     to   { opacity:1; transform:none; }
@@ -169,42 +197,52 @@
     color:#fff; cursor:pointer;
     background:linear-gradient(180deg,#2ba6c9 0%,#0d7fa3 55%,#0a6585 100%);
     box-shadow:0 6px 18px rgba(10,110,145,.28), inset 0 1px 0 rgba(255,255,255,.35);
-    transition:transform .15s ease, box-shadow .22s ease, filter .2s ease;
+    transition:transform .15s var(--ease-out), box-shadow .22s ease, filter .2s ease;
   }
-  .btn { transition:transform .42s var(--spring), box-shadow .28s ease, filter .2s ease; }
   .btn:hover { filter:brightness(1.07); transform:translateY(-1px) scale(1.015);
                box-shadow:0 9px 24px rgba(10,110,145,.35), inset 0 1px 0 rgba(255,255,255,.35); }
   .btn:active { transform:scale(.955); transition-duration:.12s; }
-  .btn:disabled { opacity:.45; cursor:default; transform:none; filter:grayscale(.5); box-shadow:none; }
+  .btn:disabled { opacity:.45; cursor:progress; transform:none; filter:grayscale(.5); box-shadow:none; }
+  .btn.is-busy::after {
+    content:""; display:inline-block; width:14px; height:14px; margin-left:10px;
+    border:2px solid rgba(255,255,255,.45); border-top-color:#fff; border-radius:50%;
+    vertical-align:-2px; animation:spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  button.retry.is-busy, button.cancel.is-busy { padding-right:32px; }
+  button.retry.is-busy::after, button.cancel.is-busy::after, button.pick.is-busy::after {
+    content:""; position:absolute; top:50%; right:9px; width:12px; height:12px;
+    margin-top:-6px; border:2px solid currentColor; border-top-color:transparent;
+    border-radius:50%; opacity:.75; animation:spin .8s linear infinite;
+  }
+  button.pick.is-busy::after {
+    top:14px; right:14px; margin-top:0; background:#fff;
+  }
+  .upload-progress {
+    width:min(240px,100%); height:6px; border-radius:999px;
+    background:rgba(18,74,110,.12); overflow:hidden;
+  }
+  .upload-progress-bar {
+    width:0; height:100%; border-radius:999px;
+    background:linear-gradient(90deg,var(--cyan),var(--mint));
+    transition:width .2s ease;
+  }
   button.retry {
     position:relative; background:none; border:1px solid rgba(201,59,59,.38);
     border-radius:8px; color:var(--coral); padding:5px 15px; font-size:13px;
-    cursor:pointer; transition:background .2s, transform .12s;
+    min-height:44px; cursor:pointer; transition:background .2s, transform .12s;
   }
   button.retry:hover { background:rgba(201,59,59,.08); }
   button.retry:active { transform:scale(.95); }
-  /* ---------- 点击特效：霜环 + 冰晶飞溅 ---------- */
-  .burst { position:absolute; inset:0; pointer-events:none; overflow:visible; z-index:5; }
-  .burst::after {
-    content:""; position:absolute; left:var(--x); top:var(--y);
-    width:16px; height:16px; margin:-8px 0 0 -8px; border-radius:50%;
-    border:1.5px solid rgba(8,132,168,.8);
-    box-shadow:0 0 14px rgba(6,140,180,.45), inset 0 0 8px rgba(6,140,180,.35);
-    animation:burst-ring .6s ease-out forwards;
+  button.retry:disabled { opacity:.45; cursor:progress; transform:none; }
+  button.cancel {
+    position:relative; background:none; border:1px solid var(--hair);
+    border-radius:8px; color:var(--mist); padding:5px 15px; font-size:13px;
+    min-height:44px; cursor:pointer; transition:background .2s, transform .12s;
   }
-  @keyframes burst-ring { from { transform:scale(.2); opacity:1; }
-                          to { transform:scale(4.2); opacity:0; } }
-  .burst i {
-    position:absolute; left:var(--x); top:var(--y);
-    width:12px; height:3px; margin:-1.5px 0 0 -6px;
-    background:linear-gradient(90deg,#0d84ab,rgba(6,140,180,0));
-    clip-path:polygon(50% 0,100% 100%,0 100%);
-    animation:burst-shard .58s cubic-bezier(.15,.8,.3,1) forwards;
-  }
-  @keyframes burst-shard {
-    from { transform:rotate(var(--a)) translate(0,0) rotate(0) scale(1); opacity:1; }
-    to   { transform:rotate(var(--a)) translate(var(--dx),var(--dy)) rotate(150deg) scale(.15); opacity:0; }
-  }
+  button.cancel:hover { background:rgba(18,74,110,.06); }
+  button.cancel:active { transform:scale(.95); }
+  button.cancel:disabled { opacity:.45; cursor:progress; transform:none; }
   /* ---------- 表单 ---------- */
   .field { margin:0 0 16px; min-width:0; }
   /* 对比页的两个下拉：各占一半宽度，长文件名也不会把整行挤换行 */
@@ -217,33 +255,45 @@
   select, input[type=text] {
     color:var(--ice-white); background:var(--deep); max-width:100%;
     border:1px solid rgba(18,74,110,.22); border-radius:9px;
-    padding:9px 13px; font-size:14px; transition:border-color .2s, box-shadow .2s;
+    padding:9px 13px; font-size:14px;
+    transition:border-color .15s ease, box-shadow .18s ease;
   }
-  select, input[type=text] { transition:border-color .22s ease, box-shadow .3s ease,
-                             transform .42s var(--spring); }
   select:hover, input[type=text]:hover { border-color:rgba(6,140,180,.55); }
   select:focus, input[type=text]:focus {
     border-color:var(--cyan); box-shadow:0 0 0 4px rgba(6,140,180,.14); outline:none;
-    transform:scale(1.008);
   }
   select option { background:var(--deep); color:var(--ice-white); }
   input[type=checkbox] { accent-color:var(--cyan); width:15px; height:15px; vertical-align:-2px; }
   .dropzone {
-    display:block; border:1px dashed rgba(18,74,110,.30); border-radius:12px;
+    position:relative; display:block; cursor:pointer;
+    border:1px dashed rgba(18,74,110,.30); border-radius:12px;
     padding:22px; text-align:center; background:rgba(6,140,180,.045);
     transition:border-color .2s, background .2s;
   }
   .dropzone:hover, .dropzone:focus-within {
     border-color:rgba(6,140,180,.6); background:rgba(6,140,180,.08);
   }
-  input[type=file] { color:var(--mist); font-size:14px; max-width:100%; }
-  input[type=file]::file-selector-button {
-    font-family:inherit; font-weight:600; font-size:13px; letter-spacing:.06em;
-    color:#fff; background:linear-gradient(180deg,#2ba6c9,#0d7fa3);
-    border:none; border-radius:8px; padding:9px 18px; margin-right:15px; cursor:pointer;
-    transition:filter .18s;
+  .dropzone:focus-within { outline:2px solid var(--cyan); outline-offset:3px; }
+  .dropzone.dragover {
+    border-color:var(--cyan); background:rgba(6,140,180,.14);
+    box-shadow:0 0 0 3px rgba(6,127,160,.14);
   }
-  input[type=file]::file-selector-button:hover { filter:brightness(1.08); }
+  /* 原生文件按钮不居中：藏起原生控件，用同一标签触发；键盘焦点落在整个投放框上 */
+  .file-cta {
+    display:inline-flex; align-items:center; justify-content:center;
+    min-height:40px; padding:0 22px; border-radius:9px;
+    font-size:13px; font-weight:600; letter-spacing:.08em; color:#fff;
+    background:linear-gradient(180deg,#2ba6c9 0%,#0d7fa3 55%,#0a6585 100%);
+    box-shadow:0 5px 14px rgba(10,110,145,.22), inset 0 1px 0 rgba(255,255,255,.35);
+    transition:filter .18s ease, transform .12s var(--ease-out);
+  }
+  .dropzone:hover .file-cta, .dropzone:focus-within .file-cta { filter:brightness(1.06); }
+  .dropzone:active .file-cta { transform:scale(.97); }
+  .drop-hint { display:block; margin-top:10px; }
+  .file-name {
+    display:block; margin-top:8px; color:var(--ice-white); font-size:13px;
+    overflow-wrap:anywhere;
+  }
   .checkline { display:flex; gap:24px; flex-wrap:wrap; align-items:center;
                color:var(--mist); font-size:14px; }
   .checkline label { cursor:pointer; display:inline-flex; align-items:center; gap:10px; }
@@ -252,22 +302,40 @@
     -webkit-appearance:none; appearance:none;
     width:44px; height:26px; margin:0; border-radius:999px; position:relative;
     background:rgba(18,74,110,.20); cursor:pointer; flex:none;
-    transition:background .28s ease, box-shadow .28s ease;
+    transition:background .2s ease, box-shadow .2s ease;
   }
   .checkline input[type=checkbox]::after {
     content:""; position:absolute; top:2px; left:2px; width:22px; height:22px;
     border-radius:50%; background:#fff;
     box-shadow:0 2px 5px rgba(23,58,84,.30), 0 1px 1px rgba(23,58,84,.16);
-    transition:transform .46s var(--spring), width .3s var(--spring);
+    transition:transform .22s var(--spring), width .22s var(--spring);
   }
   .checkline input[type=checkbox]:checked { background:var(--cyan); }
   .checkline input[type=checkbox]:checked::after { transform:translateX(18px); }
   .checkline input[type=checkbox]:active::after { width:27px; }
   .checkline input[type=checkbox]:checked:active::after { transform:translateX(13px); }
   .checkline input[type=checkbox]:focus-visible { outline:2px solid var(--cyan); outline-offset:3px; }
+  .checkline label { min-height:44px; }
+  @media (forced-colors: active) {
+    .checkline input[type=checkbox] { border:1px solid ButtonText; }
+    .checkline input[type=checkbox]::after { background:ButtonText; }
+    .checkline input[type=checkbox]:checked { background:Highlight; }
+    .checkline input[type=checkbox]:checked::after { background:HighlightText; }
+  }
   /* ---------- 表格 ---------- */
   table { width:100%; border-collapse:collapse; font-size:14px; }
-  .table-scroll { overflow-x:auto; }
+  .table-scroll { overflow-x:auto; overscroll-behavior-x:contain; }
+  .cell-name { overflow-wrap:anywhere; }
+  .sr-only {
+    position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+    overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+  }
+  .skip-link {
+    position:absolute; left:12px; top:-52px; z-index:100;
+    padding:10px 16px; border-radius:0 0 10px 10px;
+    background:#0e3a55; color:#fff; text-decoration:none; font-size:14px;
+  }
+  .skip-link:focus { top:0; }
   th {
     text-align:left; padding:9px 10px; color:var(--dim);
     font-size:11px; letter-spacing:.16em; text-transform:uppercase;
@@ -292,71 +360,81 @@
     background:rgba(160,98,7,.07); border:1px solid rgba(160,98,7,.28);
     border-left:3px solid var(--amber); border-radius:10px;
     padding:11px 15px; color:var(--amber); font-size:14px; margin-bottom:16px;
+    overflow-wrap:anywhere;
   }
   .error {
     background:rgba(201,59,59,.06); border:1px solid rgba(201,59,59,.28);
     border-left:3px solid var(--coral); border-radius:10px;
     padding:11px 15px; color:var(--coral); font-size:14px; margin-bottom:16px;
+    overflow-wrap:anywhere;
   }
-  /* ---------- 首页 Hero ---------- */
+  #reject {
+    opacity:0; transform:translateY(-4px);
+    transition:opacity .18s ease, transform .18s var(--ease-out);
+  }
+  #reject.show { opacity:1; transform:none; }
+  @media (pointer: coarse) {
+    select, input[type=text] { font-size:16px; }
+  }
+  /* ---------- 首页 Hero：关节链字标 + 参考带读数 ---------- */
   .hero {
     position:relative; min-height:calc(100svh - 64px);
     display:flex; flex-direction:column; align-items:center; justify-content:center;
-    text-align:center; padding:52px 12px 86px;
+    text-align:center; padding:44px 12px 78px;
   }
-  .hero .eyebrow { margin-bottom:26px; animation:rise .6s .05s both; }
-  .ice-slab { position:relative; display:inline-block; isolation:isolate;
-              animation:ice-in .95s cubic-bezier(.2,.7,.3,1) both; }
-  /* 标题是手绘 SVG 冰块艺术字（字母 I = 雪板），不再用字库字体渲染 */
-  .ice-word { margin:0; padding:0; line-height:1; }
-  .ice-word svg {
-    display:block; width:min(88vw,680px); height:auto;
-    filter:drop-shadow(0 16px 22px rgba(24,72,104,.26))
-           drop-shadow(0 6px 34px rgba(46,150,200,.16));
+  .hero-kicker {
+    display:inline-flex; align-items:center; gap:12px; margin:0 0 22px;
+    color:var(--mist); font-size:12px; letter-spacing:.22em; text-indent:.22em;
+    animation:rise .26s .02s both;
   }
-  .ice-word .sweep { animation:ice-sweep 8s ease-in-out infinite; }
-  @keyframes ice-sweep {
-    0%        { transform:skewX(-18deg) translateX(0); opacity:0; }
-    8%, 36%   { opacity:.9; }
-    46%, 100% { transform:skewX(-18deg) translateX(910px); opacity:0; }
+  .hero-kicker::before, .hero-kicker::after {
+    content:""; width:38px; height:1px; flex:none; background:var(--hair);
   }
-  .ice-word .spk { opacity:.65; animation:twinkle 3.6s ease-in-out infinite;
-                   transform-box:fill-box; transform-origin:center; }
-  .ice-word .spk.s2 { animation-delay:1.2s; }
-  .ice-word .spk.s3 { animation-delay:2.3s; }
-  @keyframes twinkle {
-    0%, 100% { opacity:.12; transform:scale(.5); }
-    50%      { opacity:.95; transform:scale(1.15); }
+  .hero-lockup {
+    display:flex; align-items:center; justify-content:center;
+    gap:clamp(10px,1.5vw,18px); max-width:100%;
+    animation:rise .3s var(--ease-out) both;
   }
-  /* 底光：冰体落在雪面上的投影 */
-  .ice-slab::before {
-    content:""; position:absolute; z-index:-2; left:3%; right:3%; bottom:-6px; height:44px;
-    background:radial-gradient(closest-side, rgba(56,128,168,.28), transparent);
-    filter:blur(11px);
+  .hero-mark { width:clamp(34px,5.4vw,72px); height:auto; }
+  .hero-word {
+    margin:0; padding:0; line-height:0; color:var(--ice-white);
   }
-  /* 视差量走变量：动画终值继续持有，滚动时变量在变，位移随之更新 */
-  @keyframes ice-in {
-    from { opacity:0; transform:translate3d(0, calc(var(--py,0px) + 10px), 0); filter:blur(5px); }
-    to   { opacity:1; transform:translate3d(0, var(--py,0px), 0); filter:blur(0); }
+  .hero-wordmark { height:clamp(38px,6.9vw,92px); }
+  .hero-bands {
+    display:flex; justify-content:center; flex-wrap:wrap;
+    margin:26px 0 0; padding:0;
+  }
+  .hero-band {
+    display:flex; flex-direction:column; gap:5px;
+    padding:0 clamp(14px,2.6vw,26px); min-width:0;
+  }
+  .hero-band + .hero-band { border-left:1px solid var(--hair); }
+  .hero-band dt {
+    margin:0; color:var(--mist); font-size:10px; letter-spacing:.16em;
+    line-height:1.2;
+  }
+  .hero-band dd {
+    margin:0; font-family:var(--din); font-stretch:87.5%;
+    font-weight:600; font-size:17px; line-height:1.1; letter-spacing:.02em;
+    color:var(--ice-white); font-variant-numeric:tabular-nums;
+  }
+  .hero-band-note {
+    margin:10px 0 0; color:var(--mist);
+    font-size:10px; letter-spacing:.08em; line-height:1.5;
   }
   .hero-sub {
-    margin:30px 0 0; color:var(--mist);
-    font-size:clamp(14px,2.2vw,17px); letter-spacing:.42em; text-indent:.42em;
-    animation:rise .7s .25s both;
+    margin:20px 0 0; color:var(--mist);
+    font-size:14px; letter-spacing:.08em;
+    animation:rise .28s .06s both;
   }
-  .hero-sub::before, .hero-sub::after {
-    content:"❄"; font-size:.8em; color:var(--cyan); opacity:.75; vertical-align:.1em;
-  }
-  .hero-sub::before { margin-right:1.2em; }
-  .hero-sub::after { margin-left:1.2em; }
   @keyframes rise {
-    from { opacity:0; transform:translate3d(0, calc(var(--pyf,0px) + 12px), 0); }
-    to   { opacity:1; transform:translate3d(0, var(--pyf,0px), 0); }
+    from { opacity:0; transform:translate3d(0,12px,0); }
+    to   { opacity:1; transform:translate3d(0,0,0); }
   }
   /* ---------- 功能按钮 ---------- */
   .features {
     display:flex; gap:18px; flex-wrap:wrap; justify-content:center;
-    margin-top:54px; animation:rise .8s .4s both;
+    margin-top:54px; animation:rise .3s .1s both;
   }
   .feature {
     position:relative; display:flex; flex-direction:column; align-items:center;
@@ -364,19 +442,26 @@
     color:var(--ice-white); border:1px solid var(--hair); border-radius:18px;
     background:linear-gradient(180deg, #ffffff, rgba(238,246,251,.85));
     box-shadow:0 10px 24px rgba(23,58,84,.10), inset 0 1px 0 #fff;
-    transition:transform .46s var(--spring), border-color .24s ease,
-               box-shadow .28s ease, background .24s ease;
+    transition:transform .18s var(--ease-out), border-color .2s ease,
+               box-shadow .22s ease, background .2s ease;
   }
-  .feature:hover {
-    transform:translateY(-6px) scale(1.02); border-color:rgba(6,140,180,.5);
-    box-shadow:0 18px 38px rgba(23,58,84,.17), 0 0 24px rgba(6,140,180,.13),
-               inset 0 1px 0 #fff;
+  @media (hover:hover) and (pointer:fine) {
+    .feature:hover {
+      transform:translateY(-6px) scale(1.02); border-color:rgba(6,140,180,.5);
+      box-shadow:0 18px 38px rgba(23,58,84,.17), 0 0 24px rgba(6,140,180,.13),
+                 inset 0 1px 0 #fff;
+    }
   }
   .feature:active { transform:scale(.955); transition-duration:.13s; }
-  .feature svg {
-    width:32px; height:32px; stroke:var(--cyan); fill:none; stroke-width:1.5;
+  /* 功能图标：双色（浅色块 + 线条），比纯描边更有体积 */
+  .feature svg { width:36px; height:36px; stroke:none; fill:none; }
+  .feature .ic-soft { fill:rgba(6,127,160,.13); }
+  .feature .ic-line {
+    fill:none; stroke:var(--cyan); stroke-width:1.7;
     stroke-linecap:round; stroke-linejoin:round;
   }
+  .feature .ic-solid { fill:var(--cyan); }
+  .feature--primary .ic-soft { fill:rgba(6,127,160,.2); }
   .feature .f-cn { font-size:15px; font-weight:600; letter-spacing:.12em; }
   .feature .f-en {
     font-family:var(--din); font-size:10px; letter-spacing:.26em;
@@ -386,6 +471,107 @@
     background:linear-gradient(180deg, rgba(6,140,180,.13), rgba(6,140,180,.04));
     border-color:rgba(6,140,180,.38);
   }
+  /* ---------- 上传表单：整体居中 ---------- */
+  .upload-form { display:flex; flex-direction:column; align-items:center; gap:18px; }
+  .upload-form .field { width:100%; max-width:560px; margin:0; }
+  .upload-form .checkline { justify-content:center; }
+  .upload-form .dropzone { width:100%; }
+  .submit-row { display:flex; align-items:center; justify-content:center;
+                gap:16px; flex-wrap:wrap; }
+  /* ---------- 水平档：三张卡片，各配一段可动关节的滑雪剪影 ---------- */
+  .levels { text-align:center; }
+  .level-row { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+  .level-card {
+    flex:1 1 0; min-width:132px; max-width:176px; padding:8px 8px 10px;
+    display:flex; flex-direction:column; align-items:center; gap:1px;
+    background:#fff; border:1px solid var(--hair); border-radius:16px;
+    color:var(--ice-white); cursor:pointer; font:inherit;
+    -webkit-tap-highlight-color:transparent;
+    transition:transform .18s var(--ease-out), border-color .2s ease,
+               box-shadow .22s ease, background .2s ease;
+  }
+  @media (hover:hover) and (pointer:fine) {
+    .level-card:hover { transform:translateY(-4px) scale(1.025);
+      border-color:rgba(6,140,180,.45);
+      box-shadow:0 14px 30px rgba(23,58,84,.14); }
+  }
+  .level-card:active { transform:scale(.97); transition-duration:.13s; }
+  .level-card[aria-pressed="true"] {
+    border-color:var(--cyan); background:linear-gradient(180deg,#ffffff,#edf8fd);
+    box-shadow:0 0 0 3px rgba(6,127,160,.14), 0 10px 24px rgba(23,58,84,.10);
+  }
+  .lv-anim {
+    display:block; position:relative; width:100%; aspect-ratio:4/3;
+    border-radius:11px; overflow:hidden;
+    background:linear-gradient(180deg,#f8fdff,#e4f1fa);
+    box-shadow:inset 0 0 0 1px rgba(18,74,110,.06);
+  }
+  .lv-zoom {
+    position:absolute; inset:0; transform:scale(1);
+    transition:transform .3s var(--ease-out);
+  }
+  .lv-svg { display:block; width:100%; height:100%; }
+  .lv-name { font-size:14px; font-weight:600; letter-spacing:.12em; margin-top:7px; }
+  .lv-en {
+    font-family:var(--din); font-size:9.5px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--dim);
+  }
+
+  /* 静止时不跑：悬浮（仅精确指针）、键盘聚焦、点击后的播放窗口才运行 */
+  .lv-svg .anim { animation-play-state:paused; }
+  @media (hover:hover) and (pointer:fine) {
+    .level-card:hover .lv-svg .anim { animation-play-state:running; }
+    .level-card:hover .lv-zoom { transform:scale(1.075); }
+  }
+  .level-card:focus-visible .lv-svg .anim,
+  .level-card.is-playing .lv-svg .anim { animation-play-state:running; }
+  .level-card:focus-visible .lv-zoom,
+  .level-card.is-playing .lv-zoom { transform:scale(1.075); }
+
+  /* ---------- 初学：正面犁式 ---------- */
+  @keyframes n1-sway {
+    0%,100% { transform:translateY(0) rotate(-1.2deg 100 128); }
+    38%     { transform:translateY(-1.2px) rotate(-2deg 100 128); }
+    72%     { transform:translateY(.8px) rotate(1.3deg 100 128); }
+  }
+  @keyframes n1-wedge-l {
+    0%,100% { transform:rotate(0deg 0 0); }
+    50%     { transform:rotate(-3.4deg 0 0); }
+  }
+  @keyframes n1-wedge-r {
+    0%,100% { transform:rotate(0deg 0 0); }
+    50%     { transform:rotate(3.4deg 0 0); }
+  }
+  .n1-figure { animation:n1-sway 4.4s var(--ease-in-out) infinite; }
+  .n1-ski-l  { animation:n1-wedge-l 4.4s var(--ease-in-out) infinite; }
+  .n1-ski-r  { animation:n1-wedge-r 4.4s var(--ease-in-out) infinite; }
+
+  /* ---------- 中级：侧面平行式，雪杖夹在腋下 ---------- */
+  @keyframes n2-glide {
+    0%,100% { transform:translateY(0) rotate(-.7deg 96 124); }
+    50%     { transform:translateY(-1.2px) rotate(.7deg 96 124); }
+  }
+  .n2-figure { animation:n2-glide 2.9s var(--ease-in-out) infinite; }
+
+  /* ---------- 高级：正面卡宾，最高立刃瞬间 ---------- */
+  @keyframes n3-lean {
+    0%,100% { transform:rotate(-3deg 118 124); }
+    42%,64% { transform:rotate(-8deg 118 124); }
+  }
+  @keyframes n3-edge {
+    0%,100% { transform:scaleX(1); }
+    42%,64% { transform:scaleX(.64); }
+  }
+  @keyframes n3-track {
+    0%       { stroke-dashoffset:150; opacity:0; }
+    12%      { opacity:.55; }
+    46%,88%  { stroke-dashoffset:0; opacity:.5; }
+    100%     { stroke-dashoffset:0; opacity:0; }
+  }
+  .n3-figure { animation:n3-lean 2.8s var(--ease-in-out) infinite; }
+  .n3-ski    { animation:n3-edge 2.8s var(--ease-in-out) infinite; }
+  .n3-track  { stroke-dasharray:150; animation:n3-track 2.8s linear infinite; }
+
   .scroll-hint {
     position:absolute; bottom:24px; left:50%; transform:translateX(-50%);
     color:var(--dim); text-decoration:none; font-size:12px; letter-spacing:.24em;
@@ -397,6 +583,7 @@
   /* ---------- 报告页 ---------- */
   .report-head { display:flex; align-items:flex-start; justify-content:space-between; gap:18px; flex-wrap:wrap; }
   .report-head > div { min-width:0; }
+  .report-actions { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
   .report-head h1 { font-size:24px; margin:4px 0 8px; overflow-wrap:anywhere; }
   .chips { display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
   .chip {
@@ -407,6 +594,7 @@
   .chip-warn { color:var(--amber); border-color:rgba(160,98,7,.32); background:rgba(160,98,7,.07); }
   .chip-neutral { color:var(--mist); border-color:var(--hair); background:rgba(18,74,110,.04); }
   .ghost-link {
+    display:inline-flex; align-items:center; min-height:44px;
     color:var(--mist); text-decoration:none; font-size:13px; letter-spacing:.1em;
     padding:8px 2px; border-bottom:1px solid transparent; transition:color .2s, border-color .2s;
   }
@@ -428,6 +616,22 @@
   }
   .metric-num .deg { font-size:24px; margin-left:2px; }
   .metric-meta { margin:0; color:var(--mist); font-size:13px; }
+  .metric-note {
+    margin:12px 0 0; padding-top:10px; color:var(--dim); font-size:12.5px;
+    line-height:1.6; border-top:1px dashed rgba(18,74,110,.16);
+  }
+  .trust-grid { display:flex; gap:18px; flex-wrap:wrap; margin:0; }
+  .trust-grid div { min-width:120px; }
+  .trust-grid dt {
+    color:var(--dim); font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+  }
+  .trust-grid dd {
+    margin:3px 0 0; font-family:var(--din); font-size:17px; color:var(--ice-white);
+  }
+  .assumptions { margin:14px 0 0; color:var(--mist); font-size:13px; line-height:1.6; }
+  .assumptions summary { cursor:pointer; color:var(--cyan); }
+  .assumptions ul { margin:10px 0 0; padding-left:20px; }
+  .assumptions li { margin:4px 0; }
   .metric-empty {
     margin:14px 0 0; padding:12px 0; color:var(--dim); font-size:14px;
     border-top:1px dashed rgba(18,74,110,.18);
@@ -461,13 +665,14 @@
   .phase-cell .pv.none { color:var(--dim); }
   .turns-note { margin:0 0 14px; color:var(--mist); font-size:13px; }
   .video-wrap { display:flex; gap:14px; flex-wrap:wrap; align-items:stretch; }
-  .video-wrap video { flex:1 1 420px; min-width:280px; border-radius:12px;
+  .video-wrap video { flex:1 1 420px; min-width:min(280px,100%); border-radius:12px;
                       background:#000; border:1px solid var(--hair); }
   #sk3d {
-    flex:0 1 420px; min-width:260px; background:#f3f9fc; border-radius:12px;
+    flex:0 1 420px; min-width:min(260px,100%); background:#f3f9fc; border-radius:12px;
     border:2px solid rgba(6,127,160,.35); box-shadow:0 4px 16px rgba(23,58,84,.10);
-    cursor:grab; touch-action:none; align-self:flex-start;
+    cursor:grab; touch-action:pan-y; align-self:flex-start;
   }
+  #sk3d:focus-visible { outline:3px solid var(--cyan); outline-offset:3px; }
   .legend { display:flex; gap:16px; flex-wrap:wrap; color:var(--mist); font-size:12px; }
   .legend span::before { content:"■"; margin-right:5px; }
   .tl-strip {
@@ -476,356 +681,383 @@
   }
   .tl-meta { display:flex; gap:20px; align-items:center; flex-wrap:wrap; margin-top:8px;
              color:var(--dim); font-size:12px; font-family:var(--mono); }
-  .pick-grid { display:flex; gap:14px; flex-wrap:wrap; }
+  .pick-grid { display:flex; gap:14px; flex-wrap:wrap; align-items:flex-start; }
   button.pick {
     position:relative; background:#fff; border-radius:12px; padding:7px;
     border:2px solid var(--hair); color:var(--ice-white); cursor:pointer;
-    transition:border-color .2s, transform .15s, box-shadow .2s;
+    transition:border-color .22s ease, transform .15s ease, box-shadow .26s ease;
   }
-  button.pick { transition:border-color .22s ease, transform .46s var(--spring), box-shadow .26s ease; }
-  button.pick:hover { border-color:rgba(6,140,180,.5); transform:translateY(-3px) scale(1.015); }
+  @media (hover:hover) and (pointer:fine) {
+    button.pick:hover { border-color:rgba(6,140,180,.5); transform:translateY(-3px) scale(1.015); }
+  }
   button.pick:active { transform:scale(.955); transition-duration:.13s; }
+  button.pick:disabled { opacity:.5; cursor:progress; transform:none; }
   button.pick[aria-pressed="true"] {
     border-color:var(--cyan); box-shadow:0 0 0 3px rgba(6,127,160,.16);
   }
   button.pick img { width:150px; border-radius:8px; display:block; }
+  .pick-placeholder {
+    display:flex; align-items:center; justify-content:center;
+    width:150px; height:150px; border-radius:8px;
+    background:rgba(18,74,110,.06); color:var(--dim); font-size:12px;
+    border:1px dashed var(--hair);
+  }
   button.pick .pick-label { display:block; padding:6px 2px 2px; font-size:13px; }
   .foot { text-align:center; margin-top:34px; }
   .foot a { color:var(--dim); text-decoration:none; font-size:13px; letter-spacing:.1em; }
   .foot a:hover { color:var(--cyan); }
+  /* ---------- 交互增强：磁吸按钮 ---------- */
+  /* 位移动画走 translate 属性，和 hover/active 的 transform 互不覆盖 */
+  .magnet { transition:translate .38s var(--spring); }
+  .magnet.is-tracking { transition:none; }
+
+  /* ---------- 交互增强：聚光灯卡片 ---------- */
+  /* 光斑做成背景层，文字上不叠色；位置由 JS 写入 --sx/--sy。
+     --spot-a 默认 0，指针进入才淡入，静止时卡片保持原样。 */
+  @property --spot-a { syntax:"<number>"; inherits:false; initial-value:0; }
+  .spot { --spot-a:0; transition:--spot-a .24s ease; }
+  .feature.spot {
+    background-image:
+      radial-gradient(230px circle at var(--sx,50%) var(--sy,50%),
+        rgba(64,178,220,calc(.24 * var(--spot-a))), rgba(64,178,220,0) 68%),
+      linear-gradient(180deg, #ffffff, rgba(238,246,251,.85));
+  }
+  .feature--primary.spot {
+    background-image:
+      radial-gradient(230px circle at var(--sx,50%) var(--sy,50%),
+        rgba(255,255,255,calc(.78 * var(--spot-a))), rgba(255,255,255,0) 70%),
+      linear-gradient(180deg, rgba(6,140,180,.13), rgba(6,140,180,.04));
+  }
+  .metric.spot {
+    background-image:
+      radial-gradient(260px circle at var(--sx,50%) var(--sy,50%),
+        rgba(64,178,220,calc(.16 * var(--spot-a))), rgba(64,178,220,0) 66%),
+      linear-gradient(180deg, #ffffff 0%, var(--solid) 100%);
+  }
+
+  /* ---------- 交互增强：命令面板 ---------- */
+  .cmdk-trigger {
+    display:inline-flex; align-items:center; gap:7px; flex:none;
+    height:38px; padding:0 11px; margin-right:6px;
+    border:1px solid var(--hair); border-radius:11px;
+    background:rgba(255,255,255,.55); color:var(--mist);
+    font:inherit; font-size:12px; letter-spacing:.04em; cursor:pointer;
+    transition:background .2s ease, border-color .2s ease, color .2s ease,
+               transform .12s var(--ease-out);
+  }
+  .cmdk-trigger:hover {
+    color:var(--ice-white); border-color:rgba(6,140,180,.4);
+    background:rgba(255,255,255,.85);
+  }
+  .cmdk-trigger:active { transform:scale(.94); }
+  .cmdk-trigger svg {
+    width:15px; height:15px; fill:none; stroke:currentColor;
+    stroke-width:1.8; stroke-linecap:round;
+  }
+  .cmdk-kbd {
+    font-family:var(--mono); font-size:10px; letter-spacing:.02em;
+    padding:2px 5px; border-radius:5px; color:var(--dim);
+    background:rgba(18,74,110,.06); border:1px solid rgba(18,74,110,.12);
+  }
+  .cmdk {
+    position:fixed; inset:0; z-index:60; display:flex; justify-content:center;
+    align-items:flex-start; padding:min(15vh,128px) 16px 16px;
+    background:rgba(10,43,64,.30);
+    -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+    opacity:0; transition:opacity .16s ease;
+  }
+  .cmdk[hidden] { display:none; }
+  .cmdk.show { opacity:1; }
+  .cmdk-panel {
+    width:min(560px,100%); overflow:hidden; border-radius:16px;
+    background:rgba(255,255,255,.97); border:1px solid rgba(18,74,110,.18);
+    box-shadow:0 32px 80px rgba(14,58,85,.30), inset 0 1px 0 #fff;
+    transform:translate3d(0,-10px,0) scale(.985); opacity:0;
+    transition:transform .24s var(--spring), opacity .18s ease;
+  }
+  .cmdk.show .cmdk-panel { transform:none; opacity:1; }
+  .cmdk-panel .cmdk-input {
+    width:100%; margin:0; border:0; border-bottom:1px solid var(--hair);
+    border-radius:0; padding:17px 20px; font-size:16px; color:var(--ice-white);
+    background:transparent; box-shadow:none; outline:none;
+  }
+  .cmdk-panel .cmdk-input::placeholder { color:var(--dim); }
+  .cmdk-panel .cmdk-input:focus { border-color:var(--hair); box-shadow:none; }
+  .cmdk-list {
+    max-height:min(52vh,380px); overflow-y:auto; padding:8px;
+    overscroll-behavior:contain;
+  }
+  .cmdk-item {
+    display:flex; align-items:center; gap:12px; width:100%;
+    padding:10px 12px; border:0; border-radius:10px; background:none;
+    color:var(--ice-white); font:inherit; text-align:left; cursor:pointer;
+  }
+  .cmdk-item[aria-selected="true"] {
+    background:rgba(6,107,136,.10);
+    box-shadow:inset 0 0 0 1px rgba(6,107,136,.14);
+  }
+  .cmdk-item .ci {
+    flex:none; width:30px; height:30px; border-radius:9px;
+    display:grid; place-items:center; color:var(--cyan);
+    background:rgba(6,140,180,.09); box-shadow:inset 0 0 0 1px rgba(6,140,180,.10);
+  }
+  .cmdk-item .ci svg {
+    width:15px; height:15px; fill:none; stroke:currentColor;
+    stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round;
+  }
+  .cmdk-item .ct { min-width:0; display:flex; flex-direction:column; }
+  .cmdk-item .ct b {
+    font-weight:600; font-size:14px; letter-spacing:.02em;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .cmdk-item .ct small {
+    color:var(--dim); font-size:11.5px;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .cmdk-item .ch {
+    margin-left:auto; flex:none; color:var(--dim);
+    font-family:var(--mono); font-size:10px;
+  }
+  .cmdk-empty { padding:22px 16px; text-align:center; color:var(--dim); font-size:13px; }
+  .cmdk-foot {
+    display:flex; gap:16px; flex-wrap:wrap; padding:9px 16px;
+    border-top:1px solid var(--hair); color:var(--dim); font-size:11px;
+  }
+  .cmdk-foot kbd {
+    font-family:var(--mono); font-size:10px; padding:1px 4px; margin-right:3px;
+    border:1px solid rgba(18,74,110,.16); border-radius:4px;
+    background:rgba(18,74,110,.04);
+  }
+
+  /* ---------- 交互增强：参考带进度生长 ---------- */
+  .band.prep .band-fill { transform:scaleX(0); opacity:0; }
+  .band.prep.in .band-fill {
+    transform:scaleX(1); opacity:1;
+    transition:transform .9s var(--ease-out), opacity .3s ease;
+  }
+  .band.prep .band-mark { opacity:0; transform:translate(-50%,-50%) scale(.4); }
+  .band.prep.in .band-mark {
+    opacity:1; transform:translate(-50%,-50%) scale(1);
+    transition:opacity .28s .22s ease, transform .5s .2s var(--spring);
+  }
+
+  /* ---------- 交互增强：候选人物悬停大图 ---------- */
+  .pick-peek {
+    position:fixed; z-index:40; width:264px; padding:8px 8px 4px;
+    background:#fff; border:1px solid var(--hair); border-radius:14px;
+    box-shadow:0 22px 54px rgba(23,58,84,.24), inset 0 1px 0 #fff;
+    pointer-events:none; opacity:0; transform:scale(.94);
+    transition:opacity .14s ease, transform .2s var(--spring);
+  }
+  .pick-peek.show { opacity:1; transform:none; }
+  .pick-peek img { width:100%; border-radius:9px; display:block; }
+  .pick-peek .pick-peek-label {
+    display:block; padding:6px 4px 3px; font-size:12px; color:var(--mist);
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior:auto; }
-    body::before, .ice-slab, .sweep, .spk, .scroll-hint, .hero-sub, .eyebrow,
-    .features, .st-running::before, .brand .mark .crystal { animation:none !important; }
-    nav, .nav-pill, .btn, .feature, button.pick, .brand, .brand .wordmark-svg,
-    .brand .mark, .checkline input[type=checkbox],
-    .checkline input[type=checkbox]::after { transition:none !important; }
+    .btn.is-busy::after,
+    button.retry.is-busy::after,
+    button.cancel.is-busy::after,
+    button.pick.is-busy::after { animation:none; opacity:.85; }
+    .upload-progress-bar { transition:none; }
+    #reject { transition:none; }
+    .magnet { transition:none !important; }
+    .cmdk, .cmdk-panel, .pick-peek { transition:none !important; }
+    .band.prep .band-fill { transform:none; opacity:1; transition:none; }
+    .band.prep .band-mark {
+      opacity:1; transform:translate(-50%,-50%); transition:none;
+    }
+    body::before, .hero-kicker, .hero-lockup, .hero-sub, .scroll-hint,
+    .features, .st-running::before { animation:none !important; }
+    nav, .nav-pill, .btn, .feature, button.pick, button.retry,
+    nav .nav-links a, select,
+    input[type=text], .dropzone, .ghost-link, .foot a,
+    .checkline input[type=checkbox],
+    .checkline input[type=checkbox]::after, .level-card {
+      transition-property: background-color, border-color, color, box-shadow, opacity !important;
+      transition-duration: .15s !important;
+    }
     main { animation:none !important; }
-    .burst { display:none; }
+    /* 减弱动效时只留静止姿态：不播放、不放大 */
+    .lv-svg .anim { animation:none !important; }
+    .lv-zoom { transition:none !important; }
+    .level-card:hover .lv-zoom,
+    .level-card:focus-visible .lv-zoom,
+    .level-card.is-playing .lv-zoom { transform:none !important; }
+  }
+  @media (max-width:560px) {
+    .level-card { flex:1 1 0; min-width:0; padding:6px 5px 8px; }
+    .lv-name { font-size:12.5px; letter-spacing:.06em; }
+    .lv-en { display:none; }
+    .cmdk-kbd { display:none; }
+    .cmdk-trigger { width:40px; padding:0; justify-content:center; margin-right:2px; }
+    .brand-sub { display:none; }
   }
   @media (max-width:720px) {
     main { padding:0 14px 48px; }
     .panel { padding:20px; }
     nav { padding:0 8px 0 6px; }
     .brand { gap:8px; padding:6px 8px 6px 4px; }
-    .brand .mark { width:26px; height:26px; }
-    .brand .wordmark-svg { height:20px; }
-    nav.scrolled .brand .wordmark-svg { height:18px; }
+    .brand .mark { width:28px; height:28px; }
+    .brand-wordmark { height:14px; }
+    .brand-sub { font-size:9.5px; letter-spacing:.08em; }
     nav .nav-links a { font-size:12.5px; letter-spacing:.04em; padding:0 11px; min-height:44px; }
     .feature { width:calc(50% - 9px); }
+    .hero { padding:40px 10px 72px; }
+    .hero-kicker { font-size:11px; letter-spacing:.16em; text-indent:.16em; }
+    .hero-kicker::before, .hero-kicker::after { width:28px; }
+    .hero-band { padding:0 14px; }
+    .hero-band dd { font-size:16px; }
+    .hero-sub { font-size:13px; letter-spacing:.06em; }
   }
   @media (max-width:420px) {
-    .brand .wordmark-svg { height:17px; }
-    .brand { gap:7px; padding:6px 6px 6px 4px; }
+    .brand { gap:6px; padding:6px 4px; }
+    .brand .mark { width:24px; height:24px; }
+    .brand-wordmark { height:12.5px; }
+    nav .nav-links a { padding:0 9px; font-size:12px; letter-spacing:.02em; }
+    .hero-kicker { gap:8px; font-size:10.5px; letter-spacing:.14em; text-indent:.14em; }
+    .hero-kicker::before, .hero-kicker::after { width:22px; }
+    .hero-bands { margin-top:20px; }
+    .hero-band { padding:0 10px; }
+    .hero-band dt { font-size:10px; letter-spacing:.1em; }
+    .hero-band dd { font-size:15px; }
+    .hero-band-note { font-size:10px; letter-spacing:.02em; }
   }
   @media (max-width:400px) {
-    .hero { padding-bottom:104px; }
-    .hero-sub { letter-spacing:.3em; text-indent:.3em; }
     .metric-grid { grid-template-columns:1fr; }
+  }
+  @media (max-height:760px) {
+    .hero { padding-top:32px; }
+    .hero-kicker { margin-bottom:16px; }
+    .hero-bands { margin-top:18px; }
+    .hero-sub { margin-top:14px; }
+    .features { margin-top:32px; }
+  }
+  @media (forced-colors: active) {
+    .mark .mk-bone { stroke:CanvasText; }
+    .mark .mk-joint, .mark .mk-knee { fill:CanvasText; }
+    .mark .mk-ski { stroke:LinkText; }
+    .brand-wordmark, .hero-wordmark { color:CanvasText; }
+    .file-cta {
+      background:ButtonFace; color:ButtonText; border:1px solid ButtonText;
+      box-shadow:none; filter:none;
+    }
+    .hero-band + .hero-band { border-left-color:CanvasText; }
+    .metric-num {
+      color:CanvasText !important; -webkit-text-fill-color:CanvasText !important;
+      background:none !important;
+    }
+    .band-fill, .band-mark { forced-color-adjust:none; }
+    .panel { border:1px solid CanvasText; }
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    nav, .panel--solid, .nav-links {
+      -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+      background:#fff !important;
+    }
+  }
+  @media (prefers-contrast: more) {
+    :root { --hair:rgba(18,74,110,.42); --dim:#2b4a5e; --mist:#35566b; }
+    .panel { border-color:var(--hair); }
+  }
+  @media print {
+    nav, #snow, .scroll-hint, .skip-link, .foot, .tl-strip, .tl-meta,
+    .video-wrap, .pick-grid, #replay-status, #replay-retry-wrap,
+    button, .ghost-link, noscript { display:none !important; }
+    body::before, body::after { display:none !important; }
+    main { padding:0 !important; max-width:none !important; }
+    .panel {
+      box-shadow:none !important; border:1px solid #bbb !important;
+      background:#fff !important; break-inside:avoid;
+    }
+    .metric-grid { grid-template-columns:1fr 1fr; gap:12px; }
+    .metric-num {
+      color:#000 !important; -webkit-text-fill-color:#000 !important;
+      background:none !important;
+    }
+    a { color:#000; text-decoration:none; }
+    /* 打印不等视口动画：参考带按终态出图 */
+    .band.prep .band-fill { transform:none !important; opacity:1 !important; }
+    .band.prep .band-mark {
+      opacity:1 !important; transform:translate(-50%,-50%) !important;
+    }
   }
 </style>
 </head>
-<body{% if low_density %} data-density="low"{% endif %}>
+<body>
+<svg class="wordmark-sprite" width="0" height="0" aria-hidden="true" focusable="false">
+  <defs>
+    <!-- 字标：修悦体（佐藤修悦车站胶带字）风格——笔画等粗、网格化对齐、
+         转角为胶带弯折的圆弧、端头垂直平切；I 为雪板侧影（板头上挑）。
+         填色多边形，不依赖字体。由 .scratch/shuetsu_gen.py 生成。 -->
+    <g id="ski-wordmark" fill="currentColor" stroke="none">
+      <g transform=""><path d="M55.9 7.0L23.9 7.4L18.6 9.1L14.2 12.2L11.1 16.6L9.5 21.6L9.0 26.8L9.4 42.2L11.1 47.4L14.2 51.8L18.6 54.9L23.6 56.5L28.5 57.0L33.6 57.3L35.0 57.8L35.7 58.3L36.2 59.0L36.7 60.5L37.0 63.2L36.7 75.7L36.2 77.0L35.7 77.7L35.0 78.2L33.5 78.7L30.7 79.0L4.0 79.0L4.0 93.0L31.3 93.0L36.4 92.5L41.4 90.9L45.8 87.8L48.9 83.4L50.6 78.2L51.0 62.8L50.5 57.6L48.9 52.6L45.8 48.2L41.4 45.1L36.3 43.4L29.5 43.0L26.5 42.7L25.0 42.2L24.3 41.7L23.8 41.0L23.3 39.7L23.0 27.2L23.3 24.5L23.8 23.0L24.3 22.3L25.0 21.8L26.2 21.3L56.1 21.0Z"/></g>
+      <g transform="translate(85 0)"><path d="M1.5 8.0L1.7 43.0L3.2 47.6L7.3 51.6L13.0 52.1L17.2 50.4L20.5 48.1L54.5 19.4L45.5 8.6L11.8 37.0L10.4 38.1L10.8 37.9L13.5 38.1L15.5 40.1L15.7 40.7L15.5 8.0Z"/><path d="M15.5 92.0L15.5 38.0L1.5 38.0L1.5 92.0Z"/><path d="M6.5 58.4L47.5 92.4L56.5 81.6L15.5 47.6Z"/></g>
+      <g transform="translate(168 0)"><path d="M37.0 92.0L36.7 41.7L35.6 36.3L33.8 31.3L31.3 26.6L28.2 22.3L24.5 18.6L12.7 7.8L3.3 18.2L14.8 28.6L17.4 31.4L19.5 34.1L21.0 37.0L22.1 40.1L22.7 43.2L23.0 92.0Z"/></g>
+      <g transform="translate(232 0)"><path d="M4.0 22.0L56.0 22.0L56.0 8.0L4.0 8.0Z"/><path d="M23.0 15.0L23.0 92.0L37.0 92.0L37.0 15.0Z"/></g>
+      <g transform="translate(310 0)"><path d="M8.0 8.0L8.3 60.8L10.0 65.9L13.0 70.0L17.1 73.0L21.9 74.6L26.8 75.0L37.9 74.6L42.9 73.0L47.0 70.0L50.0 65.9L51.6 61.1L52.0 56.3L52.0 8.0L38.0 8.0L38.0 55.7L37.8 58.2L37.4 59.5L37.0 60.0L36.5 60.4L35.4 60.7L27.2 61.0L24.8 60.8L23.5 60.4L23.0 60.0L22.6 59.5L22.3 58.5L22.0 8.0Z"/></g>
+      <g transform="translate(388 0)"><path d="M4.0 22.0L56.0 22.0L56.0 8.0L4.0 8.0Z"/><path d="M23.0 15.0L23.0 92.0L37.0 92.0L37.0 15.0Z"/></g>
+      <g transform="translate(469 0)"><path fill-rule="evenodd" d="M27 8h6a22 22 0 0 1 22 22v40a22 22 0 0 1 -22 22h-6a22 22 0 0 1 -22 -22v-40a22 22 0 0 1 22 -22Z M27 21h6a9 9 0 0 1 9 9v40a9 9 0 0 1 -9 9h-6a9 9 0 0 1 -9 -9v-40a9 9 0 0 1 9 -9Z"/></g>
+      <g transform="translate(552 0)"><path d="M1.5 8.0L1.5 92.0L15.5 92.0L15.5 8.0Z"/><path d="M14.9 22.0L35.9 22.3L36.3 22.4L36.6 22.7L36.8 23.4L37.0 25.3L36.7 39.9L36.6 40.3L36.3 40.6L35.6 40.8L33.7 41.0L15.0 41.0L15.0 55.0L34.3 55.0L38.5 54.6L42.8 53.2L46.5 50.5L49.2 46.8L50.7 42.3L51.0 24.7L50.6 20.5L49.2 16.2L46.5 12.5L42.8 9.8L38.2 8.3L15.1 8.0Z"/><path d="M14.6 54.5L45.6 91.5L56.4 82.5L25.4 45.5Z"/></g>
+    </g>
+  </defs>
+</svg>
+<a class="skip-link" href="#main">跳到主要内容</a>
+<noscript>
+  <div class="notice" style="margin:12px auto;max-width:900px">
+    本页的上传、任务刷新和报告切换依赖 JavaScript。请启用 JavaScript 后重试。
+  </div>
+</noscript>
 <canvas id="snow" aria-hidden="true"></canvas>
 <nav id="topnav">
-  <a class="brand" href="/" aria-label="SKITUTOR 首页">
-    <!-- 技术标识：六棱冰砖切面 + 红色雪板斜切，和标题里的双板同一套语言 -->
+  <a class="brand" href="/" aria-label="SKITUTOR BODY ANALYSIS 首页">
+    <!-- 屈体刻滑标记：实心头/髋/踝，被测膝点嵌在腿笔画断口，雪板作坡面基准线（整板坡线朝左下，板头弧段加长、末端微微上翘，板尾截短；人形不镜像，脚仍踩板线）。
+         <20px 时踝点与板线粘连属预期退化，头/躯干/板三笔画保证可辨；几何与 README lockup 同源。 -->
     <svg class="mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-      <defs>
-        <linearGradient id="mkIce" x1="0" y1="0" x2="0" y2="32" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stop-color="#bfe8fa"/><stop offset=".55" stop-color="#7cc6e6"/>
-          <stop offset="1" stop-color="#3f93bd"/>
-        </linearGradient>
-        <linearGradient id="mkSki" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stop-color="#ff8f74"/><stop offset="1" stop-color="#cf2130"/>
-        </linearGradient>
-      </defs>
-      <g class="crystal">
-        <!-- 六棱冰砖：外轮廓 + 中心切面 -->
-        <path d="M16 2.6 27.4 9.2v13.6L16 29.4 4.6 22.8V9.2Z"
-              fill="url(#mkIce)" stroke="#0a2b40" stroke-width="1.7" stroke-linejoin="round"/>
-        <path d="M16 16 4.6 9.2M16 16l11.4-6.8M16 16v13.4"
-              fill="none" stroke="rgba(255,255,255,.8)" stroke-width="1"/>
-        <path d="M4.6 9.2 16 16l11.4-6.8" fill="none"
-              stroke="rgba(10,43,64,.4)" stroke-width="1"/>
-      </g>
-      <!-- 一对红色雪板斜切过冰砖：两条平行板，板头圆角 -->
-      <g stroke="#0a2b40" stroke-width="1.1" stroke-linecap="round">
-        <path d="M8.4 22.6 19.6 7.6" stroke="url(#mkSki)" stroke-width="3.4"/>
-        <path d="M12.6 25.6 23.8 10.6" stroke="url(#mkSki)" stroke-width="3"/>
-      </g>
-      <g stroke="rgba(255,255,255,.55)" stroke-width=".9" stroke-linecap="round">
-        <path d="M8.9 22 19.2 8.2"/><path d="M13.1 25 23.4 11.2"/>
-      </g>
+      <path class="mk-ski" d="M26.76 24.3 8.93 28.8Q6.7 29.35 4.7 27.9"/>
+      <path class="mk-bone" d="M15.03 5.17 21.47 15.17M21.47 15.17 17.56 16.44M15.14 20.35 16.18 26.44"/>
+      <circle class="mk-joint" cx="15.03" cy="5.17" r="3.55"/>
+      <circle class="mk-joint" cx="21.47" cy="15.17" r="3.3"/>
+      <circle class="mk-joint" cx="16.18" cy="26.44" r="2.3"/>
+      <circle class="mk-knee" cx="14.68" cy="17.36" r="2.5"/>
     </svg>
-    <svg class="wordmark-svg" viewBox="-4 -8 662 118" aria-hidden="true" focusable="false">
-      <defs>
-        <linearGradient id="nbBody" x1="0" y1="-4" x2="0" y2="104" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stop-color="#6bb4d6"/><stop offset=".3" stop-color="#a9dcf3"/>
-          <stop offset=".55" stop-color="#e2f7ff"/><stop offset=".72" stop-color="#f7ffff"/>
-          <stop offset="1" stop-color="#5c9cbe"/>
-        </linearGradient>
-        <linearGradient id="nbRed" x1="0" y1="0" x2="0" y2="100" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stop-color="#ff9a80"/><stop offset=".42" stop-color="#ee4a42"/>
-          <stop offset="1" stop-color="#cf2130"/>
-        </linearGradient>
-        <g id="nbLetters">
-            <path d="M-1.7 2.5L7.5 0.0L15.6 0.6L24.3 -0.4L27.0 5.1L29.5 -0.0L39.1 -1.6L51.4 -1.3L61.4 -1.2L61.4 7.2L62.9 18.5L51.8 19.2L41.7 19.1L30.1 19.7L18.6 21.0L18.4 26.0L22.2 31.6L19.0 28.3L19.8 40.0L29.6 39.6L42.3 38.5L51.3 37.9L62.6 38.0L64.3 51.2L64.2 61.9L64.7 73.8L66.7 86.3L66.1 97.6L54.6 99.5L41.9 98.9L28.4 101.5L15.8 102.1L2.1 102.5L0.9 91.5L0.7 82.3L13.2 82.3L24.6 81.7L34.7 81.3L45.9 79.0L46.3 69.0L43.9 58.6L33.4 59.1L23.8 61.7L10.7 60.0L0.6 61.1L0.1 50.6L-1.4 37.5L-0.2 25.5L-2.3 14.8Z"/>
-            <path d="M84.3 1.6L94.3 1.1L104.0 2.2L103.7 13.4L102.3 26.3L103.2 39.3L102.1 52.5L100.5 64.4L100.6 76.7L101.6 88.4L101.1 100.8L92.4 101.4L90.9 96.3L90.4 101.1L80.7 100.0L80.4 89.1L80.1 76.8L80.8 63.8L81.1 50.8L82.3 37.2L83.5 25.8L83.8 13.5Z M103.0 25.6L110.5 21.0L118.1 15.2L128.5 8.5L136.2 3.0L147.9 2.8L147.3 7.0L142.5 11.7L147.2 8.4L147.1 17.7L138.1 24.6L128.4 31.1L118.9 38.2L110.3 47.3L102.0 52.9L102.2 43.2L102.8 34.8Z M102.7 49.2L111.6 56.8L120.5 65.8L126.3 74.1L135.6 80.8L144.1 89.7L143.4 96.8L144.0 103.4L131.9 101.9L125.6 96.8L115.7 91.4L110.1 83.0L100.2 77.7L100.4 68.8L101.6 59.5Z"/>
-            <path d="M248.3 -2.8L260.8 -2.5L271.9 -2.8L282.7 -2.5L285.8 3.2L289.0 -1.9L301.0 -0.9L312.8 -0.6L311.6 7.7L308.1 11.2L311.4 9.9L312.1 20.4L299.3 18.6L289.8 19.1L287.5 29.5L288.9 42.1L287.9 51.9L287.1 62.9L286.3 75.3L287.2 87.2L285.6 97.9L275.3 98.4L265.8 96.9L267.2 86.4L268.1 74.8L267.6 63.1L268.1 53.1L269.6 40.9L268.7 27.8L269.9 17.4L258.1 15.9L246.5 16.4L249.0 7.4Z"/>
-            <path d="M326.7 2.4L335.6 0.9L346.4 0.6L346.9 14.1L347.2 25.7L346.4 39.4L347.0 52.6L348.0 65.1L349.4 77.6L361.0 76.2L372.6 77.5L371.8 63.3L372.0 51.4L372.4 38.0L372.4 24.6L371.5 13.5L370.9 -0.0L380.8 1.5L390.5 -0.8L391.9 12.0L389.9 22.3L390.1 31.0L392.2 43.3L387.8 48.0L392.0 50.2L392.7 63.8L393.3 75.2L392.8 86.3L387.0 91.9L380.3 99.7L366.9 99.6L356.2 100.2L344.6 100.7L337.4 95.5L329.4 88.2L329.7 76.2L327.4 64.4L327.6 51.5L327.6 40.1L327.0 27.7L325.5 14.0Z"/>
-            <path d="M408.6 5.2L421.0 4.4L432.1 3.0L442.8 2.2L446.4 7.7L449.2 2.3L461.2 2.1L472.9 1.3L472.6 9.7L469.5 13.5L472.6 11.9L474.3 22.2L461.4 21.7L451.9 23.1L450.7 33.7L453.3 46.1L453.3 56.0L453.4 67.0L453.9 79.4L455.9 91.2L455.4 101.9L445.1 103.5L435.5 102.9L435.9 92.2L435.7 80.6L434.1 69.0L433.6 59.0L434.0 46.8L431.8 33.8L432.0 23.3L420.1 23.0L408.7 24.6L410.3 15.4Z"/>
-            <path d="M510.9 -1.6L522.3 -2.0L532.8 0.2L542.0 -0.7L548.7 7.5L547.2 11.2L550.0 8.7L557.7 16.8L557.4 29.2L557.3 40.3L555.2 50.9L556.2 62.6L556.0 74.5L553.5 84.6L545.4 91.4L537.3 100.7L527.5 98.2L515.4 98.2L506.1 98.0L496.8 89.7L489.8 80.5L491.1 71.3L492.2 59.4L491.0 47.5L493.0 36.8L493.2 23.5L494.6 13.0L502.9 5.7Z M522.1 18.6L512.5 26.3L512.5 38.2L511.7 48.9L511.1 60.0L510.2 71.0L519.3 77.9L527.0 79.7L535.2 70.9L536.1 61.4L536.3 50.9L537.8 39.1L538.0 27.1L529.2 19.3Z"/>
-            <path d="M572.3 3.9L585.5 3.0L598.1 3.0L600.7 7.6L603.7 1.8L614.0 0.7L624.0 0.8L635.8 0.1L636.6 11.9L638.3 24.5L638.0 36.2L637.2 45.5L638.5 57.3L640.0 69.2L639.7 80.3L626.9 81.7L617.5 80.9L607.3 83.3L595.4 83.3L596.8 91.3L596.2 102.8L586.3 102.3L575.9 103.3L576.3 89.3L574.6 77.6L575.2 64.5L572.8 52.1L572.5 40.5L574.1 27.7L571.6 16.2Z M592.7 22.5L594.0 32.3L594.4 42.7L595.0 53.1L595.1 62.8L605.7 62.0L618.9 62.1L618.6 52.6L618.5 41.7L617.6 30.3L617.0 22.0L606.2 23.0Z M609.2 64.4L619.6 69.3L629.2 75.3L638.4 80.9L638.4 90.8L639.1 100.3L627.6 101.7L622.4 91.6L618.9 84.0L614.2 73.8Z"/>
-        </g>
-        <g id="nbSkis">
-            <path d="M180.7 10.5C180.0 4.1 182.5 1.1 185.6 0.9C188.7 0.7 191.5 3.3 191.7 9.7L192.8 17.7C192.9 29.7 192.0 34.8 192.4 41.7C192.8 48.7 194.2 55.7 195.8 65.6L196.9 77.5C197.4 84.5 197.6 91.5 197.5 96.0L197.5 97.7L187.2 100.0L186.8 96.8C185.9 90.3 185.2 83.3 185.0 74.3L184.5 58.3C184.7 50.3 184.8 45.3 184.6 42.3C184.3 38.3 182.6 28.4 181.3 20.5Z"/>
-            <path d="M204.0 9.7C204.0 3.3 206.9 0.7 210.0 0.9C213.1 1.1 215.6 4.0 214.9 10.4L214.9 18.4C213.5 30.4 212.0 35.3 211.5 42.3C211.0 49.2 211.4 56.3 211.7 66.3L211.3 78.3C210.9 85.3 210.1 92.3 209.5 96.7L209.2 98.4L198.7 99.4L198.7 96.1C198.7 89.6 198.9 82.6 199.8 73.6L201.4 57.7C202.7 49.7 203.4 44.8 203.6 41.8C203.8 37.8 203.5 27.7 203.2 19.7Z"/>
-        </g>
-      </defs>
-      <use href="#nbLetters" transform="translate(1.6,2.4)" fill="#2f7fa3"/>
-      <use href="#nbSkis" transform="translate(1.6,2.4)" fill="#2f7fa3"/>
-      <use href="#nbLetters" fill="none" stroke="#0a2b40" stroke-width="7" stroke-linejoin="round"/>
-      <use href="#nbSkis" fill="none" stroke="#0a2b40" stroke-width="7" stroke-linejoin="round"/>
-      <use href="#nbLetters" fill="url(#nbBody)"/>
-      <use href="#nbSkis" fill="url(#nbRed)"/>
-    </svg>
+    <span class="brand-text">
+      <svg class="wordmark brand-wordmark" viewBox="0 0 612 100" aria-hidden="true" focusable="false"><use href="#ski-wordmark"/></svg>
+      <span class="brand-sub" aria-hidden="true">BODY ANALYSIS</span>
+    </span>
   </a>
+  <button class="cmdk-trigger" id="cmdkopen" type="button"
+          aria-haspopup="dialog" aria-controls="cmdk-dialog" aria-label="打开命令面板">
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <circle cx="11" cy="11" r="6.4"/><path d="M16 16l4 4"/>
+    </svg>
+    <span class="cmdk-kbd" id="cmdkkey">Ctrl K</span>
+  </button>
   <div class="nav-links" id="navlinks">
     <span class="nav-pill" id="navpill" aria-hidden="true"></span>
-    <a href="/" {% if active == 'upload' %}class="active"{% endif %}>上传分析</a>
-    <a href="/tasks" {% if active == 'tasks' %}class="active"{% endif %}>任务</a>
-    <a href="/compare" {% if active == 'compare' %}class="active"{% endif %}>对比</a>
+    <a href="/" {% if active == 'upload' %}class="active" aria-current="page"{% endif %}>上传分析</a>
+    <a href="/tasks" {% if active == 'tasks' %}class="active" aria-current="page"{% endif %}>任务</a>
+    <a href="/compare" {% if active == 'compare' %}class="active" aria-current="page"{% endif %}>对比</a>
   </div>
 </nav>
-<main>
+<main id="main">
 {% block content %}{% endblock %}
 </main>
-<script>
-(() => {
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
-
-  /* ---------- 顶部栏：滚动后凝结成霜玻璃 + 药丸高亮跟随 ---------- */
-  const nav = document.getElementById('topnav');
-  const links = document.getElementById('navlinks');
-  const pill = document.getElementById('navpill');
-  function movePill(instant) {
-    if (!links || !pill) return;
-    const cur = links.querySelector('a.active');
-    if (!cur) { pill.classList.remove('on'); return; }
-    const lr = links.getBoundingClientRect(), cr = cur.getBoundingClientRect();
-    if (instant) pill.style.transition = 'none';
-    pill.style.width = cr.width + 'px';
-    pill.style.transform = 'translateX(' + (cr.left - lr.left) + 'px)';
-    if (instant) { pill.offsetWidth; pill.style.transition = ''; }
-    pill.classList.add('on');
-  }
-  if (nav) {
-    // 顶部哨兵离开视口 = 页面已滚动：比逐帧读 scrollY 稳，也是 iOS 导航折叠的做法
-    const sentinel = document.createElement('div');
-    sentinel.setAttribute('aria-hidden', 'true');
-    sentinel.style.cssText =
-      'position:absolute;top:0;left:0;width:1px;height:1px;pointer-events:none';
-    document.body.prepend(sentinel);
-    const apply = () => nav.classList.toggle('scrolled', scrollY > 8);
-    if ('IntersectionObserver' in window) {
-      new IntersectionObserver(([e]) => nav.classList.toggle('scrolled', !e.isIntersecting),
-                               { threshold: 0 }).observe(sentinel);
-    }
-    addEventListener('scroll', apply, { passive: true });
-    apply();
-    movePill(true);
-    addEventListener('resize', () => movePill(true));
-    // 字体加载完成后药丸宽度会变，重新量一次
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => movePill(true));
-  }
-
-  /* ---------- 首页轻微视差：标题随滚动上移，卡片滞后一点 ---------- */
-  const heroEl = document.querySelector('.hero');
-  const slab = document.querySelector('.ice-slab');
-  const feats = document.querySelector('.features');
-  if (heroEl && slab && !reduce.matches) {
-    let hpTicking = false;
-    const parallax = () => {
-      const y = Math.min(scrollY, heroEl.offsetHeight);
-      slab.style.setProperty('--py', (y * -0.10).toFixed(2) + 'px');
-      if (feats) feats.style.setProperty('--pyf', (y * -0.045).toFixed(2) + 'px');
-      hpTicking = false;
-    };
-    addEventListener('scroll', () => {
-      if (!hpTicking) { hpTicking = true; requestAnimationFrame(parallax); }
-    }, { passive: true });
-  }
-
-  /* ---------- 雪花：一张 64×64 精灵，逐帧只做 drawImage ---------- */
-  const cv = document.getElementById('snow');
-  if (cv) {
-    const g = cv.getContext('2d');
-    const DPR = Math.min(devicePixelRatio || 1, 2);
-    const lowDensity = document.body.dataset.density === 'low';
-    let W = 0, H = 0, flakes = [], wind = 8, windTarget = 8,
-        pointerX = null, raf = 0, last = 0, t = 0;
-
-    // 六角雪花精灵：冷蓝晶体 + 淡光晕（浅底上也看得见），逐帧只做 drawImage
-    const sprite = document.createElement('canvas');
-    sprite.width = sprite.height = 64;
-    (() => {
-      const c = sprite.getContext('2d');
-      const grad = c.createRadialGradient(32, 32, 0, 32, 32, 30);
-      grad.addColorStop(0, 'rgba(255,255,255,.95)');
-      grad.addColorStop(.2, 'rgba(150,205,232,.55)');
-      grad.addColorStop(.55, 'rgba(120,180,215,.14)');
-      grad.addColorStop(1, 'rgba(120,180,215,0)');
-      c.fillStyle = grad;
-      c.beginPath(); c.arc(32, 32, 30, 0, 7); c.fill();
-      c.strokeStyle = 'rgba(52,118,158,.72)';
-      c.lineWidth = 2; c.lineCap = 'round';
-      for (let i = 0; i < 3; i++) {           // 六角晶体：三条直径 + 每端两枝
-        c.save(); c.translate(32, 32); c.rotate(i * Math.PI / 3);
-        c.beginPath(); c.moveTo(0, -22); c.lineTo(0, 22); c.stroke();
-        c.beginPath();
-        c.moveTo(0, -14); c.lineTo(6, -20); c.moveTo(0, -14); c.lineTo(-6, -20);
-        c.moveTo(0, 14); c.lineTo(6, 20); c.moveTo(0, 14); c.lineTo(-6, 20);
-        c.stroke(); c.restore();
-      }
-    })();
-
-    const rnd = () => Math.random();
-    function makeFlake(fromTop) {
-      const depth = Math.pow(rnd(), 1.7);
-      return {
-        x: rnd() * W, y: fromTop ? -20 : rnd() * H,
-        // 大小刻意拉开：近处大颗、远处小点，比例差到 8 倍
-        r: 0.8 + Math.pow(depth, 1.15) * 6.4,
-        vy: 9 + depth * 38,
-        windBase: 8 + depth * 14,
-        swayAmp: 6 + depth * 22,
-        swayHz: 0.05 + rnd() * 0.12,
-        phase: rnd() * Math.PI * 2,
-        alpha: 0.22 + depth * 0.46,
-        spin: (rnd() - 0.5) * 0.6 * depth,
-        rot: rnd() * Math.PI * 2,
-      };
-    }
-    function resize() {
-      W = innerWidth; H = innerHeight;
-      cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
-      cv.style.width = W + 'px'; cv.style.height = H + 'px';
-      g.setTransform(DPR, 0, 0, DPR, 0, 0);
-      // 数量加密：1080p 下约 240 颗，大屏封顶 400，窄屏仍有 130
-      const n = Math.round(W * H / 4800);
-      const count = Math.max(130, Math.min(400, n)) * (lowDensity ? 0.55 : 1);
-      flakes = Array.from({ length: Math.round(count) }, () => makeFlake(false));
-    }
-    function step(dt) {
-      const windBase = pointerX == null ? 8 : 8 + (pointerX / W - 0.5) * 18;
-      windTarget = windBase + 6 * Math.sin(performance.now() * 0.00012);
-      wind += (windTarget - wind) * 0.04;
-      t += dt;
-      g.clearRect(0, 0, W, H);
-      for (const f of flakes) {
-        f.y += f.vy * dt;
-        f.x += (wind + Math.sin(t * Math.PI * 2 * f.swayHz + f.phase) * f.swayAmp * 0.35) * dt;
-        f.rot += f.spin * dt;
-        if (f.y - f.r > H) { f.y = -f.r - rnd() * 40; f.x = rnd() * W; }
-        if (f.x - f.r > W) f.x = -f.r;
-        if (f.x + f.r < 0) f.x = W + f.r;
-        const light = 0.72 + 0.28 * (1 - f.y / H);       // 高处清晰、贴地处淡
-        const twinkle = 0.82 + 0.18 * Math.sin(t * 1.7 + f.phase);
-        const s = f.r * 3.2;
-        g.globalAlpha = Math.min(1, f.alpha * light * twinkle);
-        g.save(); g.translate(f.x, f.y); g.rotate(f.rot);
-        g.drawImage(sprite, -s / 2, -s / 2, s, s);
-        g.restore();
-      }
-      g.globalAlpha = 1;
-    }
-    function loop(now) {
-      const dt = Math.min(1 / 30, (now - last) / 1000 || 1 / 60);
-      last = now;
-      step(dt);
-      raf = requestAnimationFrame(loop);
-    }
-    function start() {
-      resize();
-      if (reduce.matches) { step(0.016); return; }   // 静态一帧，不跑 rAF
-      last = performance.now();
-      raf = requestAnimationFrame(loop);
-    }
-    function stop() { cancelAnimationFrame(raf); raf = 0; }
-    // reduced-motion 下没有 rAF 循环：resize 重建完雪花必须亲手补一帧静态画
-    addEventListener('resize', () => { clearTimeout(start._t); start._t = setTimeout(() => {
-      resize(); if (reduce.matches) step(0.016);
-    }, 150); });
-    addEventListener('pointermove', e => { pointerX = e.clientX; }, { passive: true });
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) stop();
-      else if (!reduce.matches && !raf) { last = performance.now(); raf = requestAnimationFrame(loop); }
-    });
-    reduce.addEventListener('change', () => { stop(); start(); });
-    start();
-  }
-
-  /* ---------- 冰面指针高光：跟随指针的冷光斑，画在字母裁剪内 ---------- */
-  const word = document.querySelector('.ice-word svg');
-  const hero = word && word.closest('.hero');
-  const ptr = word && word.querySelector('.ptr');
-  if (word && hero && ptr) {
-    // viewBox="-8 -20 654 142"：把屏幕坐标换算回用户单位
-    hero.addEventListener('pointermove', e => {
-      const r = word.getBoundingClientRect();
-      ptr.setAttribute('cx', ((e.clientX - r.left) / r.width * 654 - 8).toFixed(1));
-      ptr.setAttribute('cy', ((e.clientY - r.top) / r.height * 142 - 20).toFixed(1));
-    });
-  }
-
-  /* ---------- 点击：霜环 + 九片冰晶，中心落在点击点 ---------- */
-  function burst(el, x, y) {
-    const fx = document.createElement('span');
-    fx.className = 'burst';
-    fx.style.setProperty('--x', x + 'px');
-    fx.style.setProperty('--y', y + 'px');
-    const n = 9;
-    for (let i = 0; i < n; i++) {
-      const shard = document.createElement('i');
-      const a = i / n * Math.PI * 2 + Math.random() * 0.4;
-      const d = 24 + Math.random() * 34;
-      shard.style.setProperty('--a', a.toFixed(3) + 'rad');
-      shard.style.setProperty('--dx', (Math.cos(a) * d).toFixed(1) + 'px');
-      shard.style.setProperty('--dy', (Math.sin(a) * d).toFixed(1) + 'px');
-      shard.style.animationDelay = (Math.random() * 50).toFixed(0) + 'ms';
-      fx.append(shard);
-    }
-    el.append(fx);
-    setTimeout(() => fx.remove(), 800);
-  }
-  const CLICKABLE = '.btn,.feature,.pick,button.retry,nav a';
-  addEventListener('pointerdown', e => {
-    if (reduce.matches) return;
-    const el = e.target.closest(CLICKABLE);
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    const x = e.clientX ? e.clientX - r.left : r.width / 2;
-    const y = e.clientY ? e.clientY - r.top : r.height / 2;
-    burst(el, x, y);
-  }, { passive: true });
-  addEventListener('keydown', e => {
-    if (reduce.matches || (e.key !== 'Enter' && e.key !== ' ')) return;
-    const el = e.target.closest(CLICKABLE);
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    burst(el, r.width / 2, r.height / 2);
-  });
-
-  /* 站内跳转稍等一拍，让点击反馈先被看见 */
-  addEventListener('click', e => {
-    const a = e.target.closest('a.feature[data-nav]');
-    if (!a || reduce.matches || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-    e.preventDefault();
-    const href = a.getAttribute('href');
-    setTimeout(() => { location.href = href; }, 130);
-  });
-})();
-</script>
+<div class="cmdk" id="cmdk" hidden>
+  <div class="cmdk-panel" id="cmdk-dialog" role="dialog" aria-modal="true" aria-label="命令面板">
+    <input class="cmdk-input" id="cmdk-input" type="text" role="combobox"
+           aria-expanded="true" aria-controls="cmdk-list" aria-autocomplete="list"
+           placeholder="搜索页面、操作或报告…" autocomplete="off" spellcheck="false">
+    <div class="cmdk-list" id="cmdk-list" role="listbox" aria-label="命令"></div>
+    <div class="cmdk-foot" aria-hidden="true">
+      <span><kbd>↑</kbd><kbd>↓</kbd> 选择</span>
+      <span><kbd>Enter</kbd> 执行</span>
+      <span><kbd>Esc</kbd> 关闭</span>
+    </div>
+  </div>
+</div>
+<script src="/static/js/base.js"></script>
 </body>
 </html>

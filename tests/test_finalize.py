@@ -123,7 +123,7 @@ def test_render_failure_keeps_old_pair(tmp: Path):
 
 def test_publish_with_lifter_writes_animation(tmp: Path):
     """lifter+fps：animation.json 与报告成对落盘，report 带 phases 摘要；
-    标注视频只转码一次（render 内的转码关掉，交给 ensure_browser_mp4）。"""
+    转码只发生在 render_annotated 内部一次（finalize 不再自己转）。"""
     import skibot.finalize as F
     from skibot.skeleton3d import MockLifter
 
@@ -144,7 +144,7 @@ def test_publish_with_lifter_writes_animation(tmp: Path):
                                  fps=30.0, lifter=MockLifter())
     finally:
         F.render_annotated = orig_render
-    assert seen.get("transcode_h264") is False
+    assert "transcode_h264" not in seen  # 布尔参数已删除，发布链不再干预转码
     anim_p = tmp / "animation.json"
     assert anim_p.exists()
     anim = json.loads(anim_p.read_text(encoding="utf-8"))
@@ -154,6 +154,10 @@ def test_publish_with_lifter_writes_animation(tmp: Path):
     assert len(anim["frames"][0][0]) == 3
     assert len(anim["joints"]) == 26 and all(len(e) == 2 for e in anim["edges"])
     assert anim["source"] == "mock" and anim["phases"]["fps"] == 30.0
+    # 逐帧相位归属与中文标签服务端算好（回放卡 JS 不再按 turns 自己推）
+    assert anim["phase_of"] == [""] * 12  # 静态骨架没有合格弯
+    assert anim["phase_labels"] == {"entry": "入弯", "control": "控制",
+                                    "exit": "出弯"}
     # 序列是逐帧一维；置信与骨架同形
     assert all(isinstance(v, list) for v in anim["series"].values())
     assert len(anim["confidence"]) == 12

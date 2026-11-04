@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}前后对比 · SKITUTOR{% endblock %}
 {% block content %}
+<h1 class="sr-only">前后对比</h1>
 <div class="panel panel--solid">
   <h2>前后对比</h2>
   <p class="muted" style="margin-top:-4px">选两次分析，按入弯 / 控制 / 出弯比较同一关节的角度变化。</p>
@@ -37,16 +38,25 @@
 
 {% if result %}
 <div class="panel panel--solid">
-  <h2>A：{{ a_task.video_name }}
-    <span class="muted" style="font-weight:400">（{{ {'novice': '初学', 'intermediate': '中级', 'advanced': '竞技'}.get(a_task.level, a_task.level) }}，检出
+  <h2 style="overflow-wrap:anywhere">A：{{ a_video }}
+    <span class="muted" style="font-weight:400">（{{ a_label }}，检出
     {{ result.a_turns if result.a_turns is not none else "—" }} 弯）</span></h2>
-  <h2>B：{{ b_task.video_name }}
-    <span class="muted" style="font-weight:400">（{{ {'novice': '初学', 'intermediate': '中级', 'advanced': '竞技'}.get(b_task.level, b_task.level) }}，检出
+  <h2 style="overflow-wrap:anywhere">B：{{ b_video }}
+    <span class="muted" style="font-weight:400">（{{ b_label }}，检出
     {{ result.b_turns if result.b_turns is not none else "—" }} 弯）</span></h2>
 
+  {% if result.notes %}
+  <div class="notice" style="margin-top:16px">
+    <ul style="margin:0;padding-left:18px">{% for n in result.notes %}<li>{{ n }}</li>{% endfor %}</ul>
+  </div>
+  {% endif %}
+  <p class="muted" style="margin:10px 0 0">可比较项：{{ result.n_comparable }}</p>
+  <p class="muted" style="margin:8px 0 0">{{ result.interpretation_note }}</p>
+
   <h2 style="margin-top:26px">按相位</h2>
+  <div class="table-scroll">
   <table>
-    <tr><th>指标</th><th>相位</th><th>A 中位</th><th>B 中位</th><th>差值（B−A）</th><th>方向</th></tr>
+    <tr><th>指标</th><th>相位</th><th>A 中位</th><th>B 中位</th><th>差值（B−A）</th><th>方向</th><th>解释</th></tr>
     {% for r in result.phase_rows %}
     <tr>
       <td>{{ r.metric_label }}</td>
@@ -56,17 +66,20 @@
       <td>{{ r.b }}°</td>
       <td>{{ r.delta }}°</td>
       <td>{{ r.direction }}</td>
+      <td class="muted">{{ r.verdict }}{% if r.ref_label and r.ref_label != '—' %} · {{ r.ref_label }}{% endif %}</td>
       {% else %}
-      <td colspan="4" class="muted">无对比数据 —— {{ r.reason }}</td>
+      <td colspan="5" class="muted">无对比数据 —— {{ r.reason }}</td>
       {% endif %}
     </tr>
     {% endfor %}
   </table>
+  </div>
 
   <h2 style="margin-top:28px">全程三维六项</h2>
   {% if result.overall_rows %}
+  <div class="table-scroll">
   <table>
-    <tr><th>指标</th><th>A 中位</th><th>B 中位</th><th>差值（B−A）</th><th>方向</th></tr>
+    <tr><th>指标</th><th>A 中位</th><th>B 中位</th><th>差值（B−A）</th><th>方向</th><th>解释</th></tr>
     {% for r in result.overall_rows %}
     <tr>
       <td>{{ r.metric_label }}</td>
@@ -75,12 +88,14 @@
       <td>{{ r.b }}°</td>
       <td>{{ r.delta }}°</td>
       <td>{{ r.direction }}</td>
+      <td class="muted">{{ r.verdict }}{% if r.ref_label and r.ref_label != '—' %} · {{ r.ref_label }}{% endif %}</td>
       {% else %}
-      <td colspan="4" class="muted">无对比数据 —— {{ r.reason }}</td>
+      <td colspan="5" class="muted">无对比数据 —— {{ r.reason }}</td>
       {% endif %}
     </tr>
     {% endfor %}
   </table>
+  </div>
   {% else %}
   <p class="muted">两侧报告都没有三维数据，无法对比全程三维指标（未开三维提升或缺帧率）。</p>
   {% endif %}

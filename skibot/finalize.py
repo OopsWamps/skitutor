@@ -22,8 +22,8 @@ import numpy as np
 
 from . import artifacts
 from .assess import Assessment, assess
-from .phases import PHASE_METRICS
-from .render import ensure_browser_mp4, render_annotated
+from .phases import PHASE_LABELS, PHASE_METRICS, phase_labels
+from .render import render_annotated
 from .report import save_json
 from .skeleton import HALPE_NAMES, SKELETON_EDGES
 from .skeleton3d import Lifter
@@ -60,6 +60,10 @@ def build_animation(res: Assessment) -> dict | None:
         "joints": list(HALPE_NAMES),
         "edges": [list(e) for e in SKELETON_EDGES],
         "phases": res.phases.to_dict(),
+        # 逐帧相位归属与中文标签在服务端算好（phases.phase_labels 是唯一
+        # 事实源），回放卡 JS 不再按 turns 自己推
+        "phase_of": [str(s) for s in phase_labels(res.phases, sk3.n_frames)],
+        "phase_labels": dict(PHASE_LABELS),
         "series": {name: _nums1(series[name], 1) for name in PHASE_METRICS
                    if name in series},
         "confidence": _nums2(sk3.confidence, 2),
@@ -133,14 +137,11 @@ def assess_and_publish(
         if video_path is not None and tmp_video is not None and backup is not None:
             if src is None:  # 开头已把 src 与 video_path 成对校验；再判一次收窄类型
                 raise ValueError("要渲染标注视频就必须给视频源 src")
-            # 转码交给下面的 ensure_browser_mp4 统一做（CRF 18）：render 内
-            # 再转一遍是同一段视频的第二次完整有损转码，白耗一倍时间
-            render_annotated(src, kp, res, tmp_video, transcode_h264=False)
+            # render_annotated 的出口契约保证产物是浏览器可解的 H.264
+            # （render.ensure_h264，幂等）；发布链不再自己转码
+            render_annotated(src, kp, res, tmp_video)
             if not tmp_video.exists() or tmp_video.stat().st_size == 0:
                 raise RuntimeError("标注视频渲染失败：输出为空")
-            # OpenCV 只会写 FMP4，浏览器 <video> 解不了（报告页/回放卡黑屏）；
-            # 发布前转 H.264。转码失败在函数内降级保留原编码，不挡发布
-            ensure_browser_mp4(tmp_video)
             # 先把旧视频挪开备份：报告替换若失败，把旧视频换回来，
             # 报告与视频仍停在旧产物，不会一半新一半旧
             if had_old:

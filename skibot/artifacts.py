@@ -21,11 +21,6 @@ import time
 from pathlib import Path
 
 
-def work_dir(result_dir: Path, video_stem: str) -> Path:
-    """一次分析的结果子目录：result_dir/<stem>。"""
-    return Path(result_dir) / video_stem
-
-
 REPORT_NAME = "report.json"
 ANIMATION_NAME = "animation.json"
 PREVIEW_GLOB = "candidate_person*.jpg"

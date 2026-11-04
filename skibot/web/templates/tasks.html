@@ -1,7 +1,10 @@
 {% extends "base.html" %}
 {% block title %}任务 · SKITUTOR{% endblock %}
 {% block content %}
-{% if error %}<div class="error">上次分析失败：{{ error }}</div>{% endif %}
+<h1 class="sr-only">任务列表</h1>
+<div class="error" id="taskerr"{% if not error %} hidden{% endif %}>{% if error %}上次分析失败：{{ error }}{% endif %}</div>
+<div class="notice" id="precheck-notes" role="status" {% if not precheck_notes %}hidden{% endif %}>{% if precheck_notes %}预检放行说明：{{ precheck_notes }}{% endif %}</div>
+<p class="sr-only" id="task-live" role="status"></p>
 <div class="panel panel--solid">
   <h2>任务列表</h2>
   {% if not tasks %}
@@ -11,50 +14,29 @@
   <table>
     <tr><th>视频</th><th>水平档</th><th>提交时间</th><th>状态</th><th></th></tr>
     {% for t in tasks %}
-    <tr>
-      <td>{{ t.video_name }}</td>
-      <td>{{ {'novice': '初学', 'intermediate': '中级', 'advanced': '竞技'}.get(t.level, t.level) }}</td>
-      <td class="muted">{{ t.created_at.strftime('%m-%d %H:%M') }}</td>
-      <td class="st-{{ t.status }}">
-        {% if t.status == 'done' %}完成
-        {% elif t.status == 'running' %}分析中…
-        {% elif t.status == 'failed' %}失败{% if t.error %}<div class="muted">{{ t.error }}</div>{% endif %}
-        {% else %}排队中{% endif %}
+    <tr data-id="{{ t.id }}">
+      <td class="cell-name">{{ t.video }}</td>
+      <td>{{ t.level_label }}</td>
+      <td class="muted">{{ t.created_short }}</td>
+      <td class="st-{{ t.status }}" data-status="{{ t.status }}">
+        {{ t.status_label }}{% if t.status == 'running' and t.elapsed_sec is not none %}<span class="muted" data-elapsed> 已用 {{ '%d:%02d' % (t.elapsed_sec // 60, t.elapsed_sec % 60) }}</span>{% endif %}{% if t.status == 'queued' and t.queue_position %}<span class="muted" data-queue> 第 {{ t.queue_position }} 位</span>{% endif %}{% if t.status == 'failed' and t.error %}<div class="muted">{{ t.error }}</div>{% endif %}
       </td>
-      <td>
+      <td data-action>
         {% if t.status == 'done' %}<a class="ghost-link" href="/report/{{ t.id }}">查看报告</a>
-        {% elif t.status == 'failed' %}<button class="retry" data-id="{{ t.id }}">重试</button>{% endif %}
+        {% elif t.status == 'failed' %}<button class="retry" data-id="{{ t.id }}">重试</button>
+        {% elif t.status == 'queued' %}<button class="cancel" data-id="{{ t.id }}">取消</button>{% endif %}
       </td>
     </tr>
     {% endfor %}
   </table>
   </div>
-  <p class="muted" style="margin:14px 0 0">有进行中的任务时，本页每 5 秒自动刷新。</p>
+  {% if total_tasks and total_tasks > tasks | length %}
+  <p class="muted" style="margin:14px 0 0">显示最近 {{ tasks | length }} 条，共 {{ total_tasks }} 条。<a href="/tasks?show_all=1">显示全部</a></p>
+  {% elif show_all and total_tasks and total_tasks > 50 %}
+  <p class="muted" style="margin:14px 0 0">已显示全部 {{ total_tasks }} 条。<a href="/tasks">只看最近 50 条</a></p>
+  {% endif %}
+  <p class="muted" id="poll-note" style="margin:14px 0 0"{% if not (tasks | selectattr('status', 'in', ['queued', 'running']) | list) %} hidden{% endif %}>有进行中的任务时，本页会自动更新。</p>
   {% endif %}
 </div>
-{% if tasks | selectattr('status', 'equalto', 'failed') | list %}
-<script>
-document.querySelectorAll('button.retry').forEach(b => b.onclick = async () => {
-  b.disabled = true;
-  try {
-    const r = await fetch('/api/tasks/' + b.dataset.id + '/retry', {method: 'POST'});
-    if (!r.ok) {
-      let detail = r.status;
-      try { detail = (await r.json()).detail || r.status; } catch (_) {}
-      // 409 常见于任务已被别处重试并开始跑：刷新页面同步真实状态
-      alert('重试失败：' + detail);
-      location.reload();
-      return;
-    }
-    location.reload();
-  } catch (err) {
-    b.disabled = false;
-    alert('重试失败：' + err.message + '（可刷新页面查看最新状态）');
-  }
-});
-</script>
-{% endif %}
-{% if tasks | selectattr('status', 'in', ['queued', 'running']) | list %}
-<script>setTimeout(() => location.reload(), 5000);</script>
-{% endif %}
+<script src="/static/js/tasks.js"></script>
 {% endblock %}
