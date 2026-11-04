@@ -5,7 +5,6 @@
 
 <div class="panel panel--solid report-head">
   <div>
-    <p class="eyebrow">Ski Posture Report</p>
     <h1>{{ task.video_name }}</h1>
     <div class="chips">
       <span class="chip chip-neutral">{{ level_label }}</span>
@@ -16,7 +15,7 @@
   </div>
   <div class="report-actions">
     <a class="ghost-link" href="{{ annotated_url }}" download>下载标注视频</a>
-    <a class="ghost-link" href="#" onclick="window.print();return false;">打印 / 另存为 PDF</a>
+    <button class="ghost-link" type="button" onclick="window.print()">打印 / 另存为 PDF</button>
     <a class="ghost-link" href="/tasks">← 任务列表</a>
   </div>
 </div>
@@ -49,7 +48,8 @@
    （compare.PHASE_TO_REPORT），模板不再内联键名知识 #}
 {% set pk = phase_to_report.get(m.metric, m.metric) %}
 {% set cells = (phases.aggregate.get(pk) if m.basis == '3d' and phases and phases.aggregate else none) %}
-<article class="panel panel--solid metric">
+<article class="panel panel--solid metric"
+         data-metric="{{ m.metric }}" data-basis="{{ m.basis }}"{% if ref %} data-ref-lo="{{ ref[0] }}" data-ref-hi="{{ ref[1] }}"{% endif %}>
   <div class="metric-top">
     <h2>{{ m.name }}</h2>
     {% if med is not none %}
@@ -71,12 +71,17 @@
   <p class="metric-meta">本次记录角度</p>
   {% endif %}
 
+  {# 逐帧曲线容器：report_charts 用三维回放的动画 JSON 填充；二维降级任务保持隐藏 #}
+  <div class="spark" data-spark hidden></div>
+
   {% if m.band_percentile is not none %}
   {% set bp = m.band_percentile %}
   <div class="band" role="img" aria-label="参考带内位置 {{ bp }}%：0 为下沿，100 为上沿{% if bp < 0 %}，低于下沿{% elif bp > 100 %}，高于上沿{% endif %}">
     <div class="band-fill"></div>
     <div class="band-mark{% if bp < 0 or bp > 100 %} out{% endif %}"
          style="left:{{ 0 if bp < 0 else (100 if bp > 100 else bp) }}%"></div>
+    {# 各相位中位数点标（带内才画；越界相位只看下方读数格） #}
+    {% if cells and ref %}{% for ph, cn in phase_labels.items() %}{% set c = cells.get(ph, {}) %}{% if c.get('median_deg') is not none %}{% set pctl = ((c.get('median_deg') - ref[0]) / (ref[1] - ref[0]) * 100) | round(1) %}{% if 0 <= pctl <= 100 %}<span class="band-dot {{ ph }}" style="left:{{ pctl }}%" title="{{ cn }} {{ c.get('median_deg') }}°"></span>{% endif %}{% endif %}{% endfor %}{% endif %}
   </div>
   <p class="metric-meta" style="margin-top:6px">参考带内位置 {{ bp | round(1) }}%（0=下沿，100=上沿）{% if bp < 0 %} · 低于下沿{% elif bp > 100 %} · 高于上沿{% endif %}</p>
   {% endif %}
@@ -86,7 +91,7 @@
     {% for ph, cn in phase_labels.items() %}
     {% set c = cells.get(ph, {}) %}
     <div class="phase-cell">
-      <span class="ph">{{ cn }}</span>
+      <span class="ph"><span class="ph-dot {{ ph }}"></span>{{ cn }}</span>
       {% if c.get('median_deg') is not none %}
       <span class="pv">{{ c.get('median_deg') }}°</span>
       {% else %}
@@ -133,10 +138,10 @@
   <div class="tl-strip" id="tstrip"></div>
   <div class="tl-meta">
     <span class="legend">
-      <span style="color:#067fa0">入弯</span>
-      <span style="color:#0a8f6f">控制</span>
-      <span style="color:#6658cc">出弯</span>
-      <span style="color:#7d97a8">弯间 / 未检出</span>
+      <span style="color:var(--phase-entry)">入弯</span>
+      <span style="color:var(--phase-control)">控制</span>
+      <span style="color:var(--phase-exit)">出弯</span>
+      <span style="color:var(--dim)">弯间 / 未检出</span>
     </span>
     <span id="ph3d"></span>
     <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer">
@@ -181,4 +186,5 @@
 
 <div class="foot"><a href="/tasks">← 返回任务列表</a></div>
 <script src="/static/js/report.js"></script>
+<script src="/static/js/report_charts.js" defer></script>
 {% endblock %}

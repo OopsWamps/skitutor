@@ -10,8 +10,18 @@
   const replayStatus = document.getElementById('replay-status');
   const replayRetryWrap = document.getElementById('replay-retry-wrap');
   const replayRetry = document.getElementById('replay-retry');
-  // 浅底配色：相位色取深一档，保证在 #f3f9fc 画布上够对比
-  const PH_COLOR = {entry: '#067fa0', control: '#0a8f6f', exit: '#6658cc', '': '#7d97a8'};
+  // 相位色单点取自 CSS 的 --phase-* token（控制相 #1a7d38 与入弯青全色觉
+  // ΔE≥15，dataviz 校验器通过）；画布 #f3f9fc 上仍够对比。'' 即 --dim
+  const PH_COLOR = (() => {
+    const css = getComputedStyle(document.documentElement);
+    const v = n => (css.getPropertyValue(n) || '').trim();
+    return {
+      entry: v('--phase-entry') || '#067fa0',
+      control: v('--phase-control') || '#1a7d38',
+      exit: v('--phase-exit') || '#6658cc',
+      '': v('--dim') || '#54748a',
+    };
+  })();
   // 按 CSS 尺寸与 DPR 配画布，避免高分屏发糊
   let CW = 420, CH = 420;
   let redraw = () => {};   // resize 可能在动画数据到达前发生
@@ -178,6 +188,15 @@
     }
     replayWrap.setAttribute('aria-busy', 'false');
     if (replayStatus) replayStatus.hidden = true;
+    // 数据就绪：先落到 window 桥再广播。report_charts.js 是 defer 脚本，
+    // 挂监听可能晚于本地 fetch 的 resolve——只靠事件会漏接，桥保底
+    const bridge = {
+      data,
+      phaseOf,   // 含旧动画缺 phase_of 字段时的本地回退，图表模块直接复用
+      seek(t) { try { v.currentTime = Math.max(0, Math.min(v.duration || 0, t)); } catch (_) {} },
+    };
+    window.__skibotReplay = bridge;
+    document.dispatchEvent(new CustomEvent('skibot:replay', {detail: bridge}));
     let raf = null, lastF = -1;
     function tick() {
       raf = null;

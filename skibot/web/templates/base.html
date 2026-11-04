@@ -14,8 +14,23 @@
     --void:#eef5fa; --night:#e6eff6; --deep:#ffffff; --solid:#f6fafd;
     --ice-white:#12324a; --mist:#49697f; --dim:#54748a;
     --cyan:#056b88; --mint:#0a7a5c; --violet:#6658cc; --glacier:#0b6f95;
-    --amber:#a06207; --coral:#c93b3b;
+    --amber:#7d4b02; --coral:#c93b3b;
     --hair:rgba(18,74,110,.14);
+    /* 按钮系统：扁平 glacier 实色 + 顶部内高光，站内所有实心按钮共用；
+       雪道语义色只给三档水平卡（绿圆/蓝方/黑钻），与珊瑚色错误语义互不混用。
+       三档色相分别引既有 token（--mint/--cyan/--ice-white），不另立副本 */
+    --btn-face:#0d7fa3; --btn-face-hover:#1189ad; --btn-ink:#fff;
+    --btn-edge:rgba(9,95,124,.45);
+    --btn-pad:12px 30px;
+    --btn-shadow:inset 0 1px 0 rgba(255,255,255,.28), 0 6px 18px rgba(10,110,145,.26);
+    --btn-shadow-hover:inset 0 1px 0 rgba(255,255,255,.28), 0 9px 24px rgba(10,110,145,.32);
+    --radius-btn:11px; --radius-ghost:8px; --radius-card:12px;
+    --lv-novice:var(--mint); --lv-novice-edge:rgba(10,122,92,.45);
+    --lv-intermediate:var(--cyan);
+    --lv-advanced:var(--ice-white); --lv-advanced-edge:rgba(18,50,74,.5);
+    /* 相位身份色（时间轴/图例/指标卡共用）；控制相的叶绿与入弯青拉开
+       全色觉 ΔE≥15（dataviz 校验器通过），--mint 只留给状态语义 */
+    --phase-entry:#067fa0; --phase-control:#1a7d38; --phase-exit:#6658cc;
     --din:"Bahnschrift","DIN Alternate","Arial Narrow","Segoe UI","Helvetica Neue",Arial,sans-serif;
     --mono:"Cascadia Mono","Consolas",monospace;
     /* iOS 弹簧曲线：轻微过冲后回稳，用于位移/缩放类过渡 */
@@ -126,7 +141,7 @@
   .wordmark-sprite { position:absolute; width:0; height:0; overflow:hidden; }
   .brand-wordmark { height:15px; color:var(--ice-white); }
   .brand-sub {
-    font-family:var(--mono); font-size:10px; font-weight:400; line-height:1;
+    font-family:var(--mono); font-size:11px; font-weight:400; line-height:1;
     letter-spacing:.1em; text-transform:uppercase; color:var(--mist);
     white-space:nowrap;
   }
@@ -186,21 +201,17 @@
     background:linear-gradient(180deg,var(--cyan),rgba(6,127,160,.2));
   }
   .muted { color:var(--mist); font-size:13px; }
-  .eyebrow {
-    margin:0; font-family:var(--din); font-size:11px; letter-spacing:.34em;
-    text-transform:uppercase; color:var(--dim);
-  }
   /* ---------- 按钮 ---------- */
   .btn {
-    position:relative; border:1px solid rgba(10,110,145,.35); border-radius:11px;
-    padding:12px 30px; font-size:15px; font-weight:600; letter-spacing:.08em;
-    color:#fff; cursor:pointer;
-    background:linear-gradient(180deg,#2ba6c9 0%,#0d7fa3 55%,#0a6585 100%);
-    box-shadow:0 6px 18px rgba(10,110,145,.28), inset 0 1px 0 rgba(255,255,255,.35);
-    transition:transform .15s var(--ease-out), box-shadow .22s ease, filter .2s ease;
+    position:relative; border:1px solid var(--btn-edge); border-radius:var(--radius-btn);
+    padding:var(--btn-pad); font-size:15px; font-weight:600; letter-spacing:.08em;
+    color:var(--btn-ink); cursor:pointer;
+    background:var(--btn-face);
+    box-shadow:var(--btn-shadow);
+    transition:transform .15s var(--ease-out), box-shadow .22s ease, background .2s ease;
   }
-  .btn:hover { filter:brightness(1.07); transform:translateY(-1px) scale(1.015);
-               box-shadow:0 9px 24px rgba(10,110,145,.35), inset 0 1px 0 rgba(255,255,255,.35); }
+  .btn:hover { background:var(--btn-face-hover); transform:translateY(-1px) scale(1.015);
+               box-shadow:var(--btn-shadow-hover); }
   .btn:active { transform:scale(.955); transition-duration:.12s; }
   .btn:disabled { opacity:.45; cursor:progress; transform:none; filter:grayscale(.5); box-shadow:none; }
   .btn.is-busy::after {
@@ -229,7 +240,7 @@
   }
   button.retry {
     position:relative; background:none; border:1px solid rgba(201,59,59,.38);
-    border-radius:8px; color:var(--coral); padding:5px 15px; font-size:13px;
+    border-radius:var(--radius-ghost); color:var(--coral); padding:5px 15px; font-size:13px;
     min-height:44px; cursor:pointer; transition:background .2s, transform .12s;
   }
   button.retry:hover { background:rgba(201,59,59,.08); }
@@ -237,7 +248,7 @@
   button.retry:disabled { opacity:.45; cursor:progress; transform:none; }
   button.cancel {
     position:relative; background:none; border:1px solid var(--hair);
-    border-radius:8px; color:var(--mist); padding:5px 15px; font-size:13px;
+    border-radius:var(--radius-ghost); color:var(--mist); padding:5px 15px; font-size:13px;
     min-height:44px; cursor:pointer; transition:background .2s, transform .12s;
   }
   button.cancel:hover { background:rgba(18,74,110,.06); }
@@ -283,11 +294,11 @@
     display:inline-flex; align-items:center; justify-content:center;
     min-height:40px; padding:0 22px; border-radius:9px;
     font-size:13px; font-weight:600; letter-spacing:.08em; color:#fff;
-    background:linear-gradient(180deg,#2ba6c9 0%,#0d7fa3 55%,#0a6585 100%);
-    box-shadow:0 5px 14px rgba(10,110,145,.22), inset 0 1px 0 rgba(255,255,255,.35);
-    transition:filter .18s ease, transform .12s var(--ease-out);
+    background:var(--btn-face);
+    box-shadow:var(--btn-shadow);
+    transition:background .18s ease, transform .12s var(--ease-out);
   }
-  .dropzone:hover .file-cta, .dropzone:focus-within .file-cta { filter:brightness(1.06); }
+  .dropzone:hover .file-cta, .dropzone:focus-within .file-cta { background:var(--btn-face-hover); }
   .dropzone:active .file-cta { transform:scale(.97); }
   .drop-hint { display:block; margin-top:10px; }
   .file-name {
@@ -357,14 +368,14 @@
   .st-queued { color:var(--dim); }   .st-queued::before { background:var(--dim); }
   @keyframes pulse { 50% { opacity:.25; } }
   .notice {
-    background:rgba(160,98,7,.07); border:1px solid rgba(160,98,7,.28);
-    border-left:3px solid var(--amber); border-radius:10px;
+    background:rgba(160,98,7,.07); border:1px solid rgba(160,98,7,.30);
+    border-radius:10px;
     padding:11px 15px; color:var(--amber); font-size:14px; margin-bottom:16px;
     overflow-wrap:anywhere;
   }
   .error {
-    background:rgba(201,59,59,.06); border:1px solid rgba(201,59,59,.28);
-    border-left:3px solid var(--coral); border-radius:10px;
+    background:rgba(201,59,59,.06); border:1px solid rgba(201,59,59,.30);
+    border-radius:10px;
     padding:11px 15px; color:var(--coral); font-size:14px; margin-bottom:16px;
     overflow-wrap:anywhere;
   }
@@ -381,14 +392,6 @@
     position:relative; min-height:calc(100svh - 64px);
     display:flex; flex-direction:column; align-items:center; justify-content:center;
     text-align:center; padding:44px 12px 78px;
-  }
-  .hero-kicker {
-    display:inline-flex; align-items:center; gap:12px; margin:0 0 22px;
-    color:var(--mist); font-size:12px; letter-spacing:.22em; text-indent:.22em;
-    animation:rise .26s .02s both;
-  }
-  .hero-kicker::before, .hero-kicker::after {
-    content:""; width:38px; height:1px; flex:none; background:var(--hair);
   }
   .hero-lockup {
     display:flex; align-items:center; justify-content:center;
@@ -410,7 +413,7 @@
   }
   .hero-band + .hero-band { border-left:1px solid var(--hair); }
   .hero-band dt {
-    margin:0; color:var(--mist); font-size:10px; letter-spacing:.16em;
+    margin:0; color:var(--mist); font-size:11px; letter-spacing:.16em;
     line-height:1.2;
   }
   .hero-band dd {
@@ -420,11 +423,11 @@
   }
   .hero-band-note {
     margin:10px 0 0; color:var(--mist);
-    font-size:10px; letter-spacing:.08em; line-height:1.5;
+    font-size:11px; letter-spacing:.08em; line-height:1.5;
   }
   .hero-sub {
     margin:20px 0 0; color:var(--mist);
-    font-size:14px; letter-spacing:.08em;
+    font-size:16px; letter-spacing:.08em;
     animation:rise .28s .06s both;
   }
   @keyframes rise {
@@ -464,7 +467,7 @@
   .feature--primary .ic-soft { fill:rgba(6,127,160,.2); }
   .feature .f-cn { font-size:15px; font-weight:600; letter-spacing:.12em; }
   .feature .f-en {
-    font-family:var(--din); font-size:10px; letter-spacing:.26em;
+    font-family:var(--din); font-size:11px; letter-spacing:.26em;
     text-transform:uppercase; color:var(--dim);
   }
   .feature--primary {
@@ -492,13 +495,27 @@
   }
   @media (hover:hover) and (pointer:fine) {
     .level-card:hover { transform:translateY(-4px) scale(1.025);
-      border-color:rgba(6,140,180,.45);
       box-shadow:0 14px 30px rgba(23,58,84,.14); }
+    .level-card[data-level="novice"]:hover { border-color:var(--lv-novice-edge); }
+    .level-card[data-level="intermediate"]:hover { border-color:rgba(6,140,180,.45); }
+    .level-card[data-level="advanced"]:hover { border-color:var(--lv-advanced-edge); }
   }
   .level-card:active { transform:scale(.97); transition-duration:.13s; }
-  .level-card[aria-pressed="true"] {
-    border-color:var(--cyan); background:linear-gradient(180deg,#ffffff,#edf8fd);
+  /* 选中态走雪道语义：绿圆 / 蓝方 / 黑钻 */
+  .level-card[data-level="novice"][aria-pressed="true"] {
+    border-color:var(--lv-novice);
+    background:linear-gradient(180deg,#ffffff,#edf8f3);
+    box-shadow:0 0 0 3px rgba(10,122,92,.15), 0 10px 24px rgba(23,58,84,.10);
+  }
+  .level-card[data-level="intermediate"][aria-pressed="true"] {
+    border-color:var(--cyan);
+    background:linear-gradient(180deg,#ffffff,#edf8fd);
     box-shadow:0 0 0 3px rgba(6,127,160,.14), 0 10px 24px rgba(23,58,84,.10);
+  }
+  .level-card[data-level="advanced"][aria-pressed="true"] {
+    border-color:var(--lv-advanced);
+    background:linear-gradient(180deg,#ffffff,#eef2f7);
+    box-shadow:0 0 0 3px rgba(18,50,74,.18), 0 10px 24px rgba(23,58,84,.10);
   }
   .lv-anim {
     display:block; position:relative; width:100%; aspect-ratio:4/3;
@@ -511,9 +528,23 @@
     transition:transform .3s var(--ease-out);
   }
   .lv-svg { display:block; width:100%; height:100%; }
+  /* 雪道难度徽标：绿圆/蓝方/黑钻，钉在插画左上角，一眼标定档位 */
+  .lv-badge {
+    position:absolute; top:7px; left:7px; width:13px; height:13px; z-index:1;
+    box-shadow:0 1px 3px rgba(23,58,84,.28);
+  }
+  .level-card[data-level="novice"] .lv-badge {
+    border-radius:50%; background:var(--lv-novice);
+  }
+  .level-card[data-level="intermediate"] .lv-badge {
+    border-radius:3.5px; background:var(--cyan);
+  }
+  .level-card[data-level="advanced"] .lv-badge {
+    transform:rotate(45deg); border-radius:2.5px; background:var(--lv-advanced);
+  }
   .lv-name { font-size:14px; font-weight:600; letter-spacing:.12em; margin-top:7px; }
   .lv-en {
-    font-family:var(--din); font-size:9.5px; letter-spacing:.14em;
+    font-family:var(--din); font-size:11px; letter-spacing:.14em;
     text-transform:uppercase; color:var(--dim);
   }
 
@@ -528,49 +559,55 @@
   .level-card:focus-visible .lv-zoom,
   .level-card.is-playing .lv-zoom { transform:scale(1.075); }
 
-  /* ---------- 初学：正面犁式 ---------- */
+  /* ---------- 初学：正面犁式，慢而稳，重心轻摇、双板开合 ---------- */
   @keyframes n1-sway {
-    0%,100% { transform:translateY(0) rotate(-1.2deg 100 128); }
-    38%     { transform:translateY(-1.2px) rotate(-2deg 100 128); }
-    72%     { transform:translateY(.8px) rotate(1.3deg 100 128); }
+    0%,100% { transform:translateY(0) rotate(-.8deg 100 104); }
+    30%     { transform:translateY(-1.6px) rotate(-2.4deg 100 104); }
+    68%     { transform:translateY(.7px) rotate(1.9deg 100 104); }
   }
   @keyframes n1-wedge-l {
     0%,100% { transform:rotate(0deg 0 0); }
-    50%     { transform:rotate(-3.4deg 0 0); }
+    50%     { transform:rotate(-4deg 0 0); }
   }
   @keyframes n1-wedge-r {
     0%,100% { transform:rotate(0deg 0 0); }
-    50%     { transform:rotate(3.4deg 0 0); }
+    50%     { transform:rotate(4deg 0 0); }
   }
-  .n1-figure { animation:n1-sway 4.4s var(--ease-in-out) infinite; }
-  .n1-ski-l  { animation:n1-wedge-l 4.4s var(--ease-in-out) infinite; }
-  .n1-ski-r  { animation:n1-wedge-r 4.4s var(--ease-in-out) infinite; }
+  .n1-figure { animation:n1-sway 4.8s var(--ease-in-out) infinite; }
+  .n1-ski-l  { animation:n1-wedge-l 4.8s var(--ease-in-out) infinite; }
+  .n1-ski-r  { animation:n1-wedge-r 4.8s var(--ease-in-out) infinite; }
 
-  /* ---------- 中级：侧面平行式，雪杖夹在腋下 ---------- */
+  /* ---------- 中级：侧面平行式，匀速滑行，速度线掠过 ---------- */
   @keyframes n2-glide {
-    0%,100% { transform:translateY(0) rotate(-.7deg 96 124); }
-    50%     { transform:translateY(-1.2px) rotate(.7deg 96 124); }
+    0%,100% { transform:translateY(0) rotate(-.6deg 96 100); }
+    50%     { transform:translateY(-1.6px) rotate(.9deg 96 100); }
   }
-  .n2-figure { animation:n2-glide 2.9s var(--ease-in-out) infinite; }
+  @keyframes n2-speed {
+    0%       { stroke-dashoffset:24; opacity:0; }
+    18%      { opacity:.7; }
+    72%,100% { stroke-dashoffset:-12; opacity:0; }
+  }
+  .n2-figure { animation:n2-glide 3.2s var(--ease-in-out) infinite; }
+  .n2-speed  { stroke-dasharray:6 18; animation:n2-speed 3.2s linear infinite; }
 
-  /* ---------- 高级：正面卡宾，最高立刃瞬间 ---------- */
+  /* ---------- 高级：正面卡宾，深弧立刃，快而有力 ---------- */
   @keyframes n3-lean {
-    0%,100% { transform:rotate(-3deg 118 124); }
-    42%,64% { transform:rotate(-8deg 118 124); }
+    0%,100% { transform:rotate(-2.5deg 106 100); }
+    40%,62% { transform:rotate(-9.5deg 106 100); }
   }
   @keyframes n3-edge {
     0%,100% { transform:scaleX(1); }
-    42%,64% { transform:scaleX(.64); }
+    40%,62% { transform:scaleX(.6); }
   }
   @keyframes n3-track {
     0%       { stroke-dashoffset:150; opacity:0; }
-    12%      { opacity:.55; }
-    46%,88%  { stroke-dashoffset:0; opacity:.5; }
+    12%      { opacity:.6; }
+    46%,86%  { stroke-dashoffset:0; opacity:.5; }
     100%     { stroke-dashoffset:0; opacity:0; }
   }
-  .n3-figure { animation:n3-lean 2.8s var(--ease-in-out) infinite; }
-  .n3-ski    { animation:n3-edge 2.8s var(--ease-in-out) infinite; }
-  .n3-track  { stroke-dasharray:150; animation:n3-track 2.8s linear infinite; }
+  .n3-figure { animation:n3-lean 2.4s var(--ease-in-out) infinite; }
+  .n3-ski    { animation:n3-edge 2.4s var(--ease-in-out) infinite; }
+  .n3-track  { stroke-dasharray:150; animation:n3-track 2.4s linear infinite; }
 
   .scroll-hint {
     position:absolute; bottom:24px; left:50%; transform:translateX(-50%);
@@ -596,7 +633,9 @@
   .ghost-link {
     display:inline-flex; align-items:center; min-height:44px;
     color:var(--mist); text-decoration:none; font-size:13px; letter-spacing:.1em;
-    padding:8px 2px; border-bottom:1px solid transparent; transition:color .2s, border-color .2s;
+    padding:8px 2px; border:0; border-bottom:1px solid transparent;
+    background:none; font-family:inherit; cursor:pointer;
+    transition:color .2s, border-color .2s;
   }
   .ghost-link:hover { color:var(--cyan); border-bottom-color:rgba(6,140,180,.45); }
   .metric-grid {
@@ -610,9 +649,7 @@
   .metric-num {
     font-family:var(--din); font-weight:600; font-variant-numeric:tabular-nums;
     font-size:44px; line-height:1; margin:16px 0 8px; letter-spacing:.01em;
-    color:transparent; -webkit-text-fill-color:transparent;
-    background:linear-gradient(180deg,#0e3a55 0%,#12668c 55%,#2f9fc4 100%);
-    -webkit-background-clip:text; background-clip:text;
+    color:#0e3a55;
   }
   .metric-num .deg { font-size:24px; margin-left:2px; }
   .metric-meta { margin:0; color:var(--mist); font-size:13px; }
@@ -658,6 +695,53 @@
   .phase-cell .ph {
     display:block; font-size:11px; letter-spacing:.14em; color:var(--dim); margin-bottom:3px;
   }
+  .ph-dot {
+    display:inline-block; width:8px; height:8px; border-radius:2px;
+    margin-right:4px; vertical-align:-1px;
+  }
+  .ph-dot.entry { background:var(--phase-entry); }
+  .ph-dot.control { background:var(--phase-control); }
+  .ph-dot.exit { background:var(--phase-exit); }
+  /* 相位中位数在参考带上的点标：与 band-mark（整体中位数）同轴 */
+  .band-dot {
+    position:absolute; top:50%; width:9px; height:9px; border-radius:50%;
+    transform:translate(-50%,-50%); box-shadow:0 0 0 2px #fff;
+  }
+  .band-dot.entry { background:var(--phase-entry); }
+  .band-dot.control { background:var(--phase-control); }
+  .band-dot.exit { background:var(--phase-exit); }
+  /* ---------- 指标卡逐帧曲线 ---------- */
+  .spark { margin:14px 0 0; position:relative; }
+  .spark[hidden] { display:none; }
+  .spark svg { display:block; width:100%; height:76px; cursor:crosshair; touch-action:pan-y; }
+  .spark .sp-curve {
+    fill:none; stroke:var(--glacier); stroke-width:2; vector-effect:non-scaling-stroke;
+    stroke-linejoin:round; stroke-linecap:round;
+  }
+  .spark .sp-ref { fill:rgba(10,143,111,.09); }
+  .spark .sp-refline {
+    stroke:rgba(10,143,111,.32); stroke-width:1; stroke-dasharray:2 4;
+    vector-effect:non-scaling-stroke;
+  }
+  .spark .sp-strip { opacity:.85; }
+  .spark .sp-xhair {
+    stroke:rgba(18,74,110,.38); stroke-width:1; vector-effect:non-scaling-stroke;
+  }
+  .spark .sp-hdot { fill:var(--glacier); stroke:#fff; stroke-width:1.5; }
+  .spark .sp-play { fill:#0e3a55; stroke:#fff; stroke-width:1.5; }
+  .chart-tip {
+    position:fixed; z-index:45; pointer-events:none; padding:7px 11px;
+    background:rgba(255,255,255,.97); border:1px solid rgba(18,74,110,.18);
+    border-radius:10px; box-shadow:0 10px 28px rgba(23,58,84,.20);
+    font-size:12px; color:var(--ice-white); line-height:1.55;
+    opacity:0; transform:translateY(2px); transition:opacity .12s ease, transform .12s ease;
+    white-space:nowrap;
+  }
+  .chart-tip.show { opacity:1; transform:none; }
+  .chart-tip .tt-ph {
+    display:inline-block; width:8px; height:8px; border-radius:2px;
+    margin-right:5px; vertical-align:0;
+  }
   .phase-cell .pv {
     font-family:var(--din); font-variant-numeric:tabular-nums;
     font-size:17px; color:var(--ice-white);
@@ -683,7 +767,7 @@
              color:var(--dim); font-size:12px; font-family:var(--mono); }
   .pick-grid { display:flex; gap:14px; flex-wrap:wrap; align-items:flex-start; }
   button.pick {
-    position:relative; background:#fff; border-radius:12px; padding:7px;
+    position:relative; background:#fff; border-radius:var(--radius-card); padding:7px;
     border:2px solid var(--hair); color:var(--ice-white); cursor:pointer;
     transition:border-color .22s ease, transform .15s ease, box-shadow .26s ease;
   }
@@ -755,8 +839,8 @@
     stroke-width:1.8; stroke-linecap:round;
   }
   .cmdk-kbd {
-    font-family:var(--mono); font-size:10px; letter-spacing:.02em;
-    padding:2px 5px; border-radius:5px; color:var(--dim);
+    font-family:var(--mono); font-size:11px; letter-spacing:.02em;
+    padding:2px 5px; border-radius:5px; color:var(--mist);
     background:rgba(18,74,110,.06); border:1px solid rgba(18,74,110,.12);
   }
   .cmdk {
@@ -816,7 +900,7 @@
   }
   .cmdk-item .ch {
     margin-left:auto; flex:none; color:var(--dim);
-    font-family:var(--mono); font-size:10px;
+    font-family:var(--mono); font-size:11px;
   }
   .cmdk-empty { padding:22px 16px; text-align:center; color:var(--dim); font-size:13px; }
   .cmdk-foot {
@@ -824,7 +908,7 @@
     border-top:1px solid var(--hair); color:var(--dim); font-size:11px;
   }
   .cmdk-foot kbd {
-    font-family:var(--mono); font-size:10px; padding:1px 4px; margin-right:3px;
+    font-family:var(--mono); font-size:11px; padding:1px 4px; margin-right:3px;
     border:1px solid rgba(18,74,110,.16); border-radius:4px;
     background:rgba(18,74,110,.04);
   }
@@ -869,7 +953,7 @@
     .band.prep .band-mark {
       opacity:1; transform:translate(-50%,-50%); transition:none;
     }
-    body::before, .hero-kicker, .hero-lockup, .hero-sub, .scroll-hint,
+    body::before, .hero-lockup, .hero-sub, .scroll-hint,
     .features, .st-running::before { animation:none !important; }
     nav, .nav-pill, .btn, .feature, button.pick, button.retry,
     nav .nav-links a, select,
@@ -889,7 +973,7 @@
   }
   @media (max-width:560px) {
     .level-card { flex:1 1 0; min-width:0; padding:6px 5px 8px; }
-    .lv-name { font-size:12.5px; letter-spacing:.06em; }
+    .lv-name { font-size:13px; letter-spacing:.06em; }
     .lv-en { display:none; }
     .cmdk-kbd { display:none; }
     .cmdk-trigger { width:40px; padding:0; justify-content:center; margin-right:2px; }
@@ -902,26 +986,22 @@
     .brand { gap:8px; padding:6px 8px 6px 4px; }
     .brand .mark { width:28px; height:28px; }
     .brand-wordmark { height:14px; }
-    .brand-sub { font-size:9.5px; letter-spacing:.08em; }
+    .brand-sub { font-size:11px; letter-spacing:.08em; }
     nav .nav-links a { font-size:12.5px; letter-spacing:.04em; padding:0 11px; min-height:44px; }
     .feature { width:calc(50% - 9px); }
     .hero { padding:40px 10px 72px; }
-    .hero-kicker { font-size:11px; letter-spacing:.16em; text-indent:.16em; }
-    .hero-kicker::before, .hero-kicker::after { width:28px; }
     .hero-band { padding:0 14px; }
     .hero-band dd { font-size:16px; }
-    .hero-sub { font-size:13px; letter-spacing:.06em; }
+    .hero-sub { font-size:14px; letter-spacing:.06em; }
   }
   @media (max-width:420px) {
     .brand { gap:6px; padding:6px 4px; }
     .brand .mark { width:24px; height:24px; }
     .brand-wordmark { height:12.5px; }
     nav .nav-links a { padding:0 9px; font-size:12px; letter-spacing:.02em; }
-    .hero-kicker { gap:8px; font-size:10.5px; letter-spacing:.14em; text-indent:.14em; }
-    .hero-kicker::before, .hero-kicker::after { width:22px; }
     .hero-bands { margin-top:20px; }
     .hero-band { padding:0 10px; }
-    .hero-band dt { font-size:10px; letter-spacing:.1em; }
+    .hero-band dt { letter-spacing:.1em; }
     .hero-band dd { font-size:15px; }
     .hero-band-note { font-size:10px; letter-spacing:.02em; }
   }
@@ -930,7 +1010,6 @@
   }
   @media (max-height:760px) {
     .hero { padding-top:32px; }
-    .hero-kicker { margin-bottom:16px; }
     .hero-bands { margin-top:18px; }
     .hero-sub { margin-top:14px; }
     .features { margin-top:32px; }
@@ -945,10 +1024,6 @@
       box-shadow:none; filter:none;
     }
     .hero-band + .hero-band { border-left-color:CanvasText; }
-    .metric-num {
-      color:CanvasText !important; -webkit-text-fill-color:CanvasText !important;
-      background:none !important;
-    }
     .band-fill, .band-mark { forced-color-adjust:none; }
     .panel { border:1px solid CanvasText; }
   }
@@ -965,7 +1040,7 @@
   @media print {
     nav, #snow, .scroll-hint, .skip-link, .foot, .tl-strip, .tl-meta,
     .video-wrap, .pick-grid, #replay-status, #replay-retry-wrap,
-    button, .ghost-link, noscript { display:none !important; }
+    .chart-tip, button, .ghost-link, noscript { display:none !important; }
     body::before, body::after { display:none !important; }
     main { padding:0 !important; max-width:none !important; }
     .panel {
@@ -973,10 +1048,6 @@
       background:#fff !important; break-inside:avoid;
     }
     .metric-grid { grid-template-columns:1fr 1fr; gap:12px; }
-    .metric-num {
-      color:#000 !important; -webkit-text-fill-color:#000 !important;
-      background:none !important;
-    }
     a { color:#000; text-decoration:none; }
     /* 打印不等视口动画：参考带按终态出图 */
     .band.prep .band-fill { transform:none !important; opacity:1 !important; }

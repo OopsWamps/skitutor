@@ -49,9 +49,13 @@ if (dz && fi) {
     } catch (_) { /* 旧浏览器不支持赋值，保留原生选择 */ }
   });
 }
-// 水平档卡片：点选写入隐藏字段；点击同时给一个播放窗口（触屏没有 hover）
+// 水平档卡片：点选写入隐藏字段；点击同时给一个播放窗口（触屏没有 hover）。
+// 窗口取各档动画周期的整数倍，播完正好落回起始姿态，不在半途定住
 document.querySelectorAll('.level-card').forEach(card => {
   let playTimer = 0;
+  const PERIOD = {novice: 4800, intermediate: 3200, advanced: 2400};
+  const CYCLES = {novice: 1, intermediate: 1, advanced: 2};
+  const ms = (PERIOD[card.dataset.level] || 4800) * (CYCLES[card.dataset.level] || 1);
   card.addEventListener('click', () => {
     document.querySelectorAll('.level-card').forEach(c =>
       c.setAttribute('aria-pressed', String(c === card)));
@@ -60,7 +64,7 @@ document.querySelectorAll('.level-card').forEach(card => {
     void card.offsetWidth;
     card.classList.add('is-playing');
     clearTimeout(playTimer);
-    playTimer = setTimeout(() => card.classList.remove('is-playing'), 4400);
+    playTimer = setTimeout(() => card.classList.remove('is-playing'), ms);
   });
 });
 document.getElementById('f').addEventListener('submit', (e) => {
