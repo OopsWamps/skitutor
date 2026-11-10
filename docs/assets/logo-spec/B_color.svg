@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 640" font-family="'Cascadia Mono','Microsoft YaHei',Consolas,monospace">
+  <rect width="900" height="640" fill="#12324a"/>
+  <rect x="16" y="16" width="868" height="608" fill="none" stroke="#dbe7ef" stroke-width="1.2" opacity="0.85"/>
+  <rect x="24" y="24" width="852" height="592" fill="none" stroke="#dbe7ef" stroke-width="0.5" opacity="0.3"/>
+  <g stroke="#056b88" stroke-width="1.5" fill="none">
+    <path d="M16 30V16H30"/><path d="M870 16H884V30"/>
+    <path d="M16 610V624H30"/><path d="M884 610V624H870"/>
+  </g>
+  <text x="46" y="88" font-size="44" font-weight="bold" fill="#ffffff">B</text>
+  <text x="92" y="78" font-size="26" fill="#ffffff">标准色</text>
+  <text x="94" y="98" font-size="10" letter-spacing="4" fill="#dbe7ef" opacity="0.65">COLOR SPECIFICATION · HEX / RGB / RATIO</text>
+  <g stroke-width="2"><line x1="92" y1="106" x2="340" y2="106" stroke="#056b88"/><line x1="92" y1="106" x2="340" y2="106" stroke="#dbe7ef" opacity="0.28"/></g>
+  <g text-anchor="end" font-size="10" fill="#dbe7ef">
+    <text x="868" y="56">SKITUTOR · 滑雪体态分析</text>
+    <text x="868" y="72" opacity="0.65">SHEET B / 4 · 晒图 BLUEPRINT · R2 定稿</text>
+  </g>
+  <!-- 左栏:色卡 -->
+  <g stroke="#dbe7ef" stroke-width="0.75" opacity="0.7">
+    <rect x="40" y="128" width="46" height="46" fill="#12324a"/>
+    <rect x="40" y="190" width="46" height="46" fill="#056b88"/>
+    <rect x="40" y="252" width="46" height="46" fill="#c93b3b"/>
+    <rect x="40" y="314" width="46" height="46" fill="#49697f"/>
+    <rect x="40" y="376" width="46" height="46" fill="#ffffff"/>
+    <rect x="40" y="438" width="46" height="46" fill="#dbe7ef"/>
+  </g>
+  <g font-size="14" fill="#ffffff">
+    <text x="100" y="146">墨 Ink</text>
+    <text x="100" y="208">冰川青 Glacier</text>
+    <text x="100" y="270">珊瑚 Coral</text>
+    <text x="100" y="332">辅注 Slate</text>
+    <text x="100" y="394">纸 Paper</text>
+    <text x="100" y="456">细线 Line</text>
+  </g>
+  <g font-size="11" fill="#dbe7ef">
+    <text x="262" y="146">#12324A</text>
+    <text x="262" y="208">#056B88</text>
+    <text x="262" y="270">#C93B3B</text>
+    <text x="262" y="332">#49697F</text>
+    <text x="262" y="394">#FFFFFF</text>
+    <text x="262" y="456">#DBE7EF</text>
+  </g>
+  <g font-size="10" fill="#dbe7ef" opacity="0.7">
+    <text x="368" y="146">RGB 18·50·74</text>
+    <text x="368" y="208">RGB 5·107·136</text>
+    <text x="368" y="270">RGB 201·59·59</text>
+    <text x="368" y="332">RGB 73·105·127</text>
+    <text x="368" y="394">RGB 255·255·255</text>
+    <text x="368" y="456">RGB 219·231·239</text>
+  </g>
+  <g font-size="10" fill="#dbe7ef" opacity="0.65">
+    <text x="100" y="164">骨架 / 字标 / 深底纸面</text>
+    <text x="100" y="226">板线 / 强调构造</text>
+    <text x="100" y="288">仅膝点与警示注记</text>
+    <text x="100" y="350">副标 / 次级说明</text>
+    <text x="100" y="412">浅底纸面</text>
+    <text x="100" y="474">构造线 / 深底提亮</text>
+  </g>
+  <!-- 右栏:三变体 -->
+  <text x="500" y="132" font-size="15" fill="#ffffff">三种变体</text>
+  <line x1="500" y1="140" x2="554" y2="140" stroke="#056b88" stroke-width="2"/>
+  <line x1="500" y1="140" x2="554" y2="140" stroke="#dbe7ef" stroke-width="2" opacity="0.28"/>
+  <g stroke="#dbe7ef" stroke-width="0.75" opacity="0.7">
+    <rect x="500" y="152" width="108" height="96" fill="#ffffff"/>
+    <rect x="622" y="152" width="108" height="96" fill="#12324a"/>
+    <rect x="744" y="152" width="108" height="96" fill="#ffffff"/>
+  </g>
+  <!-- ① 浅底标准 -->
+  <g transform="translate(515.6 161.6) scale(2.4)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M26.76 24.3 8.93 28.8Q6.7 29.35 4.7 27.9" stroke="#056b88" stroke-width="3"/>
+    <path d="M15.03 5.17 21.47 15.17M21.47 15.17 17.56 16.44M15.14 20.35 16.18 26.44" stroke="#12324a" stroke-width="3"/>
+    <circle cx="15.03" cy="5.17" r="3.6" fill="#12324a" stroke="none"/>
+    <circle cx="21.47" cy="15.17" r="3.3" fill="#12324a" stroke="none"/>
+    <circle cx="16.18" cy="26.44" r="2.25" fill="#12324a" stroke="none"/>
+    <circle cx="14.68" cy="17.36" r="2.5" fill="#c93b3b" stroke="none"/>
+  </g>
+  <!-- ② 深底反白 -->
+  <g transform="translate(637.6 161.6) scale(2.4)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M26.76 24.3 8.93 28.8Q6.7 29.35 4.7 27.9" stroke="#056b88" stroke-width="3"/>
+    <path d="M26.76 24.3 8.93 28.8Q6.7 29.35 4.7 27.9" stroke="#dbe7ef" stroke-width="3" opacity="0.3"/>
+    <path d="M15.03 5.17 21.47 15.17M21.47 15.17 17.56 16.44M15.14 20.35 16.18 26.44" stroke="#ffffff" stroke-width="3"/>
+    <circle cx="15.03" cy="5.17" r="3.6" fill="#ffffff" stroke="none"/>
+    <circle cx="21.47" cy="15.17" r="3.3" fill="#ffffff" stroke="none"/>
+    <circle cx="16.18" cy="26.44" r="2.25" fill="#ffffff" stroke="none"/>
+    <circle cx="14.68" cy="17.36" r="2.5" fill="#c93b3b" stroke="none"/>
+  </g>
+  <!-- ③ 单色 -->
+  <g transform="translate(759.6 161.6) scale(2.4)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M26.76 24.3 8.93 28.8Q6.7 29.35 4.7 27.9" stroke="#12324a" stroke-width="3"/>
+    <path d="M15.03 5.17 21.47 15.17M21.47 15.17 17.56 16.44M15.14 20.35 16.18 26.44" stroke="#12324a" stroke-width="3"/>
+    <circle cx="15.03" cy="5.17" r="3.6" fill="#12324a" stroke="none"/>
+    <circle cx="21.47" cy="15.17" r="3.3" fill="#12324a" stroke="none"/>
+    <circle cx="16.18" cy="26.44" r="2.25" fill="#12324a" stroke="none"/>
+    <circle cx="14.68" cy="17.36" r="2.5" fill="#c93b3b" stroke="none"/>
+  </g>
+  <g font-size="11" fill="#dbe7ef" text-anchor="middle">
+    <text x="554" y="264">① 浅底 · 标准</text>
+    <text x="676" y="264">② 深底 · 反白</text>
+    <text x="798" y="264">③ 单色 · 红膝保留</text>
+  </g>
+  <!-- 色量配比(双条:mark 本体 / 版面应用,双条制嫁接自 modular) -->
+  <text x="500" y="300" font-size="15" fill="#ffffff">色量配比（建议）</text>
+  <line x1="500" y1="308" x2="554" y2="308" stroke="#056b88" stroke-width="2"/>
+  <line x1="500" y1="308" x2="554" y2="308" stroke="#dbe7ef" stroke-width="2" opacity="0.28"/>
+  <text x="500" y="328" font-size="11" fill="#dbe7ef" opacity="0.85">图形（mark 本体）</text>
+  <g stroke="#dbe7ef" stroke-width="0.75" opacity="0.7">
+    <rect x="500" y="334" width="368" height="26" fill="#ffffff"/>
+    <rect x="500" y="334" width="228.2" height="26" fill="#12324a"/>
+    <rect x="728.2" y="334" width="81" height="26" fill="#056b88"/>
+    <rect x="809.2" y="334" width="36.8" height="26" fill="#ffffff"/>
+    <rect x="846" y="334" width="14.7" height="26" fill="#c93b3b"/>
+    <rect x="860.7" y="334" width="7.3" height="26" fill="#49697f"/>
+  </g>
+  <g font-size="10" fill="#dbe7ef">
+    <text x="614" y="376" text-anchor="middle">墨 62%</text>
+    <text x="768" y="376" text-anchor="middle">冰川青 22%</text>
+    <text x="853" y="376" text-anchor="end">珊瑚 4%</text>
+    <text x="827" y="390" text-anchor="middle">纸 10%</text>
+    <text x="868" y="390" text-anchor="end">辅注 2%</text>
+  </g>
+  <text x="500" y="412" font-size="11" fill="#dbe7ef" opacity="0.85">版面应用（含纸底）</text>
+  <g stroke="#dbe7ef" stroke-width="0.75" opacity="0.7">
+    <rect x="500" y="418" width="368" height="26" fill="#ffffff"/>
+    <rect x="720.8" y="418" width="92" height="26" fill="#12324a"/>
+    <rect x="812.8" y="418" width="36.8" height="26" fill="#056b88"/>
+    <rect x="849.6" y="418" width="18.4" height="26" fill="#c93b3b"/>
+  </g>
+  <g font-size="10">
+    <text x="610" y="460" text-anchor="middle" fill="#49697f">纸 60%</text>
+    <text x="766" y="460" text-anchor="middle" fill="#dbe7ef">墨 25%</text>
+    <text x="831" y="460" text-anchor="middle" fill="#dbe7ef">青 10%</text>
+    <text x="868" y="460" text-anchor="end" fill="#dbe7ef">珊瑚 5%</text>
+  </g>
+  <!-- 用色规则 -->
+  <text x="500" y="488" font-size="15" fill="#ffffff">用色规则</text>
+  <line x1="500" y1="496" x2="554" y2="496" stroke="#056b88" stroke-width="2"/>
+  <line x1="500" y1="496" x2="554" y2="496" stroke="#dbe7ef" stroke-width="2" opacity="0.28"/>
+  <g font-size="12" fill="#dbe7ef">
+    <text x="500" y="514">① 珊瑚仅用于膝点与警示注记，不作大面积</text>
+    <text x="500" y="532">② 墨底纸面上，文字用纸白或细线色保证对比</text>
+    <text x="500" y="550">③ 深底坡线保留冰川青，叠细线 ≥30% 提亮（对比 ≈2.2:1，限 ≥24px）</text>
+    <text x="500" y="568">④ 单色稿：肢体与板线归墨，红膝保留珊瑚；更小尺寸坡线改细线色</text>
+  </g>
+  <!-- 标题栏 -->
+  <rect x="40" y="578" width="828" height="34" fill="none" stroke="#dbe7ef" stroke-width="0.75" opacity="0.7"/>
+  <g stroke="#dbe7ef" stroke-width="0.5" opacity="0.5">
+    <line x1="176" y1="578" x2="176" y2="612"/><line x1="388" y1="578" x2="388" y2="612"/><line x1="470" y1="578" x2="470" y2="612"/><line x1="584" y1="578" x2="584" y2="612"/><line x1="672" y1="578" x2="672" y2="612"/><line x1="806" y1="578" x2="806" y2="612"/>
+  </g>
+  <g font-size="8" fill="#dbe7ef" opacity="0.55">
+    <text x="48" y="590">项目</text><text x="184" y="590">图名</text><text x="396" y="590">图号</text><text x="478" y="590">比例</text><text x="592" y="590">单位</text><text x="680" y="590">日期</text><text x="814" y="590">版</text>
+  </g>
+  <g font-size="12" fill="#ffffff">
+    <text x="48" y="606">SKITUTOR VI 标准</text><text x="184" y="606">标准色</text><text x="396" y="606">FIN-B</text><text x="478" y="606">—</text><text x="592" y="606">u · m=3</text><text x="680" y="606">2026-11-10</text><text x="814" y="606">R2</text>
+  </g>
+</svg>

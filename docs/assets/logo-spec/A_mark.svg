@@ -1,0 +1,187 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 640" font-family="'Cascadia Mono','Microsoft YaHei',Consolas,monospace">
+  <rect width="900" height="640" fill="#12324a"/>
+  <!-- 图框 -->
+  <rect x="16" y="16" width="868" height="608" fill="none" stroke="#dbe7ef" stroke-width="1.2" opacity="0.85"/>
+  <rect x="24" y="24" width="852" height="592" fill="none" stroke="#dbe7ef" stroke-width="0.5" opacity="0.3"/>
+  <g stroke="#056b88" stroke-width="1.5" fill="none">
+    <path d="M16 30V16H30"/><path d="M870 16H884V30"/>
+    <path d="M16 610V624H30"/><path d="M884 610V624H870"/>
+  </g>
+  <!-- 页眉 -->
+  <text x="46" y="88" font-size="44" font-weight="bold" fill="#ffffff">A</text>
+  <text x="92" y="78" font-size="26" fill="#ffffff">图形标准制图</text>
+  <text x="94" y="98" font-size="10" letter-spacing="4" fill="#dbe7ef" opacity="0.65">MARK CONSTRUCTION · MODULAR GRID m=3</text>
+  <g stroke-width="2"><line x1="92" y1="106" x2="340" y2="106" stroke="#056b88"/><line x1="92" y1="106" x2="340" y2="106" stroke="#dbe7ef" opacity="0.28"/></g>
+  <g text-anchor="end" font-size="10" fill="#dbe7ef">
+    <text x="868" y="56">SKITUTOR · 滑雪体态分析</text>
+    <text x="868" y="72" opacity="0.65">SHEET A / 4 · 晒图 BLUEPRINT · R2 定稿</text>
+  </g>
+  <!-- 网格层 32u × 32u,S=14,原点 (40,120) -->
+  <g stroke="#dbe7ef" fill="none">
+    <path opacity="0.06" stroke-width="0.5" d="M54 120V568M68 120V568M82 120V568M110 120V568M124 120V568M138 120V568M166 120V568M180 120V568M194 120V568M222 120V568M236 120V568M250 120V568M278 120V568M292 120V568M306 120V568M334 120V568M348 120V568M362 120V568M390 120V568M404 120V568M418 120V568M446 120V568M460 120V568M474 120V568"/>
+    <path opacity="0.06" stroke-width="0.5" d="M40 134H488M40 148H488M40 162H488M40 190H488M40 204H488M40 218H488M40 246H488M40 260H488M40 274H488M40 302H488M40 316H488M40 330H488M40 358H488M40 372H488M40 386H488M40 414H488M40 428H488M40 442H488M40 470H488M40 484H488M40 498H488M40 526H488M40 540H488M40 554H488"/>
+    <path opacity="0.16" stroke-width="0.6" d="M40 120V568M96 120V568M152 120V568M208 120V568M264 120V568M320 120V568M376 120V568M432 120V568M488 120V568M40 120H488M40 176H488M40 232H488M40 288H488M40 344H488M40 400H488M40 456H488M40 512H488M40 568H488"/>
+  </g>
+  <g font-size="9" fill="#dbe7ef" opacity="0.55" text-anchor="middle">
+    <text x="40" y="113">0</text><text x="96" y="113">4</text><text x="152" y="113">8</text><text x="208" y="113">12</text><text x="264" y="113">16</text><text x="320" y="113">20</text><text x="376" y="113">24</text><text x="432" y="113">28</text><text x="488" y="113">32</text>
+  </g>
+  <g font-size="9" fill="#dbe7ef" opacity="0.55" text-anchor="end">
+    <text x="36" y="123">0</text><text x="36" y="235">8</text><text x="36" y="347">16</text><text x="36" y="459">24</text><text x="36" y="571">32</text>
+  </g>
+  <!-- 构造层(单位坐标) -->
+  <g transform="translate(40 120) scale(14)" fill="none">
+    <g stroke="#dbe7ef" stroke-width="0.05" stroke-dasharray="0.3 0.2" opacity="0.85">
+      <circle cx="15.03" cy="5.17" r="3.95"/>
+      <circle cx="21.47" cy="15.17" r="3.65"/>
+      <circle cx="14.68" cy="17.36" r="2.85"/>
+      <circle cx="16.18" cy="26.44" r="2.6"/>
+    </g>
+    <g stroke="#ffffff" stroke-width="0.07" opacity="0.9">
+      <path d="M14.53 5.17H15.53M15.03 4.67V5.67"/>
+      <path d="M20.97 15.17H21.97M21.47 14.67V15.67"/>
+      <path d="M14.18 17.36H15.18M14.68 16.86V17.86"/>
+      <path d="M15.68 26.44H16.68M16.18 25.94V26.94"/>
+    </g>
+    <g stroke="#dbe7ef" stroke-width="0.05" stroke-dasharray="0.38 0.22 0.08 0.22" opacity="0.8">
+      <line x1="15.03" y1="5.17" x2="21.47" y2="15.17"/>
+      <line x1="21.47" y1="15.17" x2="17.56" y2="16.44"/>
+      <line x1="17.56" y1="16.44" x2="15.14" y2="20.35"/>
+      <line x1="15.14" y1="20.35" x2="16.32" y2="27.23"/>
+      <line x1="28.5" y1="23.86" x2="4.77" y2="29.85"/>
+    </g>
+    <g stroke="#dbe7ef" stroke-width="0.04" stroke-dasharray="0.2 0.18" opacity="0.45">
+      <line x1="27.13" y1="25.75" x2="9.3" y2="30.25"/>
+      <line x1="26.39" y1="22.85" x2="8.56" y2="27.35"/>
+    </g>
+    <g stroke="#dbe7ef" stroke-width="0.04" opacity="0.5">
+      <circle cx="6.7" cy="29.35" r="0.3" stroke-dasharray="0.14 0.12"/>
+      <line x1="8.93" y1="28.8" x2="6.7" y2="29.35"/>
+      <line x1="6.7" y1="29.35" x2="4.7" y2="27.9"/>
+    </g>
+    <!-- 坡角 14.2°:水平基准 + 圆弧(墨色描边打底,避免被板笔画淹没) -->
+    <g opacity="0.9">
+      <line x1="26.76" y1="24.3" x2="17" y2="24.3" stroke="#12324a" stroke-width="0.16"/>
+      <line x1="26.76" y1="24.3" x2="17" y2="24.3" stroke="#dbe7ef" stroke-width="0.05" stroke-dasharray="0.3 0.2"/>
+      <path d="M17.26 24.3A9.5 9.5 0 0 0 17.57 26.63" stroke="#12324a" stroke-width="0.22" fill="none"/>
+      <path d="M17.26 24.3A9.5 9.5 0 0 0 17.57 26.63" stroke="#dbe7ef" stroke-width="0.08" fill="none"/>
+    </g>
+  </g>
+  <!-- 图形层(墨/纸互换:骨=纸白,板=冰川青+细线提亮,膝=珊瑚) -->
+  <g transform="translate(40 120) scale(14)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M26.76 24.3 8.93 28.8Q6.7 29.35 4.7 27.9" stroke="#056b88" stroke-width="3"/>
+    <path d="M26.76 24.3 8.93 28.8Q6.7 29.35 4.7 27.9" stroke="#dbe7ef" stroke-width="3" opacity="0.3"/>
+    <path d="M15.03 5.17 21.47 15.17M21.47 15.17 17.56 16.44M15.14 20.35 16.18 26.44" stroke="#ffffff" stroke-width="3"/>
+    <circle cx="15.03" cy="5.17" r="3.6" fill="#ffffff" stroke="none"/>
+    <circle cx="21.47" cy="15.17" r="3.3" fill="#ffffff" stroke="none"/>
+    <circle cx="16.18" cy="26.44" r="2.25" fill="#ffffff" stroke="none"/>
+    <circle cx="14.68" cy="17.36" r="2.5" fill="#c93b3b" stroke="none"/>
+  </g>
+  <!-- 标注(引线 + 文字) -->
+  <g stroke="#dbe7ef" stroke-width="0.75" fill="none" opacity="0.85">
+    <line x1="211.3" y1="153.3" x2="182" y2="149"/>
+    <line x1="376.7" y1="296.3" x2="446" y2="278"/>
+    <line x1="205.6" y1="363" x2="168" y2="390" stroke="#c93b3b"/>
+    <line x1="284.7" y1="521.7" x2="328" y2="540"/>
+    <line x1="310" y1="448" x2="283" y2="470" opacity="0.6"/>
+  </g>
+  <g font-size="12" fill="#dbe7ef">
+    <text x="178" y="146" text-anchor="end">头 r=3.60 · 1.2m</text>
+    <text x="456" y="274" text-anchor="end">髋 r=3.30 · 1.1m</text>
+    <text x="164" y="394" text-anchor="end">膝 r=2.50 · 5/6m</text>
+    <text x="332" y="544">踝 r=2.25 · 3/4m</text>
+    <text x="316" y="442">坡角 14.2°</text>
+    <text x="316" y="456" font-size="9" opacity="0.75">= atan(4.5 / 17.83)</text>
+  </g>
+  <!-- 细部①定位:踝区虚线圈 + 引出线 -->
+  <circle cx="266.5" cy="490.2" r="16" fill="none" stroke="#c93b3b" stroke-width="0.9" stroke-dasharray="3 2.5"/>
+  <line x1="282" y1="498" x2="506" y2="464" stroke="#c93b3b" stroke-width="0.6" stroke-dasharray="5 4" opacity="0.7"/>
+  <circle cx="398" cy="481" r="8" fill="#c93b3b"/>
+  <text x="398" y="485" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">1</text>
+  <!-- 右栏:制图说明 -->
+  <text x="512" y="130" font-size="15" fill="#ffffff">制图说明</text>
+  <line x1="512" y1="138" x2="566" y2="138" stroke="#056b88" stroke-width="2"/>
+  <line x1="512" y1="138" x2="566" y2="138" stroke="#dbe7ef" stroke-width="2" opacity="0.28"/>
+  <g stroke="#dbe7ef" fill="none" opacity="0.85">
+    <circle cx="521" cy="153" r="7" stroke-width="0.8" stroke-dasharray="3 2"/>
+    <path d="M517 180H525M521 176V184" stroke-width="0.9" stroke="#ffffff"/>
+    <line x1="512" y1="204" x2="532" y2="204" stroke-width="0.8" stroke-dasharray="5 3 1 3"/>
+    <path d="M512 226H532M512 230H532" stroke-width="0.8" stroke-dasharray="4 2" opacity="0.6"/>
+  </g>
+  <g font-size="12" fill="#dbe7ef">
+    <text x="540" y="157">模数圆 r+0.35u</text>
+    <text x="540" y="184">关节中心十字</text>
+    <text x="540" y="208">中心线（骨 / 板）</text>
+    <text x="540" y="232">笔画边缘 ±1.5u</text>
+  </g>
+  <text x="512" y="254" font-size="12" fill="#dbe7ef">模数 m = 3（骨 / 板笔画宽）· 1m = 42px @S14</text>
+  <!-- 点位表(嫁接自 manual,含 Q 控制点) -->
+  <text x="512" y="278" font-size="15" fill="#ffffff">点位表 · 单位 u</text>
+  <line x1="512" y1="286" x2="566" y2="286" stroke="#056b88" stroke-width="2"/>
+  <line x1="512" y1="286" x2="566" y2="286" stroke="#dbe7ef" stroke-width="2" opacity="0.28"/>
+  <g font-size="10" fill="#dbe7ef" opacity="0.7">
+    <text x="512" y="302">点位</text><text x="602" y="302" text-anchor="end">X</text><text x="692" y="302" text-anchor="end">Y</text>
+    <text x="700" y="302">点位</text><text x="790" y="302" text-anchor="end">X</text><text x="868" y="302" text-anchor="end">Y</text>
+  </g>
+  <g stroke="#dbe7ef" stroke-width="0.5" opacity="0.3">
+    <line x1="512" y1="306" x2="692" y2="306"/><line x1="700" y1="306" x2="868" y2="306"/>
+    <line x1="512" y1="324" x2="692" y2="324"/><line x1="700" y1="324" x2="868" y2="324"/>
+    <line x1="512" y1="342" x2="692" y2="342"/><line x1="700" y1="342" x2="868" y2="342"/>
+    <line x1="512" y1="360" x2="692" y2="360"/><line x1="700" y1="360" x2="868" y2="360"/>
+    <line x1="512" y1="378" x2="692" y2="378"/><line x1="700" y1="378" x2="868" y2="378"/>
+  </g>
+  <g font-size="12" fill="#dbe7ef">
+    <text x="512" y="320">头</text><text x="602" y="320" text-anchor="end">15.03</text><text x="692" y="320" text-anchor="end">5.17</text>
+    <text x="512" y="338">髋</text><text x="602" y="338" text-anchor="end">21.47</text><text x="692" y="338" text-anchor="end">15.17</text>
+    <text x="512" y="356">膝</text><text x="602" y="356" text-anchor="end">14.68</text><text x="692" y="356" text-anchor="end">17.36</text>
+    <text x="512" y="374">踝</text><text x="602" y="374" text-anchor="end">16.18</text><text x="692" y="374" text-anchor="end">26.44</text>
+    <text x="700" y="320">板起</text><text x="790" y="320" text-anchor="end">26.76</text><text x="868" y="320" text-anchor="end">24.30</text>
+    <text x="700" y="338">板止</text><text x="790" y="338" text-anchor="end">8.93</text><text x="868" y="338" text-anchor="end">28.80</text>
+    <text x="700" y="356">Q 控</text><text x="790" y="356" text-anchor="end">6.70</text><text x="868" y="356" text-anchor="end">29.35</text>
+    <text x="700" y="374">板尾</text><text x="790" y="374" text-anchor="end">4.70</text><text x="868" y="374" text-anchor="end">27.90</text>
+  </g>
+  <text x="512" y="392" font-size="9.5" fill="#dbe7ef" opacity="0.85">口径：板线中心线由直段两端点（26.76,24.30）–（8.93,28.80）内插</text>
+  <!-- 细部①:踝-板间隙放大(10×,含板带边缘 ±1.5u 与净空示意) -->
+  <text x="512" y="416" font-size="13" fill="#dbe7ef">细部 ① 踝-板间隙（放大 10×）</text>
+  <rect x="512" y="424" width="344" height="112" fill="none" stroke="#dbe7ef" stroke-width="0.6" stroke-dasharray="4 3" opacity="0.4"/>
+  <g transform="translate(536 452) scale(10)" fill="none" stroke-linecap="round">
+    <path d="M9.46 1.75 -0.17 4.19" stroke="#056b88" stroke-width="3"/>
+    <path d="M9.46 1.75 -0.17 4.19" stroke="#dbe7ef" stroke-width="3" opacity="0.3"/>
+    <path d="M9.46 0.25 -0.17 2.69" stroke="#dbe7ef" stroke-width="0.06" opacity="0.7" stroke-dasharray="0.3 0.2"/>
+    <path d="M9.46 3.25 -0.17 5.69" stroke="#dbe7ef" stroke-width="0.06" opacity="0.7" stroke-dasharray="0.3 0.2"/>
+    <circle cx="2.68" cy="2.94" r="2.25" fill="#ffffff" stroke="none"/>
+    <path d="M2.68 2.94H4.4" stroke="#dbe7ef" stroke-width="0.06" opacity="0.8"/>
+    <path d="M2.68 3.47H4.4" stroke="#dbe7ef" stroke-width="0.06" opacity="0.8"/>
+    <line x1="4.9" y1="2.94" x2="4.9" y2="3.47" stroke="#ffffff" stroke-width="0.09"/>
+    <line x1="4.55" y1="2.94" x2="5.25" y2="2.94" stroke="#ffffff" stroke-width="0.09"/>
+    <line x1="4.55" y1="3.47" x2="5.25" y2="3.47" stroke="#ffffff" stroke-width="0.09"/>
+  </g>
+  <line x1="590" y1="484" x2="650" y2="466" stroke="#dbe7ef" stroke-width="0.6" opacity="0.7"/>
+  <text x="656" y="470" font-size="16" font-weight="bold" fill="#ffffff">0.53</text>
+  <text x="656" y="488" font-size="9.5" fill="#dbe7ef" opacity="0.85">踝心 → 板线中心 · 竖向</text>
+  <text x="656" y="504" font-size="9.5" fill="#dbe7ef" opacity="0.85">板带缘 ±1.5u：上 1.97 / 下 4.97</text>
+  <text x="512" y="552" font-size="10" fill="#dbe7ef" opacity="0.9">口径：0.53 = 踝心至板线中心的竖向距离，非净空</text>
+  <text x="512" y="566" font-size="9.5" fill="#dbe7ef" opacity="0.8">净空示意：踝圆下缘 5.19u 越过板带下缘 4.97u 达 0.22u（踩板重叠，刻意）</text>
+  <!-- 比例尺(嫁接自 modular:6m 长尺,置于图区内) -->
+  <g stroke="#056b88" stroke-width="1.5">
+    <line x1="60" y1="558" x2="312" y2="558"/>
+    <line x1="60" y1="552" x2="60" y2="564"/><line x1="312" y1="552" x2="312" y2="564"/>
+    <line x1="102" y1="554" x2="102" y2="562" stroke-width="1"/><line x1="144" y1="554" x2="144" y2="562" stroke-width="1"/>
+    <line x1="186" y1="554" x2="186" y2="562" stroke-width="1"/><line x1="228" y1="554" x2="228" y2="562" stroke-width="1"/>
+    <line x1="270" y1="554" x2="270" y2="562" stroke-width="1"/>
+  </g>
+  <g font-size="9" fill="#dbe7ef" opacity="0.7" text-anchor="middle">
+    <text x="60" y="550">0</text><text x="102" y="550">1</text><text x="144" y="550">2</text><text x="186" y="550">3</text><text x="228" y="550">4</text><text x="270" y="550">5</text><text x="306" y="550">6m</text>
+  </g>
+  <text x="324" y="562" font-size="10" fill="#dbe7ef" opacity="0.85">比例尺 1m = 42px</text>
+  <!-- 标题栏 -->
+  <rect x="40" y="578" width="828" height="34" fill="none" stroke="#dbe7ef" stroke-width="0.75" opacity="0.7"/>
+  <g stroke="#dbe7ef" stroke-width="0.5" opacity="0.5">
+    <line x1="176" y1="578" x2="176" y2="612"/><line x1="388" y1="578" x2="388" y2="612"/><line x1="470" y1="578" x2="470" y2="612"/><line x1="584" y1="578" x2="584" y2="612"/><line x1="672" y1="578" x2="672" y2="612"/><line x1="806" y1="578" x2="806" y2="612"/>
+  </g>
+  <g font-size="8" fill="#dbe7ef" opacity="0.55">
+    <text x="48" y="590">项目</text><text x="184" y="590">图名</text><text x="396" y="590">图号</text><text x="478" y="590">比例</text><text x="592" y="590">单位</text><text x="680" y="590">日期</text><text x="814" y="590">版</text>
+  </g>
+  <g font-size="12" fill="#ffffff">
+    <text x="48" y="606">SKITUTOR VI 标准</text><text x="184" y="606">图形标准制图</text><text x="396" y="606">FIN-A</text><text x="478" y="606">S=14 px/u</text><text x="592" y="606">u · m=3</text><text x="680" y="606">2026-11-10</text><text x="814" y="606">R2</text>
+  </g>
+</svg>

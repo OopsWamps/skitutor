@@ -1,0 +1,229 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 640" font-family="'Cascadia Mono','Microsoft YaHei',Consolas,monospace">
+  <rect width="900" height="640" fill="#12324a"/>
+  <rect x="16" y="16" width="868" height="608" fill="none" stroke="#dbe7ef" stroke-width="1.2" opacity="0.85"/>
+  <rect x="24" y="24" width="852" height="592" fill="none" stroke="#dbe7ef" stroke-width="0.5" opacity="0.3"/>
+  <g stroke="#056b88" stroke-width="1.5" fill="none">
+    <path d="M16 30V16H30"/><path d="M870 16H884V30"/>
+    <path d="M16 610V624H30"/><path d="M884 610V624H870"/>
+  </g>
+  <text x="46" y="88" font-size="44" font-weight="bold" fill="#ffffff">D</text>
+  <text x="92" y="78" font-size="26" fill="#ffffff">应用参数</text>
+  <text x="94" y="98" font-size="10" letter-spacing="4" fill="#dbe7ef" opacity="0.65">MINIMUM SIZE · CLEARSPACE · FAVICON 16PX</text>
+  <g stroke-width="2"><line x1="92" y1="106" x2="340" y2="106" stroke="#056b88"/><line x1="92" y1="106" x2="340" y2="106" stroke="#dbe7ef" opacity="0.28"/></g>
+  <g text-anchor="end" font-size="10" fill="#dbe7ef">
+    <text x="868" y="56">SKITUTOR · 滑雪体态分析</text>
+    <text x="868" y="72" opacity="0.65">SHEET D / 4 · 晒图 BLUEPRINT · R2 定稿</text>
+  </g>
+  <!-- 左上:最小使用尺寸(三档阶梯,嫁接自 modular;下限推导随条) -->
+  <text x="40" y="132" font-size="15" fill="#ffffff">最小使用尺寸</text>
+  <line x1="40" y1="140" x2="94" y2="140" stroke="#056b88" stroke-width="2"/>
+  <line x1="40" y1="140" x2="94" y2="140" stroke="#dbe7ef" stroke-width="2" opacity="0.28"/>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <g transform="translate(48 156) scale(0.75)">
+      <path d="M26.76 24.3 8.93 28.8Q6.7 29.35 4.7 27.9" stroke="#056b88" stroke-width="3"/><path d="M26.76 24.3 8.93 28.8Q6.7 29.35 4.7 27.9" stroke="#dbe7ef" stroke-width="3" opacity="0.3"/>
+      <path d="M15.03 5.17 21.47 15.17M21.47 15.17 17.56 16.44M15.14 20.35 16.18 26.44" stroke="#ffffff" stroke-width="3"/>
+      <circle cx="15.03" cy="5.17" r="3.6" fill="#ffffff" stroke="none"/><circle cx="21.47" cy="15.17" r="3.3" fill="#ffffff" stroke="none"/><circle cx="16.18" cy="26.44" r="2.25" fill="#ffffff" stroke="none"/><circle cx="14.68" cy="17.36" r="2.5" fill="#c93b3b" stroke="none"/>
+    </g>
+    <g transform="translate(120 156) scale(1.5)">
+      <path d="M26.76 24.3 8.93 28.8Q6.7 29.35 4.7 27.9" stroke="#056b88" stroke-width="3"/><path d="M26.76 24.3 8.93 28.8Q6.7 29.35 4.7 27.9" stroke="#dbe7ef" stroke-width="3" opacity="0.3"/>
+      <path d="M15.03 5.17 21.47 15.17M21.47 15.17 17.56 16.44M15.14 20.35 16.18 26.44" stroke="#ffffff" stroke-width="3"/>
+      <circle cx="15.03" cy="5.17" r="3.6" fill="#ffffff" stroke="none"/><circle cx="21.47" cy="15.17" r="3.3" fill="#ffffff" stroke="none"/><circle cx="16.18" cy="26.44" r="2.25" fill="#ffffff" stroke="none"/><circle cx="14.68" cy="17.36" r="2.5" fill="#c93b3b" stroke="none"/>
+    </g>
+    <g transform="translate(230 156) scale(3)">
+      <path d="M26.76 24.3 8.93 28.8Q6.7 29.35 4.7 27.9" stroke="#056b88" stroke-width="3"/><path d="M26.76 24.3 8.93 28.8Q6.7 29.35 4.7 27.9" stroke="#dbe7ef" stroke-width="3" opacity="0.3"/>
+      <path d="M15.03 5.17 21.47 15.17M21.47 15.17 17.56 16.44M15.14 20.35 16.18 26.44" stroke="#ffffff" stroke-width="3"/>
+      <circle cx="15.03" cy="5.17" r="3.6" fill="#ffffff" stroke="none"/><circle cx="21.47" cy="15.17" r="3.3" fill="#ffffff" stroke="none"/><circle cx="16.18" cy="26.44" r="2.25" fill="#ffffff" stroke="none"/><circle cx="14.68" cy="17.36" r="2.5" fill="#c93b3b" stroke="none"/>
+    </g>
+  </g>
+  <g font-size="11" fill="#dbe7ef" text-anchor="middle">
+    <text x="60" y="266">24px</text><text x="144" y="266">48px</text><text x="278" y="266">96px</text>
+  </g>
+  <g font-size="9" fill="#dbe7ef" opacity="0.65" text-anchor="middle">
+    <text x="60" y="280">屏显下限</text><text x="144" y="280">导航 / 内联</text><text x="278" y="280">展示</text>
+  </g>
+  <g stroke="#dbe7ef" stroke-width="1">
+    <line x1="48" y1="292" x2="78" y2="292"/><line x1="48" y1="287" x2="48" y2="297"/><line x1="78" y1="287" x2="78" y2="297"/>
+  </g>
+  <text x="86" y="296" font-size="11" fill="#dbe7ef">印刷下限 8mm ≈ 30px @96dpi，此时 1m ≈ 0.75mm</text>
+  <text x="40" y="316" font-size="11" fill="#dbe7ef" opacity="0.85">下限依据：笔画宽 1m ≥ 2px（屏显）/ ≥ 0.75mm（印刷）</text>
+  <!-- 组合最小 140px(嫁接自 modular,统一口径) -->
+  <g transform="translate(48 324) scale(0.2682)">
+    <g transform="translate(84 36) scale(2.75)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M26.76 24.3 8.93 28.8Q6.7 29.35 4.7 27.9" stroke="#056b88" stroke-width="3"/>
+      <path d="M26.76 24.3 8.93 28.8Q6.7 29.35 4.7 27.9" stroke="#dbe7ef" stroke-width="3" opacity="0.3"/>
+      <path d="M15.03 5.17 21.47 15.17M21.47 15.17 17.56 16.44M15.14 20.35 16.18 26.44" stroke="#ffffff" stroke-width="3"/>
+      <circle cx="15.03" cy="5.17" r="3.6" fill="#ffffff" stroke="none"/><circle cx="21.47" cy="15.17" r="3.3" fill="#ffffff" stroke="none"/><circle cx="16.18" cy="26.44" r="2.25" fill="#ffffff" stroke="none"/><circle cx="14.68" cy="17.36" r="2.5" fill="#c93b3b" stroke="none"/>
+    </g>
+    <g transform="translate(190 47) scale(0.68)" fill="#ffffff">
+      <g><path d="M55.9 7.0L23.9 7.4L18.6 9.1L14.2 12.2L11.1 16.6L9.5 21.6L9.0 26.8L9.4 42.2L11.1 47.4L14.2 51.8L18.6 54.9L23.6 56.5L28.5 57.0L33.6 57.3L35.0 57.8L35.7 58.3L36.2 59.0L36.7 60.5L37.0 63.2L36.7 75.7L36.2 77.0L35.7 77.7L35.0 78.2L33.5 78.7L30.7 79.0L4.0 79.0L4.0 93.0L31.3 93.0L36.4 92.5L41.4 90.9L45.8 87.8L48.9 83.4L50.6 78.2L51.0 62.8L50.5 57.6L48.9 52.6L45.8 48.2L41.4 45.1L36.3 43.4L29.5 43.0L26.5 42.7L25.0 42.2L24.3 41.7L23.8 41.0L23.3 39.7L23.0 27.2L23.3 24.5L23.8 23.0L24.3 22.3L25.0 21.8L26.2 21.3L56.1 21.0Z"/></g>
+      <g transform="translate(85 0)"><path d="M1.5 8.0L1.7 43.0L3.2 47.6L7.3 51.6L13.0 52.1L17.2 50.4L20.5 48.1L54.5 19.4L45.5 8.6L11.8 37.0L10.4 38.1L10.8 37.9L13.5 38.1L15.5 40.1L15.7 40.7L15.5 8.0Z"/><path d="M15.5 92.0L15.5 38.0L1.5 38.0L1.5 92.0Z"/><path d="M6.5 58.4L47.5 92.4L56.5 81.6L15.5 47.6Z"/></g>
+      <g transform="translate(168 0)"><path d="M37.0 92.0L36.7 41.7L35.6 36.3L33.8 31.3L31.3 26.6L28.2 22.3L24.5 18.6L12.7 7.8L3.3 18.2L14.8 28.6L17.4 31.4L19.5 34.1L21.0 37.0L22.1 40.1L22.7 43.2L23.0 92.0Z"/></g>
+      <g transform="translate(232 0)"><path d="M4.0 22.0L56.0 22.0L56.0 8.0L4.0 8.0Z"/><path d="M23.0 15.0L23.0 92.0L37.0 92.0L37.0 15.0Z"/></g>
+      <g transform="translate(310 0)"><path d="M8.0 8.0L8.3 60.8L10.0 65.9L13.0 70.0L17.1 73.0L21.9 74.6L26.8 75.0L37.9 74.6L42.9 73.0L47.0 70.0L50.0 65.9L51.6 61.1L52.0 56.3L52.0 8.0L38.0 8.0L38.0 55.7L37.8 58.2L37.4 59.5L37.0 60.0L36.5 60.4L35.4 60.7L27.2 61.0L24.8 60.8L23.5 60.4L23.0 60.0L22.6 59.5L22.0 8.0Z"/></g>
+      <g transform="translate(388 0)"><path d="M4.0 22.0L56.0 22.0L56.0 8.0L4.0 8.0Z"/><path d="M23.0 15.0L23.0 92.0L37.0 92.0L37.0 15.0Z"/></g>
+      <g transform="translate(469 0)"><path fill-rule="evenodd" d="M27 8h6a22 22 0 0 1 22 22v40a22 22 0 0 1 -22 22h-6a22 22 0 0 1 -22 -22v-40a22 22 0 0 1 22 -22Z M27 21h6a9 9 0 0 1 9 9v40a9 9 0 0 1 -9 9h-6a9 9 0 0 1 -9 -9v-40a9 9 0 0 1 9 -9Z"/></g>
+      <g transform="translate(552 0)"><path d="M1.5 8.0L1.5 92.0L15.5 92.0L15.5 8.0Z"/><path d="M14.9 22.0L35.9 22.3L36.3 22.4L36.6 22.7L36.8 23.4L37.0 25.3L36.7 39.9L36.6 40.3L36.3 40.6L35.6 40.8L33.7 41.0L15.0 41.0L15.0 55.0L34.3 55.0L38.5 54.6L42.8 53.2L46.5 50.5L49.2 46.8L50.7 42.3L51.0 24.7L50.6 20.5L49.2 16.2L46.5 12.5L42.8 9.8L38.2 8.3L15.1 8.0Z"/><path d="M14.6 54.5L45.6 91.5L56.4 82.5L25.4 45.5Z"/></g>
+    </g>
+    <text x="190" y="140" font-size="13" letter-spacing="2" textLength="416" lengthAdjust="spacing" fill="#dbe7ef">BODY ANALYSIS</text>
+  </g>
+  <g stroke="#dbe7ef" stroke-width="1">
+    <line x1="48" y1="372" x2="188" y2="372"/><line x1="48" y1="367" x2="48" y2="377"/><line x1="188" y1="367" x2="188" y2="377"/>
+  </g>
+  <text x="40" y="388" font-size="11" fill="#dbe7ef">组合最小宽 140px（屏显）/ 48mm（印刷）· 示样即 140px 宽</text>
+  <!-- 禁用 -->
+  <text x="40" y="416" font-size="15" fill="#ffffff">禁用</text>
+  <line x1="40" y1="424" x2="94" y2="424" stroke="#056b88" stroke-width="2"/>
+  <line x1="40" y1="424" x2="94" y2="424" stroke="#dbe7ef" stroke-width="2" opacity="0.28"/>
+  <g stroke="#c93b3b" stroke-width="2" fill="none">
+    <path d="M46 432l8 8M54 432l-8 8"/>
+    <path d="M46 450l8 8M54 450l-8 8"/>
+    <path d="M46 468l8 8M54 468l-8 8"/>
+    <path d="M46 486l8 8M54 486l-8 8"/>
+  </g>
+  <g font-size="12" fill="#dbe7ef">
+    <text x="64" y="440">外加描边 / 投影 / 发光</text>
+    <text x="64" y="458">拉伸压扁、改变坡线方向</text>
+    <text x="64" y="476">红膝改色或移位</text>
+    <text x="64" y="494">镜像使用（坡线必须朝左下）</text>
+  </g>
+  <!-- 降级序列 -->
+  <text x="40" y="516" font-size="13" fill="#ffffff">降级序列</text>
+  <line x1="40" y1="522" x2="94" y2="522" stroke="#056b88" stroke-width="2"/>
+  <line x1="40" y1="522" x2="94" y2="522" stroke="#dbe7ef" stroke-width="2" opacity="0.28"/>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <g transform="translate(112 508) scale(1.5)">
+      <path d="M26.76 24.3 8.93 28.8Q6.7 29.35 4.7 27.9" stroke="#056b88" stroke-width="3"/><path d="M26.76 24.3 8.93 28.8Q6.7 29.35 4.7 27.9" stroke="#dbe7ef" stroke-width="3" opacity="0.3"/>
+      <path d="M15.03 5.17 21.47 15.17M21.47 15.17 17.56 16.44M15.14 20.35 16.18 26.44" stroke="#ffffff" stroke-width="3"/>
+      <circle cx="15.03" cy="5.17" r="3.6" fill="#ffffff" stroke="none"/><circle cx="21.47" cy="15.17" r="3.3" fill="#ffffff" stroke="none"/><circle cx="16.18" cy="26.44" r="2.25" fill="#ffffff" stroke="none"/><circle cx="14.68" cy="17.36" r="2.5" fill="#c93b3b" stroke="none"/>
+    </g>
+    <g transform="translate(178 524)">
+      <path d="M26.76 24.3 8.93 28.8Q6.7 29.35 4.7 27.9" stroke="#056b88" stroke-width="3"/><path d="M26.76 24.3 8.93 28.8Q6.7 29.35 4.7 27.9" stroke="#dbe7ef" stroke-width="3" opacity="0.3"/>
+      <path d="M15.03 5.17 21.47 15.17M21.47 15.17 17.56 16.44M15.14 20.35 16.18 26.44" stroke="#ffffff" stroke-width="3"/>
+      <circle cx="15.03" cy="5.17" r="3.6" fill="#ffffff" stroke="none"/><circle cx="21.47" cy="15.17" r="3.3" fill="#ffffff" stroke="none"/><circle cx="16.18" cy="26.44" r="2.25" fill="#ffffff" stroke="none"/><circle cx="14.68" cy="17.36" r="2.5" fill="#c93b3b" stroke="none"/>
+    </g>
+    <g transform="translate(226 532) scale(0.75)">
+      <path d="M26.76 24.3 8.93 28.8Q6.7 29.35 4.7 27.9" stroke="#056b88" stroke-width="3"/><path d="M26.76 24.3 8.93 28.8Q6.7 29.35 4.7 27.9" stroke="#dbe7ef" stroke-width="3" opacity="0.3"/>
+      <path d="M15.03 5.17 21.47 15.17M21.47 15.17 17.56 16.44M15.14 20.35 16.18 26.44" stroke="#ffffff" stroke-width="3"/>
+      <circle cx="15.03" cy="5.17" r="3.6" fill="#ffffff" stroke="none"/><circle cx="21.47" cy="15.17" r="3.3" fill="#ffffff" stroke="none"/><circle cx="16.18" cy="26.44" r="2.25" fill="#ffffff" stroke="none"/><circle cx="14.68" cy="17.36" r="2.5" fill="#c93b3b" stroke="none"/>
+    </g>
+    <g transform="translate(268 540)">
+      <path d="M13.38 12.15 4.465 14.4Q3.35 14.675 2.35 13.95" stroke="#056b88" stroke-width="1.5"/>
+      <path d="M13.38 12.15 4.465 14.4Q3.35 14.675 2.35 13.95" stroke="#dbe7ef" stroke-width="1.5" opacity="0.3"/>
+      <circle cx="7.34" cy="8.68" r="1.25" fill="#c93b3b" stroke="none"/>
+    </g>
+  </g>
+  <g font-size="10" fill="#dbe7ef" text-anchor="middle">
+    <text x="136" y="570">48</text><text x="194" y="570">32</text><text x="239" y="570">24</text><text x="276" y="570">16 降级</text>
+  </g>
+  <text x="330" y="528" font-size="11" fill="#dbe7ef" opacity="0.85">48 / 32 / 24 全细节</text>
+  <text x="330" y="546" font-size="11" fill="#dbe7ef" opacity="0.85">16 起用降级形</text>
+  <!-- 右上:favicon 16px 降级 -->
+  <text x="500" y="132" font-size="15" fill="#ffffff">favicon 16px 降级</text>
+  <line x1="500" y1="140" x2="554" y2="140" stroke="#056b88" stroke-width="2"/>
+  <line x1="500" y1="140" x2="554" y2="140" stroke="#dbe7ef" stroke-width="2" opacity="0.28"/>
+  <rect x="500" y="150" width="44" height="44" fill="#12324a" stroke="#dbe7ef" stroke-width="0.75"/>
+  <g transform="translate(514 156)">
+    <path d="M13.38 12.15 4.465 14.4Q3.35 14.675 2.35 13.95" stroke="#056b88" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M13.38 12.15 4.465 14.4Q3.35 14.675 2.35 13.95" stroke="#dbe7ef" stroke-width="1.5" fill="none" opacity="0.3" stroke-linecap="round"/>
+    <circle cx="7.34" cy="8.68" r="1.25" fill="#c93b3b"/>
+  </g>
+  <text x="522" y="212" font-size="11" fill="#dbe7ef" text-anchor="middle">实际 16px</text>
+  <g transform="translate(560 150) scale(8)">
+    <g stroke="#dbe7ef" stroke-width="0.03" opacity="0.12">
+      <path d="M2 0V16M4 0V16M6 0V16M8 0V16M10 0V16M12 0V16M14 0V16M0 2H16M0 4H16M0 6H16M0 8H16M0 10H16M0 12H16M0 14H16"/>
+    </g>
+    <rect x="0" y="0" width="16" height="16" fill="none" stroke="#dbe7ef" stroke-width="0.06" opacity="0.5"/>
+    <path d="M13.38 12.15 4.465 14.4Q3.35 14.675 2.35 13.95" stroke="#056b88" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M13.38 12.15 4.465 14.4Q3.35 14.675 2.35 13.95" stroke="#dbe7ef" stroke-width="1.5" fill="none" opacity="0.3" stroke-linecap="round"/>
+    <circle cx="7.34" cy="8.68" r="1.25" fill="#c93b3b"/>
+  </g>
+  <text x="624" y="296" font-size="11" fill="#dbe7ef" text-anchor="middle">放大 ×8 · 构造</text>
+  <!-- 保留 / 舍弃(修正:降级形为基准精确 0.5 半化,Q 弯头保留) -->
+  <text x="704" y="158" font-size="13" fill="#ffffff">保留</text>
+  <g fill="#dbe7ef">
+    <circle cx="708" cy="170" r="2"/>
+    <circle cx="708" cy="186" r="2"/>
+    <circle cx="708" cy="202" r="2"/>
+  </g>
+  <g font-size="11" fill="#dbe7ef">
+    <text x="718" y="174">板坡线全弧（含板尾弯头 Q）</text>
+    <text x="718" y="190">坡角 14.2° 不变</text>
+    <text x="718" y="206">红膝点 Ø2.5px（16px 实测）</text>
+  </g>
+  <text x="704" y="234" font-size="13" fill="#ffffff">舍弃</text>
+  <g stroke="#c93b3b" stroke-width="1.6" fill="none">
+    <path d="M704 244l6 6M710 244l-6 6"/>
+    <path d="M704 262l6 6M710 262l-6 6"/>
+    <path d="M704 280l6 6M710 280l-6 6"/>
+  </g>
+  <g font-size="11" fill="#dbe7ef">
+    <text x="718" y="252">头 / 髋 / 踝圆点</text>
+    <text x="718" y="270">骨线全部（股 / 胫与膝断口）</text>
+    <text x="718" y="288">深底提亮细线</text>
+  </g>
+  <text x="704" y="306" font-size="9.5" fill="#dbe7ef" opacity="0.8">降级形 = 基准精确 0.5 半化</text>
+  <text x="704" y="320" font-size="9.5" fill="#dbe7ef" opacity="0.8">每处删减均有对应条目</text>
+  <!-- 三底色 16px 实尺预览(嫁接自 minimal) -->
+  <text x="704" y="352" font-size="12" fill="#ffffff">三底色 16px 实尺预览</text>
+  <rect x="704" y="358" width="17" height="17" fill="#ffffff" stroke="#dbe7ef" stroke-width="0.6"/>
+  <g transform="translate(704.5 358.5) scale(0.5)" fill="none" stroke-linecap="round">
+    <path d="M13.38 12.15 4.465 14.4Q3.35 14.675 2.35 13.95" stroke="#056b88" stroke-width="1.5"/>
+    <circle cx="7.34" cy="8.68" r="1.25" fill="#c93b3b" stroke="none"/>
+  </g>
+  <rect x="744" y="358" width="17" height="17" fill="#dbe7ef"/>
+  <g transform="translate(744.5 358.5) scale(0.5)" fill="none" stroke-linecap="round">
+    <path d="M13.38 12.15 4.465 14.4Q3.35 14.675 2.35 13.95" stroke="#056b88" stroke-width="1.5"/>
+    <circle cx="7.34" cy="8.68" r="1.25" fill="#c93b3b" stroke="none"/>
+  </g>
+  <rect x="784" y="358" width="17" height="17" fill="#12324a"/>
+  <g transform="translate(784.5 358.5) scale(0.5)" fill="none" stroke-linecap="round">
+    <path d="M13.38 12.15 4.465 14.4Q3.35 14.675 2.35 13.95" stroke="#056b88" stroke-width="1.5"/>
+    <circle cx="7.34" cy="8.68" r="1.25" fill="#c93b3b" stroke="none"/>
+  </g>
+  <g font-size="10" fill="#dbe7ef" opacity="0.7" text-anchor="middle">
+    <text x="712.5" y="390">白底</text><text x="752.5" y="390">浅灰</text><text x="792.5" y="390">深底</text>
+  </g>
+  <!-- 降级规则 -->
+  <g font-size="11" fill="#dbe7ef">
+    <text x="500" y="326">降级规则</text>
+    <text x="500" y="342">只删减 · 不镜像 · 不改坡向</text>
+    <text x="500" y="358">红点位置固定 7.34,8.68 @16</text>
+    <text x="500" y="374">（= 14.68,17.36 u 半化）</text>
+  </g>
+  <!-- 留白规则(四边精确 2m) -->
+  <text x="500" y="412" font-size="15" fill="#ffffff">留白规则</text>
+  <line x1="500" y1="420" x2="554" y2="420" stroke="#056b88" stroke-width="2"/>
+  <line x1="500" y1="420" x2="554" y2="420" stroke="#dbe7ef" stroke-width="2" opacity="0.28"/>
+  <rect x="545.6" y="428" width="105.6" height="105.6" fill="none" stroke="#dbe7ef" stroke-width="0.8" stroke-dasharray="5 4" opacity="0.6"/>
+  <g transform="translate(560 442) scale(2.4)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M26.76 24.3 8.93 28.8Q6.7 29.35 4.7 27.9" stroke="#056b88" stroke-width="3"/><path d="M26.76 24.3 8.93 28.8Q6.7 29.35 4.7 27.9" stroke="#dbe7ef" stroke-width="3" opacity="0.3"/>
+    <path d="M15.03 5.17 21.47 15.17M21.47 15.17 17.56 16.44M15.14 20.35 16.18 26.44" stroke="#ffffff" stroke-width="3"/>
+    <circle cx="15.03" cy="5.17" r="3.6" fill="#ffffff" stroke="none"/><circle cx="21.47" cy="15.17" r="3.3" fill="#ffffff" stroke="none"/><circle cx="16.18" cy="26.44" r="2.25" fill="#ffffff" stroke="none"/><circle cx="14.68" cy="17.36" r="2.5" fill="#c93b3b" stroke="none"/>
+  </g>
+  <g stroke="#dbe7ef" stroke-width="0.7" opacity="0.8">
+    <line x1="602" y1="413.6" x2="602" y2="428"/><line x1="598" y1="413.6" x2="606" y2="413.6"/><line x1="598" y1="428" x2="606" y2="428"/>
+    <line x1="531.2" y1="480.8" x2="545.6" y2="480.8"/><line x1="531.2" y1="476.8" x2="531.2" y2="484.8"/><line x1="545.6" y1="476.8" x2="545.6" y2="484.8"/>
+  </g>
+  <g font-size="10" fill="#dbe7ef">
+    <text x="608" y="424">2m</text>
+    <text x="527" y="478" text-anchor="end">2m</text>
+  </g>
+  <g font-size="13" fill="#ffffff">
+    <text x="680" y="470">四周最小留白 = 2m</text>
+  </g>
+  <g font-size="11" fill="#dbe7ef">
+    <text x="680" y="490">任何图文元素不得侵入虚线框</text>
+    <text x="680" y="508">锁标内间距同 2m（见 FIN-C）</text>
+  </g>
+  <!-- 标题栏 -->
+  <rect x="40" y="578" width="828" height="34" fill="none" stroke="#dbe7ef" stroke-width="0.75" opacity="0.7"/>
+  <g stroke="#dbe7ef" stroke-width="0.5" opacity="0.5">
+    <line x1="176" y1="578" x2="176" y2="612"/><line x1="388" y1="578" x2="388" y2="612"/><line x1="470" y1="578" x2="470" y2="612"/><line x1="584" y1="578" x2="584" y2="612"/><line x1="672" y1="578" x2="672" y2="612"/><line x1="806" y1="578" x2="806" y2="612"/>
+  </g>
+  <g font-size="8" fill="#dbe7ef" opacity="0.55">
+    <text x="48" y="590">项目</text><text x="184" y="590">图名</text><text x="396" y="590">图号</text><text x="478" y="590">比例</text><text x="592" y="590">单位</text><text x="680" y="590">日期</text><text x="814" y="590">版</text>
+  </g>
+  <g font-size="12" fill="#ffffff">
+    <text x="48" y="606">SKITUTOR VI 标准</text><text x="184" y="606">应用参数</text><text x="396" y="606">FIN-D</text><text x="478" y="606">16px 网格</text><text x="592" y="606">u · m=3</text><text x="680" y="606">2026-11-10</text><text x="814" y="606">R2</text>
+  </g>
+</svg>
