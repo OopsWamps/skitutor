@@ -27,6 +27,9 @@ web_demo/
 # impeccable engine binary (downloaded, checksum-pinned, not for git)
 .claude/skills/impeccable/scripts/bin/
 
+# taste-skill 设计评审的截图与报告（可再生过程产物）
+.taste-skill/
+
 # .scratch 只留 phase-2（任务票与引用证据）；根下的调研/设计过程产物不进库
 .scratch/*
 !.scratch/phase-2/

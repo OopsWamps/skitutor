@@ -4,11 +4,11 @@
   <!-- 屈体刻滑的滑雪者：实心头/髋/踝，被测膝点嵌在腿笔画断口（珊瑚），雪板作坡面基准线。
        与网页导航标记同一套几何（skibot/web/templates/base.html）。 -->
   <g transform="translate(84 36) scale(2.75)" fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M26.76 24.3 8.93 28.8Q6.7 29.35 4.7 27.9" stroke="#056b88" stroke-width="2.9"/>
+    <path d="M26.76 24.3 8.93 28.8Q6.7 29.35 4.7 27.9" stroke="#056b88" stroke-width="3"/>
     <path d="M15.03 5.17 21.47 15.17M21.47 15.17 17.56 16.44M15.14 20.35 16.18 26.44" stroke="#12324a" stroke-width="3"/>
-    <circle cx="15.03" cy="5.17" r="3.55" fill="#12324a" stroke="none"/>
+    <circle cx="15.03" cy="5.17" r="3.6" fill="#12324a" stroke="none"/>
     <circle cx="21.47" cy="15.17" r="3.3" fill="#12324a" stroke="none"/>
-    <circle cx="16.18" cy="26.44" r="2.3" fill="#12324a" stroke="none"/>
+    <circle cx="16.18" cy="26.44" r="2.25" fill="#12324a" stroke="none"/>
     <circle cx="14.68" cy="17.36" r="2.5" fill="#c93b3b" stroke="none"/>
   </g>
   <!-- 字标：修悦体（佐藤修悦车站胶带字）风格，与网页精灵同一套几何 -->
